@@ -6,9 +6,6 @@ import {
     cartModel
 } from "./models/carts.model.js";
 
-import {
-    ticketModel
-} from "./models/ticket.model.js";
 // Import de variables de entorno:
 import {
     envMongoURL
@@ -131,7 +128,7 @@ export default class CartsDAO {
         return response;
     };
 
-    // Borrar un producto de un carrito: 
+    // Borrar un producto de un carrito - DAO: 
     async deleteProductFromCart(cid, pid) {
         let response = {};
         try {
@@ -156,7 +153,7 @@ export default class CartsDAO {
         return response;
     };
 
-    // Eliminar todos los productos de un carrito: 
+    // Eliminar todos los productos de un carrito - DAO: 
     async deleteAllProductsFromCart(cid) {
         let response = {};
         try {
@@ -259,6 +256,25 @@ export default class CartsDAO {
         } catch (error) {
             response.status = "error";
             response.message = "Error al actualizar el producto en el carrito - DAO: " + error.message;
+        };
+        return response;
+    };
+
+    // Eliminar todos los productos de un carrito: 
+    async deleteCart(cid) {
+        let response = {};
+        try {
+            const result = await cartModel.findOneAndDelete({
+                _id: cid
+            });
+            if (result === null) {
+                response.status = "not found cart";
+            } else {
+                response.status = "success";
+            };
+        } catch (error) {
+            response.status = "error";
+            response.message = "Error al eliminar todos los productos del carrito - DAO: " + error.message;
         };
         return response;
     };

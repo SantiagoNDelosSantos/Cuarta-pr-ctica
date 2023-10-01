@@ -23,7 +23,7 @@ export default class ErrorGenerator {
         return `La dirección de correo electrónico proporcionada "${userEmail}" no es válida. Por favor, proporciona una dirección de correo electrónico válida.`;
     }
 
-    static generateUpdatedCartForbiddenErrorInfo(){
+    static generateUpdatedCartForbiddenErrorInfo() {
         return `Esta ruta está diseñada exclusivamente para actualizar el contenido de un carrito al reemplazar los productos anteriores en él. No se aplica a los tickets, ya que, por cuestiones de seguridad, estos se agregan al carrito exclusivamente a través de la ruta de procesamiento de compra.`
     }
 
@@ -112,7 +112,7 @@ export default class ErrorGenerator {
         return `La propiedad de ID del ticket no tiene un formato válido, se recibió ${tid}.`;
     }
 
-    // Usuarios:
+    // Session:
 
     static generateRegisterDataErrorInfo(userRegister) {
         return `Una o más propiedades en los datos de registro están faltando o no son válidas.
@@ -142,5 +142,7 @@ export default class ErrorGenerator {
     static generateUserIdInfo(uid) {
         return `El ID de usuario no tiene un formato válido, se recibió ${uid}.`;
     }
+
+    // User: 
 
 }

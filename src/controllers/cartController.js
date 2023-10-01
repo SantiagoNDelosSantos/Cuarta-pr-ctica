@@ -370,4 +370,40 @@ export default class CartController {
         return response;
     };
 
+    // Eliminar un carrito - Controller: 
+    async deleteCartController(req, res, next) {
+        const cid = req.params.cid;
+        try {
+            if (!cid || !mongoose.Types.ObjectId.isValid(cid)) {
+                CustomError.createError({
+                    name: "El formato del ID de carrito es incorrecto.",
+                    cause: ErrorGenerator.generateCidErrorInfo(cid),
+                    message: "El ID de carrito proporcionado no es válido.",
+                    code: ErrorEnums.INVALID_ID_CART_ERROR
+                });
+            };
+        } catch (error) {
+            return next(error);
+        };
+        let response = {};
+        try {
+            const resultService = await this.cartService.deleteCartService(cid);
+            response.statusCode = resultService.statusCode;
+            response.message = resultService.message;
+            if (resultService.statusCode === 500) {
+                req.logger.error(response.message);
+            } else if (resultService.statusCode === 404 || resultService.statusCode === 409) {
+                req.logger.warn(response.message);
+            } else if (resultService.statusCode === 200) {
+                response.result = resultService.result;
+                req.logger.debug(response.message);
+            };
+        } catch (error) {
+            response.statusCode = 500;
+            response.message = "Error al eliminar el carrito - Controller: " + error.message;
+            req.logger.error(response.message);
+        };
+        return response;
+    };
+
 };

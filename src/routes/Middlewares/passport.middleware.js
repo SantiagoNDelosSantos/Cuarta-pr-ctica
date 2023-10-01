@@ -9,14 +9,10 @@ import {
 } from '../../config.js';
 
 // Imports DTO: 
-import {
-    CurrentUserDTO
-} from '../../controllers/DTO/user.dto.js'
+import { CurrentUserDTO } from '../../controllers/DTO/user.dto.js'
 
-// Import mongoose para validación de IDs:
-import {
-    createBDUserGH
-} from '../../config/gitHub.passport.js';
+// Import GitHub estrategia:
+import { createBDSessionGH } from '../../config/gitHub.passport.js';
 
 // Errores:
 import ErrorEnums from "../../errors/error.enums.js";

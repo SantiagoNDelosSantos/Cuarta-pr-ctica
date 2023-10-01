@@ -1,5 +1,8 @@
-// Import clase DAO de usuarios: 
+// Import SessionDAO: 
 import SessionDAO from "../DAO/mongodb/SessionMongo.dao.js";
+
+// Import CartService:
+import CartService from "./carts.service.js";
 
 // Import Nodemailer:
 import Mail from '../email/nodemailer.js'
@@ -16,20 +19,20 @@ import {
 // Import variables de entorno:
 import {
     envResetPassToken,
-    envCoderSecret,
     envCoderTokenCookie
 } from '../config.js'
 
-// Clase para el Service de usuarios: 
+// Clase para el Service de session: 
 export default class SessionService {
 
-    // Constructor de UserService: 
+    // Constructor de SessionService: 
     constructor() {
         this.sessionDAO = new SessionDAO();
-        this.mail = new Mail()
+        this.cartService = new CartService();
+        this.mail = new Mail();
     }
 
-    // Métodos de UserService: 
+    // Métodos de SessionService: 
 
     // Crear usuario - Service:
     async createUserService(info) {
@@ -51,11 +54,11 @@ export default class SessionService {
         return response;
     };
 
-    // Buscar usuario por Email, Nombre o ID - Service:
-    async getUserByEmailOrNameOrIdService(identifier) {
+    // Buscar usuario - Service:
+    async getUserService(identifier) {
         let response = {};
         try {
-            const resultDAO = await this.sessionDAO.getUserByEmailOrNameOrId(identifier);
+            const resultDAO = await this.sessionDAO.getUser(identifier);
             if (resultDAO.status === "error") {
                 response.statusCode = 500;
                 response.message = resultDAO.message;
@@ -72,10 +75,10 @@ export default class SessionService {
             response.message = "Error al obtener el usuario - Service: " + error.message;
         };
         return response;
-    };
+    }
 
     // Actualizar usuario - Service: 
-    async updateUserProfileSevice(uid, updateUser) {
+    async updateUserSevice(uid, updateUser) {
         let response = {};
         try {
             const resultDAO = await this.sessionDAO.updateUser(uid, updateUser);
@@ -98,10 +101,10 @@ export default class SessionService {
     };
 
     // Enviar email para reestablecer contraseña - Service: 
-    async getUserByEmailAndSendEmail(email) {
+    async getUserAndSendEmailService(email) {
         let response = {};
         try {
-            const resultDAO = await this.sessionDAO.getUserByEmailOrNameOrId(email);
+            const resultDAO = await this.sessionDAO.getUser(email);
             if (resultDAO.status === "error") {
                 response.statusCode = 500;
                 response.message = resultDAO.message;
@@ -173,7 +176,7 @@ export default class SessionService {
         };
         try {
             // Buscamos al usuario en la base de datos por su correo: 
-            const resultDAO = await this.sessionDAO.getUserByEmailOrNameOrId(userEmail);
+            const resultDAO = await this.sessionDAO.getUser(userEmail);
             if (resultDAO.status === "error") {
                 response.statusCode = 500;
                 response.message = resultDAO.message;
@@ -181,7 +184,7 @@ export default class SessionService {
                 response.statusCode = 404;
                 response.message = `No se encontró ninguna cuenta asociada a este correo, ${userEmail}.`;
             } else if (resultDAO.status === "success") {
-                // Si el usuario existe, verificamos si la nueva contraseña es igual a la actual: 
+                // Si el usaurio existe, verificamos si la nueva contraseña es igual a la actual: 
                 const user = resultDAO.result
                 // Si es igual retronamos un error y pedimos una nueva contraseña:
                 if (isValidPassword(user, newPass)) {
@@ -216,59 +219,61 @@ export default class SessionService {
         return response;
     };
 
-    async changeRoleService( uid, res) {
+    // Cerrar session - Service:
+    async logoutService(req, res, uid) {
         let response = {};
         try {
-            // Buscamos al usuario en la base de datos por su correo: 
-            const resultDAO = await this.sessionDAO.getUserByEmailOrNameOrId(uid);
+            const lastConnection = {
+                last_connection: new Date().toLocaleDateString() + " - " + new Date().toLocaleTimeString()
+            };
+            // Enviamos el id del usaurio y su last_connection:
+            const resultUpdt = await this.sessionDAO.updateUser(uid, lastConnection);
+            // Validamos los resultados:
+            if (resultUpdt.status === "error") {
+                response.statusCode = 500;
+                response.message = resultUpdt.message;
+            } else if (resultUpdt.status === "not found user") {
+                response.statusCode = 404;
+                response.message = "Usuario no encontrado.";
+            } else if (resultUpdt.status === "success") {
+                // Luego de actualizar el last_connection, eliminamos el token de la cookie:
+                res.cookie(envCoderTokenCookie, "", {
+                    httpOnly: true,
+                    signed: true,
+                    maxAge: 7 * 24 * 60 * 60 * 1000
+                })
+                // Devolvemos un status 200:
+                response.statusCode = 200;
+                response.message = "Session cerrada exitosamente.";
+            };
+        } catch (error) {
+            response.statusCode = 500;
+            response.message = "Error al cerrar session - Service: " + error.message;
+        };
+        return response;
+    };
+
+    // Eliminar cuenta - Service: 
+    async deleteUserService(uid, cid) {
+        let response = {};
+        try {
+            const resultDAO = await this.sessionDAO.deleteUser(uid);
             if (resultDAO.status === "error") {
                 response.statusCode = 500;
                 response.message = resultDAO.message;
-            } else if (resultDAO.status === "not found user") {
+            } else if (resultDAO.status === "not found session") {
                 response.statusCode = 404;
-                response.message = `Usuario no encontrado.`;
+                response.message = `No se encontró ninguna cuenta con este ID, ${uid}.`;
             } else if (resultDAO.status === "success") {
-                // Si el usuario existe, extraemos su rol actual: 
-                let userRole = resultDAO.result.role;
-                const newRole = userRole === "user" ? "premium" : "user";
-                const updateUser = {
-                    role: newRole
-                };
-                // Enviamos el nuevo role al updateUser:
-                const resultRolPremium = await this.sessionDAO.updateUser(uid, updateUser);
-                // Validamos los resultados:
-                if (resultRolPremium.status === "error") {
-                    response.statusCode = 500;
-                    response.message = resultRolPremium.message;
-                } else if (resultRolPremium.status === "not found user") {
-                    response.statusCode = 404;
-                    response.message = "Usuario no encontrado.";
-                } else if (resultRolPremium.status === "success") {
+                const deleteCart = await this.cartService.deleteCartService(cid)
+                if (deleteCart.statusCode === 200) {
                     response.statusCode = 200;
-                    response.message = `Usuario actualizado exitosamente, su rol a sido actualizado a ${newRole}.`;
-                    // Traemos al usuario actualizado:
-                    const newUser = await this.sessionDAO.getUserByEmailOrNameOrId(uid);
-                    //  Actualizamos el role del usuario en el token: 
-                    let token = jwt.sign({
-                        email: newUser.result.email,
-                        first_name: newUser.result.first_name,
-                        role: newUser.result.role,
-                        cart: newUser.result.cart,
-                        userID: newUser.result._id
-                    }, envCoderSecret, {
-                        expiresIn: '7d'
-                    });
-                    // Sobrescribimos la cookie:
-                    res.cookie(envCoderTokenCookie, token, {
-                        httpOnly: true,
-                        signed: true,
-                        maxAge: 7 * 24 * 60 * 60 * 1000
-                    })
+                    response.message = "Cuenta eliminada exitosamente.";
                 };
             };
         } catch (error) {
             response.statusCode = 500;
-            response.message = "Error al modificar el rol del usuario - Service: " + error.message;
+            response.message = "Error al eliminar cuenta - Service: " + error.message;
         };
         return response;
     };

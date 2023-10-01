@@ -18,7 +18,7 @@ const CartSchema = new mongoose.Schema({
         type: [{
             ticketsRef:{
                 type: mongoose.Schema.Types.ObjectId,
-                ref:"ticket",
+                ref: "ticket",
             },
         }],
     },

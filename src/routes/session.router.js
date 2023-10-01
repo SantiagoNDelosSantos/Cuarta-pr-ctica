@@ -1,22 +1,20 @@
-import {
-    Router
-} from 'express';
+import { Router } from 'express';
 import passport from 'passport';
 
-import {
-    registerUser,
+import { registerUser,
     loginUser,
     getCurrentUser,
     authenticateWithGitHub,
-    getProfileUser
-} from './Middlewares/passport.middleware.js';
+    getProfileUser } from './Middlewares/passport.middleware.js';
 
-import {
-    completeProfile
-} from '../config/formExtra.js';
+import { completeProfile } from '../config/formExtra.js';
 
 // Import SessionController
 import SessionController from '../controllers/sessionController.js';
+
+// Import Middleware User:
+import { rolesMiddlewareUser } from "./Middlewares/roles.middleware.js";
+
 
 // Instancia de router: 
 const sessionRouter = Router();
@@ -24,13 +22,13 @@ const sessionRouter = Router();
 // Instancia de SessionController: 
 let sessionController = new SessionController();
 
-// Register:
+// Register - Router:
 sessionRouter.post('/register', registerUser);
 
-// Login:
+// Login - Router:
 sessionRouter.post('/login', loginUser);
 
-// GitHub:
+// GitHub - Router:
 sessionRouter.get('/github', passport.authenticate('github', {
     session: false,
     scope: 'user:email'
@@ -38,44 +36,48 @@ sessionRouter.get('/github', passport.authenticate('github', {
 
 sessionRouter.get('/githubcallback', authenticateWithGitHub);
 
-// Formulario extra - GitHub:
+// Formulario extra GitHub - Router:
 sessionRouter.post('/completeProfile', completeProfile);
 
-// Current user:
-sessionRouter.get('/current', passport.authenticate('jwt', {
-    session: false
-}), getCurrentUser);
+// Current user - Router:
+sessionRouter.get('/current', passport.authenticate('jwt', { session: false }), getCurrentUser);
 
-// Ver perfil usuario: 
-sessionRouter.get('/profile', passport.authenticate('jwt', {
-    session: false
-}), getProfileUser);
+// Ver perfil usuario - Router: 
+sessionRouter.get('/profile', passport.authenticate('jwt', { session: false }), getProfileUser);
 
-// Enviar email para reestablecer contraseña:
-sessionRouter.post('/requestResetPassword', async (req, res, next) => {
-    const result = await sessionController.resetPass1Controller(req, res, next);
+// Enviar email para reestablecer contraseña - Router:
+sessionRouter.post('/requestResetPassword', passport.authenticate('jwt', { session: false }), rolesMiddlewareUser, async (req, res, next) => {
+    const result = await sessionController.getSessionAndSendEmailController(req, res, next);
     if (result !== undefined) {
         res.status(result.statusCode).send(result);
     };
 });
 
-// Reestablecer contraseña de usuario:
-sessionRouter.post('/resetPassword', passport.authenticate('jwt', {
-        session: false
-    }),
-    async (req, res, next) => {
-        const result = await sessionController.resetPass2Controller(req, res, next);
+// Reestablecer contraseña de usuario - Router:
+sessionRouter.post('/resetPassword', passport.authenticate('jwt', { session: false }), rolesMiddlewareUser, async (req, res, next) => {
+    const result = await sessionController.resetPassSessionController(req, res, next);
+    if (result !== undefined) {
+        res.status(result.statusCode).send(result);
+    };
+});
+
+// Cerrar session - Router:
+sessionRouter.post('/logout', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
+        const result = await sessionController.logoutController(req, res, next);
         if (result !== undefined) {
             res.status(result.statusCode).send(result);
         };
-    });
+    }
+);
 
-// Cambiar rol del usuario: 
-sessionRouter.post('/premium/:uid', async (req, res, next) => {
-    const result = await sessionController.changeRoleController(req, res, next);
-    if (result !== undefined) {
-        res.status(result.statusCode).send(result);
-    };
-});
+// Eliminar cuenta - Router:  
+sessionRouter.post('/deleteAccount', passport.authenticate('jwt', { session: false }), rolesMiddlewareUser, 
+    async (req, res, next) => {
+        const result = await sessionController.deleteAccountController(req, res, next);
+        if (result !== undefined) {
+            res.status(result.statusCode).send(result);
+        };
+    }
+);
 
 export default sessionRouter;

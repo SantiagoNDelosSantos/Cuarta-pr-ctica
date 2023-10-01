@@ -87,4 +87,13 @@ cartRouter.put('/:cid/products/:pid', passport.authenticate('jwt', { session: fa
     };
 });
 
+// Eliminar un carrito - Router:
+cartRouter.delete('/deleteCart/:cid', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
+    const result = await cartController.deleteCartController(req, res, next);
+    if(result !== undefined) {
+        res.status(result.statusCode).send(result);
+    };
+});
+
+
 export default cartRouter;

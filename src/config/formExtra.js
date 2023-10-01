@@ -1,25 +1,20 @@
 import jwt from 'jsonwebtoken';
-import {
-    envCoderSecret,
-    envCoderTokenCookie, envCoderUserIDCookie
-} from '../config.js';
+import { envCoderSecret, envCoderTokenCookie, envCoderUserIDCookie } from '../config.js';
 
 // Import createHash: 
-import {
-    createHash
-} from "../utils.js";
+import { createHash } from "../utils.js";
 
-// Import UserController:
+// Import SessionController:
 import SessionController from '../controllers/sessionController.js';
 
 // Instancia de SessionController: 
 let sessionController = new SessionController();
 
-// Función para completeProfile: 
-export const completeProfile = async (req, res) => {
+// Function para completeProfile: 
+export const completeProfile = async (req, res, next) => {
 
-    // Obtenemos la cookie con el ID del usuario base creado con los datos de GitHub: 
-    const userId = req.signedCookies[envCoderUserIDCookie]
+    // Obtenemos la cookie con el ID del "usuario base" creado con los datos de GitHub: 
+    const sessionId = req.signedCookies[envCoderUserIDCookie]
 
     const last_name = req.body.last_name;
     const email = req.body.email;
@@ -29,29 +24,29 @@ export const completeProfile = async (req, res) => {
     try {
 
         // Crear el objeto con los datos del formulario extra, para actualizar al usuario creado con los datos de GitHub:
-        const updateUser = {
+        const updateSession = {
             last_name,
             email,
             age,
             password
         };
 
-        // Actualizar el usuario en la base de datos:
-        const updateSessionControl = await sessionController.updateUserController(req, res, userId, updateUser);
+        // Actualizar la session en la base de datos:
+        const updateSessionControl = await sessionController.updateSessionController(req, res, next, sessionId, updateSession);
 
-        // Si se encuantra el usuario lo actualizamos:
+        // Si se encuEntra la session la actualizamos:
         if (updateSessionControl.statusCode === 200) {
 
             // Extraermos solo el resultado:
-            const userExtraForm = updateSessionControl.result;
+            const sessionExtraForm = updateSessionControl.result;
 
             // Generar el token JWT:
             let token = jwt.sign({
-                email: userExtraForm.email,
-                first_name: userExtraForm.first_name,
-                role: userExtraForm.role,
-                cart: userExtraForm.cart,
-                userID: userExtraForm._id
+                email: sessionExtraForm.email,
+                first_name: sessionExtraForm.first_name,
+                role: sessionExtraForm.role,
+                cart: sessionExtraForm.cart,
+                userID: sessionExtraForm._id
             }, envCoderSecret, {
                 expiresIn: '7d'
             });
@@ -66,11 +61,12 @@ export const completeProfile = async (req, res) => {
                 status: 'success',
                 redirectTo: '/products'
             });
+            
         };
         
     } catch (error) {
         req.logger.error(error.message)
-        return ('Error al completar el perfil del usuario creado con GitHub - formExtra.js: ' + error.message);
+        return ('Error al completar datos de session creada con GitHub - formExtra.js: ' + error.message);
     };
 
 };

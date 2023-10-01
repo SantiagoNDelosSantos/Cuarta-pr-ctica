@@ -206,7 +206,7 @@ export const errorMiddleware = (error, req, res, next) => {
             });
             break;
 
-            case ErrorEnums.INVALID_ID_USER_ERROR:
+        case ErrorEnums.INVALID_ID_USER_ERROR:
             res.status(400).send({
                 status: "error",
                 error: error.name,
@@ -215,6 +215,8 @@ export const errorMiddleware = (error, req, res, next) => {
                 code: ErrorEnums.INVALID_ID_USER_ERROR
             });
             break;
+
+            // User:
 
         default:
             res.status(500).send({

@@ -30,8 +30,8 @@ const ticketSchema = new mongoose.Schema({
     },
 
     purchase_datetime: {
-        type: Date,
-        default: Date.now,
+        type: String,
+        default: new Date().toLocaleDateString()  + " - " + new Date().toLocaleTimeString(),
     },
 
     // Productos que se pudieron comprar

@@ -1,23 +1,21 @@
 // Import mongoose para el mongoose.connect:
 import mongoose from "mongoose";
 
-// Import del modelo de productos:
-import {
-    userModel
-} from './models/users.model.js'
+// Import del modelo de usuarios:
+import { userModel } from './models/users.model.js'
 
-// Importación de variables de entorno: 
-import {
-    envMongoURL
-} from "../../config.js";
+// Import variables de entorno: 
+import { envMongoURL } from "../../config.js";
 
-// Clase para el DAO de sesiones/usuarios:
+// Clase para el DAO de session:
 export default class SessionDAO {
 
     // Conexión Mongoose:
     connection = mongoose.connect(envMongoURL);
 
-    // Crear usuario - DAO: 
+    // Métodos para el SessionDAO:
+
+     // Crear usuario - DAO: 
     async createUser(info) {
         let response = {};
         try {
@@ -26,13 +24,13 @@ export default class SessionDAO {
             response.result = result;
         } catch (error) {
             response.status = "error";
-            response.message = "Error al registrar al usurio - DAO: " + error.message;
+            response.message = "Error al registrar al usuario - DAO: " + error.message;
         };
         return response;
     };
 
-    // Buscar usuario por email, nombre de usuario o id - DAO:
-    async getUserByEmailOrNameOrId(identifier) {
+    // Buscar usuario - DAO:
+    async getUser(identifier) {
         let response = {};
         try {
             const conditions = [{ email: identifier }, { first_name: identifier } ];
@@ -67,6 +65,23 @@ export default class SessionDAO {
         } catch (error) {
             response.status = "error";
             response.message = "Error al actualizar los datos del usuario - DAO: " + error.message;
+        };
+        return response;
+    };
+
+    // Eliminar usuario - DAO:
+    async deleteUser(uid) {
+        let response = {};
+        try {
+            const result = await userModel.findOneAndDelete({ _id: uid });
+            if (result === null) {
+                response.status = "not found user";
+            } else {
+                response.status = "success";
+            };
+        } catch (error) {
+            response.status = "error";
+            response.message = "Error al eliminar cuenta de usuario - DAO: " + error.message;
         };
         return response;
     };

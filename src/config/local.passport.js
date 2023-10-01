@@ -8,7 +8,7 @@ import {
     isValidPassword
 } from "../utils.js";
 
-// Import UserController:
+// Import SessionController:
 import SessionController from '../controllers/sessionController.js'
 
 // Import CartController:
@@ -29,7 +29,7 @@ let sessionController = new SessionController();
 // Instancia de CartController: 
 let cartController = new CartController();
 
-// Función de PassportLocal para exportarla:
+// Función de PassportLocal:
 export const initializePassportLocal = (req, res) => {
 
     // Primera estrategia - Registro:
@@ -41,7 +41,7 @@ export const initializePassportLocal = (req, res) => {
 
         async (req, username, password, done) => {
 
-            // Sacamos del body del formulario toda la informacion del usuario: 
+            // Sacamos del body el formulario toda la informacion de registro: 
             const {
                 first_name,
                 last_name,
@@ -52,7 +52,7 @@ export const initializePassportLocal = (req, res) => {
             try {
 
                 // Buscamos el correo en la base de datos: 
-                const existSessionControl = await sessionController.getUserByEmailOrNameOrIdController(req, res, username);
+                const existSessionControl = await sessionController.getUserController(req, res, username);
 
                 // Verificamos si no hubo algun error en el módulo de session, si lo hubo devolvemos el mensaje de error:
                 if (existSessionControl.statusCode === 500) {
@@ -73,7 +73,7 @@ export const initializePassportLocal = (req, res) => {
                 // Si el usuario no esta registrado en la base de datos (404), entonces se procede al registro: 
                 else if (existSessionControl.statusCode === 404) {
 
-                    // Creamos un carrito para el usuario: 
+                    // Creamos un carrito para la session: 
                     const resultCartControl = await cartController.createCartController(req, res);
 
                     // Validamos si no hubo algun error en el  módulo de cart, si lo hubo devolvemos el mensaje de error:
@@ -120,6 +120,7 @@ export const initializePassportLocal = (req, res) => {
                             });
                         }
                     }
+
                 };
             } catch (error) {
                 req.logger.error(error)
@@ -142,7 +143,7 @@ export const initializePassportLocal = (req, res) => {
 
             try {
 
-                // Verificar si el usuario es administrador
+                // Verificar si el usuario es admin:
                 if (username === envAdminEmailCoder && password === envAdminPassCoder) {
                     let userAdmin = {
                         first_name: "Admin",
@@ -153,16 +154,18 @@ export const initializePassportLocal = (req, res) => {
                         role: "admin",
                         cart: null,
                     };
-                    return done(null, userAdmin, { statusCode: 200 });
+                    return done(null, userAdmin, {
+                        statusCode: 200
+                    });
                 }
 
                 // Si no es admin procedemos a logueo del usuario:
                 else {
 
                     // Buscamos el correo en la base de datos: 
-                    const existDBSessionControl = await sessionController.getUserByEmailOrNameOrIdController(req, res, username);
+                    const existDBSessionControl = await sessionController.getUserController(req, res, username);
 
-                    // Verificamos si no hubo algun error en el  módulo de session, si lo hubo devolvemos el mensaje de error:
+                    // Verificamos si no hubo algun error en el módulo de session, si lo hubo devolvemos el mensaje de error:
                     if (existDBSessionControl.statusCode === 500) {
                         return done(null, false, {
                             statusCode: 500,
@@ -170,7 +173,7 @@ export const initializePassportLocal = (req, res) => {
                         });
                     }
 
-                    // Si el usuario no esta registrado en la base de datos (404), entocnes le decimos que se registre: 
+                    // Si el usuario no esta registrado en la base de datos (404), entonces le decimos que se registre: 
                     else if (existDBSessionControl.statusCode === 404) {
                         return done(null, false, {
                             statusCode: 404,
@@ -185,16 +188,28 @@ export const initializePassportLocal = (req, res) => {
                         const user = existDBSessionControl.result;
 
                         // Si el usuario existe en la base de datos, verificamos que la contraseña sea válida:
-                        if (!isValidPassword(user, password)) {
+                        if (!isValidPassword(session, password)) {
                             return done(null, false, {
                                 statusCode: 409,
                                 message: 'Existe una cuenta asociada a este correo pero, la contraseña ingresada es incorrecta.'
                             });
                         } else {
-                            // Si el usuario existe y la contraseña es correcta, retornar el usuario autenticado:
-                            return done(null, user, { statusCode: 200 });
-                        }
-                    }
+
+                            // Si la cuenta existe y la contraseña es correcta, modificamos la propiedad last_connection de la session:
+                            const lastConnection = {
+                                last_connection: new Date().toLocaleDateString() + " - " + new Date().toLocaleTimeString()
+                            };
+                            const lastConnect = await sessionController.updateUserController(req, res, done, user._id, lastConnection);
+
+                            if (lastConnect.statusCode === 200) {
+                                // Tambien retornamos el usuario autenticado:
+                                return done(null, session, {
+                                    statusCode: 200
+                                });
+                            }
+
+                        };
+                    };
                 }
             } catch (error) {
                 console.log(error)

@@ -43,17 +43,19 @@ const ErrorEnums = {
 
     INVALID_ID_TICKET_ERROR: 15,
 
-    // Session:
+    // Session: 
 
     INVALID_REGISTER_DATA: 16,
 
-    INVALID_LOGIN_DATA: 17,
+    INVALID_LOGIN_DATA: 17, 
 
     INVALID_EMAIL_USER: 18,
 
     INVALID_NEW_PASS_USER: 19,
 
     INVALID_ID_USER_ERROR: 20,
+
+    // User:
 
 }
 

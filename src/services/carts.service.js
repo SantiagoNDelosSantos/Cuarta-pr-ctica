@@ -332,4 +332,27 @@ export default class CartService {
         return response;
     };
 
+    // Eliminar un carrito - Service: 
+    async deleteCartService(cid) {
+        let response = {};
+        try {
+            const resultDAO = await this.cartDao.deleteCart(cid)
+            if (resultDAO.status === "error") {
+                response.statusCode = 500;
+                response.message = resultDAO.message;
+            } else if (resultDAO.status === "not found cart") {
+                response.statusCode = 404;
+                response.message = `No se encontró ningún carrito con el ID ${cid}.`;
+            } else if (resultDAO.status === "success") {
+                response.statusCode = 200;
+                response.message = "Carrito eliminado exitosamente.";
+                response.result = resultDAO.result;
+            };
+        } catch (error) {
+            response.statusCode = 500;
+            response.message = "Error al eliminar el carrito - Service: " + error.message;
+        };
+        return response;
+    };
+
 };
