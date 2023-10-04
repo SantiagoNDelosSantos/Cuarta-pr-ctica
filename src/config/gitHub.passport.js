@@ -47,12 +47,12 @@ export const initializePassportGitHub = (req, res, next) => {
 
 };
 
-export const createBDSessionGH = async (req, res, next, session) => {
+export const createBDUserGH = async (req, res, next, user) => {
     let response = {};
     try {
 
-        // Buscamos la session en la base de datos: 
-        const existSessionControl = await sessionController.getSessionController(req, res, session);
+        // Buscamos al usuario en la base de datos: 
+        const existSessionControl = await sessionController.getUserController(req, res, user);
 
         // Verificamos si no hubo algun error en el  módulo de session, si lo hubo devolvemos el mensaje de error:
         if (existSessionControl.statusCode === 500) {
@@ -65,20 +65,23 @@ export const createBDSessionGH = async (req, res, next, session) => {
         if (existSessionControl.statusCode === 200) {
 
             // Si la cuenta existe, modificamos la propiedad last_connection de la session:
-            const lastConnection = { last_connection: new Date().toLocaleDateString()  + " - " + new Date().toLocaleTimeString()}; 
-            await sessionController.updateSessionController(req, res, next, existSessionControl.result._id.toString(), lastConnection);
+            const lastConnection = {
+                last_connection: new Date().toLocaleDateString() + " - " + new Date().toLocaleTimeString()
+            };
+            const lastConnect = await sessionController.updateUserController(req, res, next, existSessionControl.result._id.toString(), lastConnection);
 
-            // Tambien devolvemos la session: 
-            response.statusCode = 200;
-            response.result = existSessionControl.result;
-            return response;
-
+            if (lastConnect.statusCode === 200) {
+                // En dicho caso Tambien,  devolvemos el resultado: 
+                response.statusCode = 200;
+                response.result = existSessionControl.result;
+                return response;
+            }
         }
 
-        // Si el usuario no esta registrado en la base de datos (404), entonces se procede a crear la session con los datos de GitHub: 
+        // Si el usuario no esta registrado en la base de datos (404), entonces se procede a crear un usuario con los datos de GitHub: 
         else if (existSessionControl.statusCode === 404) {
 
-            // Creamos un carrito para la session: 
+            // Creamos un carrito para el usuario: 
             const resultCartControl = await cartController.createCartController(req, res);
 
             // Validamos si no hubo algun error en el  módulo de cart, si lo hubo devolvemos el mensaje de error:
@@ -88,15 +91,15 @@ export const createBDSessionGH = async (req, res, next, session) => {
                 return response;
             }
 
-            // Si no hubo error en el módulo de cart continuamos con la creación de la session:
+            // Si no hubo error en el módulo de cart continuamos con la creación del usuario:
             if (resultCartControl.statusCode === 200) {
 
                 // Extraemos solo el carrito creado por el cartController: 
                 const cart = resultCartControl.result;
 
-                // Creamos el objeto con los datos y le añadimos el _id de su carrito: 
-                const newSession = {
-                    first_name: session,
+                // Creamos el objeto con los datos del usuario y le añadimos el _id de su carrito: 
+                const newUser = {
+                    first_name: user,
                     last_name: "X",
                     email: "X",
                     age: 0,
@@ -105,8 +108,8 @@ export const createBDSessionGH = async (req, res, next, session) => {
                     cart: cart._id,
                 };
 
-                // Creamos la nueva session:
-                const createSessionControl = await sessionController.createSessionControler(req, res, newSession);
+                // Creamos el nuevo usuario:
+                const createSessionControl = await sessionController.createUserControler(req, res, newUser);
 
                 // Verificamos si no hubo algun error en el  módulo de session, si lo hubo devolvemos el mensaje de error:
                 if (createSessionControl.statusCode === 500) {
@@ -119,15 +122,18 @@ export const createBDSessionGH = async (req, res, next, session) => {
                 if (createSessionControl.statusCode === 200) {
 
                     // Modificamos la propiedad last_connection de la session:
-                    const lastConnection = { last_connection: new Date().toLocaleDateString()  + " - " + new Date().toLocaleTimeString()};
-                    await sessionController.updateSessionController(req, res, next, existSessionControl.result._id.toString(), lastConnection);
-                    
-                    // Tambien devolvemos la nueva session:
-                    response.statusCode = 200;
-                    response.result = createSessionControl.result;
-                    return response;
-                }
+                    const lastConnection = {
+                        last_connection: new Date().toLocaleDateString() + " - " + new Date().toLocaleTimeString()
+                    };
+                    const lastConnect = await sessionController.updateUserController(req, res, next, createSessionControl.result._id.toString(), lastConnection);
 
+                    if (lastConnect.statusCode === 200) {
+                        // Tambien devolvemos el nuevo "usuario base":
+                        response.statusCode = 200;
+                        response.result = createSessionControl.result;
+                        return response;
+                    }
+                }
             }
         };
     } catch (error) {

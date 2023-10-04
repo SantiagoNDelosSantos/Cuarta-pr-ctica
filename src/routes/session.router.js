@@ -43,19 +43,19 @@ sessionRouter.post('/completeProfile', completeProfile);
 sessionRouter.get('/current', passport.authenticate('jwt', { session: false }), getCurrentUser);
 
 // Ver perfil usuario - Router: 
-sessionRouter.get('/profile', passport.authenticate('jwt', { session: false }), getProfileUser);
+sessionRouter.get('/profile', passport.authenticate('jwt', { session: false, failureRedirect: '/login' }), getProfileUser);
 
 // Enviar email para reestablecer contraseña - Router:
-sessionRouter.post('/requestResetPassword', passport.authenticate('jwt', { session: false }), rolesMiddlewareUser, async (req, res, next) => {
-    const result = await sessionController.getSessionAndSendEmailController(req, res, next);
+sessionRouter.post('/requestResetPassword', passport.authenticate('jwt', { session: false, failureRedirect: '/login'}), rolesMiddlewareUser, async (req, res, next) => {
+    const result = await sessionController.getUserAndSendEmailController(req, res, next);
     if (result !== undefined) {
         res.status(result.statusCode).send(result);
     };
 });
 
 // Reestablecer contraseña de usuario - Router:
-sessionRouter.post('/resetPassword', passport.authenticate('jwt', { session: false }), rolesMiddlewareUser, async (req, res, next) => {
-    const result = await sessionController.resetPassSessionController(req, res, next);
+sessionRouter.post('/resetPassword', passport.authenticate('jwtResetPass', { session: false, failureRedirect: '/requestResetPassword' }), passport.authenticate('jwt', { session: false }), rolesMiddlewareUser, async (req, res, next) => {
+    const result = await sessionController.resetPassUserController(req, res, next);
     if (result !== undefined) {
         res.status(result.statusCode).send(result);
     };
@@ -73,7 +73,7 @@ sessionRouter.post('/logout', passport.authenticate('jwt', { session: false }), 
 // Eliminar cuenta - Router:  
 sessionRouter.post('/deleteAccount', passport.authenticate('jwt', { session: false }), rolesMiddlewareUser, 
     async (req, res, next) => {
-        const result = await sessionController.deleteAccountController(req, res, next);
+        const result = await sessionController.deleteUserController(req, res, next);
         if (result !== undefined) {
             res.status(result.statusCode).send(result);
         };

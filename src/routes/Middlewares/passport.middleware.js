@@ -12,7 +12,7 @@ import {
 import { CurrentUserDTO } from '../../controllers/DTO/user.dto.js'
 
 // Import GitHub estrategia:
-import { createBDSessionGH } from '../../config/gitHub.passport.js';
+import { createBDUserGH } from '../../config/gitHub.passport.js';
 
 // Errores:
 import ErrorEnums from "../../errors/error.enums.js";
@@ -120,7 +120,7 @@ export const authenticateWithGitHub = (req, res, next) => {
                 message: info.message
             });
         } else if (user) {
-            const resultDB_GH = await createBDUserGH(req, res, user, next);
+            const resultDB_GH = await createBDUserGH(req, res, next, user);
             if (resultDB_GH.statusCode === 500){
                 return res.status(resultDB_GH.statusCode).json({
                     message: resultDB_GH.message

@@ -21,10 +21,10 @@ export default class SessionService {
     // Métodos para UserService: 
 
     // Cambiar rol del usuario - Service:
-    async changeRoleService(uid, res) {
+    async changeRoleService(res, uid) {
         let response = {};
         try {
-            // Buscamos al usuario en la base de datos por su correo: 
+            // Buscamos al usuario en la base de datos por su ID: 
             const resultDAO = await this.userDAO.getUser(uid);
             if (resultDAO.status === "error") {
                 response.statusCode = 500;
@@ -76,6 +76,51 @@ export default class SessionService {
             response.message = "Error al modificar el rol del usuario - Service: " + error.message;
         };
         return response;
+    };
+
+    async uploadPremiumDocsService(uid, rutaIdentification, rutaProofOfAddres, rutaBankStatement) {
+        let response = {};
+        try {
+            // Buscamos al usuario en la base de datos por su correo: 
+            const resultDAO = await this.userDAO.getUser(uid);
+            if (resultDAO.status === "error") {
+                response.statusCode = 500;
+                response.message = resultDAO.message;
+            } else if (resultDAO.status === "not found user") {
+                response.statusCode = 404;
+                response.message = `Usuario no encontrado.`;
+            } else if (resultDAO.status === "success") {
+
+                // Enviamos el nuevo role al updateUser:
+                const updateUser = 
+
+
+
+                const resultDocs = await this.userDAO.updateUser(uid, updateUser);
+
+
+                // Validamos los resultados:
+
+
+
+
+                if (resultRolPremium.status === "error") {
+                    response.statusCode = 500;
+                    response.message = resultRolPremium.message;
+                } else if (resultRolPremium.status === "not found user") {
+                    response.statusCode = 404;
+                    response.message = "Usuario no encontrado.";
+                } else if (resultRolPremium.status === "success") {
+                    response.statusCode = 200;
+                    response.message = `Documentos subidos exitosamente.`;
+                };
+            };
+        } catch (error) {
+            response.statusCode = 500;
+            response.message = "Error al subir documentación de usuario - Service: " + error.message;
+        };
+        return response;
+
     };
 
 }

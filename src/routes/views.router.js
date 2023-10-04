@@ -14,7 +14,7 @@ import {
 
 const viewsRouter = Router();
 
-viewsRouter.get('/products', (req, res) => {
+viewsRouter.get('/products', passport.authenticate('jwt', { session: false, failureRedirect: '/login'}), (req, res) => {
     res.render('products', {
         title: 'Productos'
     })
@@ -43,6 +43,12 @@ viewsRouter.get('/login', (req, res) => {
         title: 'Iniciar Sesión'
     });
 });
+
+viewsRouter.get('/changeRole', (req, res) => {
+    res.render('changeRole', {
+        title: 'Cambiar Role'
+    })
+})
 
 viewsRouter.get('/completeProfile', (req, res) => {
     res.render('extraForm', {
@@ -73,14 +79,6 @@ viewsRouter.get('/adminPanel', passport.authenticate('jwt', {
     })
 })
 
-viewsRouter.get('/adminPanel', passport.authenticate('jwt', {
-    session: false
-}), rolesMiddlewareAdmin, (req, res) => {
-    res.render('userAdmin', {
-        title: 'Panel de administrador'
-    })
-})
-
 viewsRouter.get('/premiumView', passport.authenticate('jwt', {
         session: false
     }), rolesMiddlewareUserPremium, (req, res) => {
@@ -88,6 +86,5 @@ viewsRouter.get('/premiumView', passport.authenticate('jwt', {
             title: 'Premium View'
         })
     })
-
 
 export default viewsRouter;

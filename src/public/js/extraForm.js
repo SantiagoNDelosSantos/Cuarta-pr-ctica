@@ -14,18 +14,19 @@ extraForm.addEventListener('submit', async (e) => {
             },
         });
         const json = await response.json();
-        if (response.ok) {
-            console.log('Perfil completado con éxito.');
-            extraForm.reset();
-            if (json.redirectTo) {
-                window.location.href = json.redirectTo;
-            }
-        } else {
+
+        if (!json.redirectTo) {
             Swal.fire({
                 icon: 'error',
                 title: 'Error al completar el perfil',
                 text: json.message || 'Error al completar el perfil. Inténtalo de nuevo.',
             });
+        } else if (response.ok) {
+            console.log('Perfil completado con éxito.');
+            extraForm.reset();
+            if (json.redirectTo) {
+                window.location.href = json.redirectTo;
+            }
         }
     } catch (error) {
         console.log('Error en la solicitud:', error);

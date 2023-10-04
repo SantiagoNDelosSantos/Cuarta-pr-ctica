@@ -124,6 +124,15 @@ export default class ErrorGenerator {
         * password: Se requiere una contraseña válida, puede ser un string, un número o una combinación de ambos.`
     }
 
+    static generateRegisterGitHubErrorInfo(userRegister) {
+        return `Una o más propiedades en los datos de registro están faltando o no son válidas.
+        Propiedades requeridas:
+        * last_name: Debe ser un string sin números, se recibió ${userRegister.last_name}.
+        * email: Debe ser un correo electrónico válido, se recibió ${userRegister.email}.
+        * age: Debe ser un número, se recibió ${userRegister.age}.
+        * password: Se requiere una contraseña válida, puede ser un string, un número o una combinación de ambos.`
+    }
+
     static generateLoginDataErrorInfo(userLogin) {
         return `Una o más propiedades en los datos del login están faltando o no son válidas.
         Propiedades requeridas:

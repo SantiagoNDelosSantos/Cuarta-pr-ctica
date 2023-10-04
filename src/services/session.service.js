@@ -261,7 +261,7 @@ export default class SessionService {
             if (resultDAO.status === "error") {
                 response.statusCode = 500;
                 response.message = resultDAO.message;
-            } else if (resultDAO.status === "not found session") {
+            } else if (resultDAO.status === "not found user") {
                 response.statusCode = 404;
                 response.message = `No se encontró ninguna cuenta con este ID, ${uid}.`;
             } else if (resultDAO.status === "success") {
