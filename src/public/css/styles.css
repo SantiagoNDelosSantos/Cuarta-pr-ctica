@@ -22,7 +22,7 @@
 h1 {
   font-family: 'Montserrat';
   text-align: center;
-  margin-top: 22px;
+  margin-top: 18px;
 }
 
 p {
@@ -36,11 +36,11 @@ p {
   margin-top: 30px;
 }
 
-#sendMsg{
+#sendMsg {
   margin-top: 0 !important;
 }
 
-#message{
+#message {
   width: 100%;
   margin-left: 10%;
 }
@@ -85,7 +85,8 @@ tbody {
   text-align: left;
 }
 
-.boton, .botonEnv {
+.boton,
+.botonEnv {
   color: #002877;
   font-family: 'Montserrat';
   font-size: 1.2em;
@@ -94,19 +95,21 @@ tbody {
   border-radius: 1em;
   border: none;
   text-align: center;
+  width: auto;
 }
 
 .boton:hover,
-.pag:hover, .botonEnv{
+.pag:hover,
+.botonEnv {
   background-color: #bfe4fd;
 }
 
-.botonEnv{
+.botonEnv {
   padding: 1em;
   width: 40%;
 }
 
-#tdBtnSendMsg{
+#tdBtnSendMsg {
   margin-left: 10%;
 }
 
@@ -118,7 +121,7 @@ input {
   border-bottom: 1px solid #edf2f7;
   color: #000000;
   font-size: 1em;
-  padding: 15px 5px;
+  padding: 10px 5px;
   text-align: center;
   border-radius: 1em;
 }
@@ -186,7 +189,6 @@ h2 {
 #registerForm,
 #loginForm,
 #profile,
-#changeRole,
 #extraForm,
 #resetPassForm1,
 #resetPassForm2 {
@@ -212,7 +214,7 @@ h2 {
   height: 85vh;
 }
 
-#profile, #changeRole {
+#profile {
   margin-left: 20%;
   margin-right: 20%;
   width: 60%;
@@ -266,7 +268,7 @@ h2 {
 }
 
 .logoGRD {
-  width: 80% !important;
+  width: 50% !important;
 }
 
 .divLogo {
@@ -275,20 +277,21 @@ h2 {
   align-items: center;
 }
 
-.divLogoChat{
+.divLogoChat {
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.logoGRDChat{
+.logoGRDChat {
   width: 40%;
 }
 
 /* Sweet Alert*/
 .swal2-popup.swal2-modal.swal2-icon-success.swal2-show,
 .swal2-popup.swal2-modal.swal2-icon-error.swal2-show,
+.swal2-popup.swal2-modal.swal2-icon-info.swal2-show,
 .swal2-popup.swal2-modal.swal2-icon-warning.swal2-show,
 button.swal2-cancel.swal2-styled {
   border-radius: 2em;
@@ -331,4 +334,36 @@ body {
 ::-webkit-scrollbar-thumb {
   background-color: #a7d7f7;
   border-radius: 1em;
+}
+
+/*Imputs changeRole:*/
+
+#uploadDocuments {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.inputRole {
+  display: flex;
+  justify-content: center;
+  gap: 2em;
+  flex-direction: row;
+  width: auto;
+}
+
+#identification,
+#bankStatement,
+#proofOfAddress {
+  border-radius: 5em;
+  padding-left: 1em;
+  padding-right: 0em;
+  width: auto;
+  border: 0.2em solid #d7eefd;
+  color: #002877;
+}
+
+input {
+  width: 70%;
 }

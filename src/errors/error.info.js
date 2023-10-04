@@ -154,4 +154,11 @@ export default class ErrorGenerator {
 
     // User: 
 
+    static uploadPremiumDocsErrorInfo(identification, proofOfAddress, bankStatement) {
+        return `No se han proporcionado ninguno de los documentos requeridos:
+        - Como documento de identificación se ha recibido, ${identification}.
+        - Como comprobante de domicilio se ha recibido, ${proofOfAddress}.
+        - Como comprobante de estado de cuenta se recibido, ${bankStatement}.`
+    }
+
 }

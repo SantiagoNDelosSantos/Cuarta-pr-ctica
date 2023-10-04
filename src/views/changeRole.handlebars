@@ -2,21 +2,44 @@
 
     <div id="conteProfi">
 
-        <h1>Convertirse en premium:</h1>
+        <div class="divLogo">
+            <img src="https://i.ibb.co/hd9vsgK/Logo-BK-Grande.png" alt="Logo-BK-Grande" border="0" class="logoGRD">
+        </div>
 
         <br />
+        <h1 style="margin-top: 0 !important">Convertirse en premium:</h1>
 
-        <form id="uploadDocuments" enctype="multipart/form-data">
+        <br />
+        <br />
 
-            <input type="file" id="identification" name="identification">
-            <br />
-            <input type="file" id="proofOfAddress" name="proofOfAddress">
-            <br />
-            <input type="file" id="bankStatement" name="bankStatement">
-            <br />
-            <input class="boton" type="submit" value="Cargar Documentos">
+            <form id="uploadDocuments" enctype="multipart/form-data">
+                <div class="inputRole">
+                    <p style="margin-top: 14px !important">Identificación:</p>
+                    <input type="file" id="identification" name="identification">
+                </div>
 
-        </form>
+                <br />
+
+                <div class="inputRole">
+                    <p style="margin-top: 10px !important">Comprobante de domicilio:</p>
+                    <input type="file" id="proofOfAddress" name="proofOfAddress">
+                </div>
+
+                <br />
+
+                <div class="inputRole">
+                    <p style="margin-top: 8px !important">Comprobante de estado de cuenta:</p>
+                    <input type="file" id="bankStatement" name="bankStatement">
+                </div>
+
+                <br />
+                <br />
+
+                <div class="inputRole">
+                    <input class="boton" type="submit" value="Cargar Documentos">
+                    <button id="ChangeROLE" class="boton">Actualizar Role</button>
+                </div>
+            </form>
 
     </div>
 

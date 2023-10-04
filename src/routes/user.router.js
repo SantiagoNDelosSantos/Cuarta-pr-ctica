@@ -23,17 +23,7 @@ const userRouter = Router();
 // Instancia de UserController: 
 let userController = new UserController();
 
-// Cambiar rol del usuario: 
-userRouter.post('/premium/:uid', passport.authenticate('jwt', {
-    session: false
-}), rolesMiddlewareUser, async (req, res, next) => {
-    const result = await userController.changeRoleController(req, res, next);
-    if (result !== undefined) {
-        res.status(result.statusCode).send(result);
-    };
-});
-
-// Subir documentos (Premium):
+// Subir documentación de usuario - Router:
 userRouter.post('/:uid/documents',  passport.authenticate('jwt', {
     session: false
 }), rolesMiddlewareUser, uploaderDocuments.fields([{
@@ -53,6 +43,16 @@ userRouter.post('/:uid/documents',  passport.authenticate('jwt', {
         if (result !== undefined) {
             res.status(result.statusCode).send(result);
         };
+});
+
+// Cambiar rol del usuario - Router: 
+userRouter.post('/premium/:uid', passport.authenticate('jwt', {
+    session: false
+}), rolesMiddlewareUser, async (req, res, next) => {
+    const result = await userController.changeRoleController(req, res, next);
+    if (result !== undefined) {
+        res.status(result.statusCode).send(result);
+    };
 });
 
 export default userRouter;

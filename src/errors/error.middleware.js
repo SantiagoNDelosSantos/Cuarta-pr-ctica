@@ -217,6 +217,16 @@ export const errorMiddleware = (error, req, res, next) => {
             break;
 
             // User:
+            
+            case ErrorEnums.INVALID_FORM_FILES_ERROR:
+                res.status(400).send({
+                    status: "error",
+                    error: error.name,
+                    cause: error.cause,
+                    message: error.message,
+                    code: ErrorEnums.INVALID_FORM_FILES_ERROR
+                });
+                break;
 
         default:
             res.status(500).send({

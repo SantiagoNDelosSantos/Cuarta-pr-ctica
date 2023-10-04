@@ -57,6 +57,8 @@ const ErrorEnums = {
 
     // User:
 
+    INVALID_FORM_FILES_ERROR: 30,
+
 }
 
 export default ErrorEnums;
