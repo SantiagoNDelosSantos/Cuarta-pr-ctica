@@ -96,6 +96,7 @@ tbody {
   border: none;
   text-align: center;
   width: auto;
+  cursor: pointer;
 }
 
 .boton:hover,
@@ -320,19 +321,16 @@ a:hover {
 }
 
 /*Scroll bar*/
-/* Ocultar la barra de desplazamiento, pero aún permitir el desplazamiento */
 body {
-  scrollbar-width: 1em;
-  scrollbar-color: #1f7cba;
+  overflow: auto !important;
 }
 
-/* Personalizar el pulgarcito solo en navegadores basados en WebKit (como Chrome y Safari) */
 ::-webkit-scrollbar {
   width: 0.4em;
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #a7d7f7;
+  background-color: #bfe4fd;
   border-radius: 1em;
 }
 
@@ -351,6 +349,7 @@ body {
   gap: 2em;
   flex-direction: row;
   width: auto;
+  padding: 0;
 }
 
 #identification,
@@ -362,6 +361,7 @@ body {
   width: auto;
   border: 0.2em solid #d7eefd;
   color: #002877;
+  cursor: pointer;
 }
 
 input {

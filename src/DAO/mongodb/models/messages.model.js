@@ -7,9 +7,17 @@ const MessagesSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    userId: {
+        type: String,
+        required: true
+    },
     message: {
         type: String,
         required: true
+    },
+    time: {
+        type: String,
+        default: null
     },
 })
 

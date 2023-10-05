@@ -8,13 +8,14 @@ import passport from 'passport';
 // Import Middleware Roles:
 import {
     rolesMiddlewareAdmin,
-    rolesMiddlewareUserPremium
+    rolesMiddlewareUserPremium,
+    rolesMiddlewareUser
 } from "./Middlewares/roles.middleware.js";
 
 
 const viewsRouter = Router();
 
-viewsRouter.get('/products', passport.authenticate('jwt', { session: false, failureRedirect: '/login'}), (req, res) => {
+viewsRouter.get('/products', passport.authenticate('jwt', {session: false, failureRedirect: '/login'}), (req, res) => {
     res.render('products', {
         title: 'Productos'
     })
@@ -26,7 +27,7 @@ viewsRouter.get('/cart', (req, res) => {
     });
 });
 
-viewsRouter.get('/chat', (req, res) => {
+viewsRouter.get('/chat', passport.authenticate('jwt', { session: false, failureRedirect: '/login' }), rolesMiddlewareUser, (req, res) => {
     res.render('chat', {
         title: 'Chat'
     })
@@ -80,11 +81,11 @@ viewsRouter.get('/adminPanel', passport.authenticate('jwt', {
 })
 
 viewsRouter.get('/premiumView', passport.authenticate('jwt', {
-        session: false
-    }), rolesMiddlewareUserPremium, (req, res) => {
-        res.render('userPremium', {
-            title: 'Premium View'
-        })
+    session: false
+}), rolesMiddlewareUserPremium, (req, res) => {
+    res.render('userPremium', {
+        title: 'Premium View'
     })
+})
 
 export default viewsRouter;
