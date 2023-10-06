@@ -102,6 +102,7 @@ export const loginUser = (req, res, next) => {
                 signed: true,
                 maxAge: 7 * 24 * 60 * 60 * 1000
             }).status(info.statusCode).json({
+                statusCode: info.statusCode,
                 message: 'Login exitoso',
                 role: user.role
             });

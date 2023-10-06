@@ -66,7 +66,7 @@ export const completeProfile = async (req, res, next) => {
         // Verificamos si no hubo algun error en el módulo de session, si lo hubo devolvemos el mensaje de error:
         if (existSessionControl.statusCode === 500) {
             res.send({
-                status: 500,
+                statusCode: 500,
                 message: existSessionControl.message
             });
         }
@@ -74,7 +74,7 @@ export const completeProfile = async (req, res, next) => {
         // Verificamos si el usuario ya esta registrado, en dicho caso le decimos que vaya al login:
         else if (existSessionControl.statusCode === 200) {
             res.send({
-                status: 409,
+                statusCode: 409,
                 message: 'Ya existe una cuenta asociada a este correo. Diríjase al login y presione en "Ingresa aquí" para iniciar sesión.'
             });
         }
@@ -118,6 +118,7 @@ export const completeProfile = async (req, res, next) => {
                 // Redirigir al usuario a la vista de productos:
                 res.send({
                     status: 'success',
+                    statusCode: 200,
                     redirectTo: '/products'
                 });
 
@@ -127,7 +128,10 @@ export const completeProfile = async (req, res, next) => {
 
     } catch (error) {
         req.logger.error(error.message)
-        return ('Error al completar datos de session creada con GitHub - formExtra.js: ' + error.message);
+        res.send({
+            statusCode: 500,
+            message: 'Error al completar datos de session creada con GitHub - formExtra.js: ' + error.message
+        });
     };
 
 };

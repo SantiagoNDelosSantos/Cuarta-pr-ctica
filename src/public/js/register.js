@@ -28,13 +28,13 @@ form.addEventListener('submit', async (e) => {
             window.location.href = '/login';
         } else if (customError) {
             Swal.fire({
-                icon: 'error',
+                icon: 'warning',
                 title: 'Error de registro',
                 text: customError || 'Error en el registro. Inténtalo de nuevo.',
             });
         } else if (statusCodeRes === 409) {
             Swal.fire({
-                icon: 'warning',
+                icon: 'info',
                 title: 'Error de registro',
                 text: messageRes || 'Error en el registro. Inténtalo de nuevo.',
             });

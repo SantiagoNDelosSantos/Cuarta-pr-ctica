@@ -125,7 +125,7 @@ export default class SessionService {
                 <table cellspacing="0" cellpadding="0" width="100%">
                     <tr>
                         <td style="text-align: center;">
-                            <img src="https://i.ibb.co/hd9vsgK/Logo-BK-Grande.png" alt="Logo-BK-Grande" border="0" style="max-width: 50% !important; ">
+                            <img src="https://i.ibb.co/hd9vsgK/Logo-BK-Grande.png" alt="Logo-BK-Grande" border="0" style="max-width: 40% !important; ">
                         </td>
                     </tr>
                     <tr>
@@ -135,8 +135,8 @@ export default class SessionService {
                             Haga click en el siguiente enlace para restablecer su contraseña:</p>
                             <a href="http://localhost:8080/resetPassword?token=${token}" 
                             style="
-                            background-color: #d7eefd;
-                            color: #002877; 
+                            background-color: #95d0f7;
+                            color: #ffffff; 
                             text-decoration: none;
                             padding: 10px 20px; 
                             border-radius: 1em; 
