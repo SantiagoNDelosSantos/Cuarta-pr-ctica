@@ -9,6 +9,9 @@ import ErrorEnums from "../errors/error.enums.js";
 import CustomError from "../errors/customError.class.js";
 import ErrorGenerator from "../errors/error.info.js";
 
+// Variable de entorno:
+import {envResetPassCookieEmail} from "../config.js"
+
 // Clase para el Controller de session: 
 export default class SessionController {
 
@@ -124,6 +127,10 @@ export default class SessionController {
                 req.logger.warn(response.message);
             } else if (resultService.statusCode === 200) {
                 req.logger.debug(response.message);
+                res.cookie(envResetPassCookieEmail, userEmail, {
+                    httpOnly: true,
+                    signed: true,
+                    maxAge:  3600 * 1000});
             };
         } catch (error) {
             response.statusCode = 500;
@@ -135,7 +142,7 @@ export default class SessionController {
 
     // Restablecer contraseña - Controller:
     async resetPassUserController(req, res, next) {
-        const userEmail = req.user.email;
+        const userEmail = req.signedCookies[envResetPassCookieEmail]
         const newPass = req.body.newPassword
         const confirmPass = req.body.confirmPassword
         try {

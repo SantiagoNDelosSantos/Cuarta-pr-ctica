@@ -51,6 +51,9 @@ export const envAuthPassTransport = process.env.AUTH_PASS_TRANSPORT;
 // Token para el link de restablecer contraseña:
 export const envResetPassToken = process.env.RESET_PASSWORD_TOKEN;
 
+// Cookie para guardar el email del usuario que solicita correo de restablecimiento de contraseña:
+export const envResetPassCookieEmail = process.env.RESET_PASSWORD_COOKIE 
+
 console.log(program.opts())
 
 // Cargar variables de entorno, antes de levantar el servidor: 

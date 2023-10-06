@@ -133,7 +133,7 @@ export default class SessionService {
                         <h2 style="font-size: 24px; margin: 0;">Enlace para restablecimiento de contraseña:</h2>
                             <p style="font-size: 16px;">
                             Haga click en el siguiente enlace para restablecer su contraseña:</p>
-                            <a href="http://localhost:8080/resetPassword?token=${token}" 
+                            <a href="http://localhost:8080/resetPasswordView?token=${token}" 
                             style="
                             background-color: #95d0f7;
                             color: #ffffff; 

@@ -6,7 +6,6 @@ import jwt from 'jsonwebtoken';
 
 // Import variables de entorno:
 import {
-    envResetPassToken,
     envCoderSecret,
     envCoderTokenCookie
 } from '../config.js'
