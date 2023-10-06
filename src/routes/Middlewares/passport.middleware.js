@@ -50,12 +50,13 @@ export const registerUser = (req, res, next) => {
         }
         if (!user) {
             return res.status(info.statusCode).json({
+                statusCode: info.statusCode,
                 message: info.message
             });
         }
         res.status(info.statusCode).json({
-            message: 'Registro exitoso',
-            user
+            statusCode: info.statusCode,
+            message: 'Registro exitoso'
         });
     })(req, res, next);
 };
@@ -83,6 +84,7 @@ export const loginUser = (req, res, next) => {
         };
         if (!user) {
             return res.status(info.statusCode).json({
+                statusCode: info.statusCode,
                 message: info.message
             });
         } else {

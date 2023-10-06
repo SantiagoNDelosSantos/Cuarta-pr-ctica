@@ -191,7 +191,7 @@ export const initializePassportLocal = (req, res) => {
                         if (!isValidPassword( user, password )) {
                             return done(null, false, {
                                 statusCode: 409,
-                                message: 'Existe una cuenta asociada a este correo pero, la contraseña ingresada es incorrecta.'
+                                message: 'Existe una cuenta asociada a este correo, pero la contraseña ingresada es incorrecta.'
                             });
                         } else {
 

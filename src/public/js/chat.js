@@ -19,7 +19,7 @@ socket.on("messages", (messageResult) => {
         <tr>
             <th>Usuario</th>
             <th>Mensajes</th>
-            <th>Time</th>
+            <th>Date - Time</th>
             <th>Eliminar</th>
         </tr>
       </thead>`;
@@ -130,7 +130,7 @@ function enviarMensaje() {
           user: userName,
           userId: userID,
           message: messageText,
-          time: new Date().toLocaleTimeString()
+          time: new Date().toLocaleDateString() + " - " + new Date().toLocaleTimeString()
         };
 
         // Enviar el mensaje al servidor:
