@@ -64,26 +64,27 @@ function deleteMessage(messageId) {
       })
       .then(response => response.json())
       .then(data => {
+        if (data.statusCode === 200) {
+          Swal.fire({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 550000,
+            title: data.message || 'El mensaje fue eliminado con éxito.',
+            icon: 'success'
+          });
+        } else if (data.statusCode === 403) {
+          Swal.fire({
+            title: 'Error al eliminar el mensaje',
+            text: data.message || 'El mensaje no pudo ser eliminado.',
+            icon: 'warning',
+          });
+        } else
         if (data.statusCode === 500 || data.statusCode === 404) {
           Swal.fire({
             title: 'Error',
             text: data.message || 'Hubo un problema al eliminar el mensaje.',
             icon: 'error',
-          });
-        } else if (data.statusCode === 403) {
-          Swal.fire({
-            title: 'Advertencia',
-            text: data.message || 'El mensaje no pudo ser eliminado.',
-            icon: 'warning',
-          });
-        } else if (data.statusCode === 200) {
-          Swal.fire({
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 5000,
-            title: data.message || 'El mensaje fue eliminado con éxito.',
-            icon: 'success'
           });
         }
       })

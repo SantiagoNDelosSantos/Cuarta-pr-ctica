@@ -309,7 +309,7 @@ input {
   text-align: center;
   cursor: pointer;
   border: 0.15em solid #95d0f7;
-  border-bottom: 2px solid  #95d0f7;
+  border-bottom: 2px solid #95d0f7;
 }
 
 /*.boton:hover,
@@ -461,8 +461,63 @@ a:hover {
 .swal2-popup.swal2-modal.swal2-icon-error.swal2-show,
 .swal2-popup.swal2-modal.swal2-icon-info.swal2-show,
 .swal2-popup.swal2-modal.swal2-icon-warning.swal2-show,
+.swal2-popup.swal2-toast {
+  border-radius: 2em !important;
+  backdrop-filter: blur(6px) !important;
+  background: rgb(255 255 255 / 68%) !important;
+  border-bottom: 0.1em solid rgb(188 188 188 / 78%)!important;
+}
+
+.swal2-popup.swal2-toast {
+  font-size: 1em;
+}
+
 button.swal2-cancel.swal2-styled {
   border-radius: 2em;
+  backdrop-filter: blur(6px);
+  background-color: #ffffff00;
+}
+
+.swal2-container.swal2-center.swal2-backdrop-show {
+  overflow-y: auto;
+  background: #00000017;
+}
+
+h2#swal2-title {
+  color: black;
+}
+
+div#swal2-html-container {
+  color: black;
+}
+
+.swal2-container.swal2-top-end.swal2-backdrop-show{
+  width: auto !important;
+}
+
+.swal2-icon.swal2-warning,
+.swal2-icon.swal2-error,
+.swal2-icon.swal2-error [class^=swal2-x-mark-line],
+.swal2-icon.swal2-info,
+.swal2-icon.swal2-success,
+.swal2-icon.swal2-success [class^=swal2-success-line] {
+  border-color: #7066e0 !important;
+  color: #7066e0 !important;
+}
+
+.swal2-icon.swal2-error [class^=swal2-x-mark-line],
+.swal2-icon.swal2-success [class^=swal2-success-line] {
+  background-color: #7066e0 !important;
+}
+
+button.swal2-confirm.swal2-styled {
+  background-color: #ffffff00;
+}
+
+.swal2-success-circular-line-left,
+.swal2-success-circular-line-right,
+.swal2-success-fix {
+  background: none !important;
 }
 
 button.swal2-confirm.swal2-styled {

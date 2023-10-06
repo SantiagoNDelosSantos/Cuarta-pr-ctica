@@ -17,35 +17,33 @@
 
         <br>
 
-        <div id="profile">
-
-            <div style="display: flex; justify-content: center; gap: 1em; flex-direction: row; align-items: center;">
-
-                <img src="https://i.ibb.co/Kxb8GDb/login.png" alt="login" border="0"
-                    style="margin-top: 3em; height: 25vh; width: auto; margin-top: 0em">
-
-                <div class="inputRole"
 
 
-                    style="display: flex; justify-content: center; gap: 1em; flex-direction: column; align-items: center;">
-                    <!-- Campo de entrada de archivos oculto -->
-                    <input type="file" id="archivoInput" style="display: none;" multiple>
+        <div style="display: flex; justify-content: center; gap: 1em; flex-direction: row; align-items: center;">
+
+            <img src="https://i.ibb.co/Kxb8GDb/login.png" alt="login" border="0"
+                style="margin-top: 3em; height: 25vh; width: auto; margin-top: 0em">
+
+            <div class="inputRole"
+                style="display: flex; justify-content: center; gap: 1em; flex-direction: column; align-items: center;">
+                <!-- Campo de entrada de archivos oculto -->
+                <input type="file" id="archivoInput" style="display: none;" multiple>
 
 
-                    <!-- Botón personalizado -->
-                    <label for="archivoInput"
-                        style="padding: 10px;  font-family: 'Montserrat'; background-color: #bfe4fd; color: #002877; cursor: pointer; border-radius: 5px; border: none;">
-                        <span id="nombreArchivo">Seleccionar archivo</span>
-                    </label>
+                <!-- Botón personalizado -->
+                <label for="archivoInput"
+                    style="padding: 10px;  font-family: 'Montserrat'; background-color: #bfe4fd; color: #002877; cursor: pointer; border-radius: 5px; border: none;">
+                    <span id="nombreArchivo">Seleccionar archivo</span>
+                </label>
 
 
 
-                    <input class="boton" type="submit" value="Cargar Documentos">
+                <input class="boton" type="submit" value="Cargar Documentos">
 
-                    <button id="ChangeROLE" class="boton">Actualizar Role</button>
+                <button id="ChangeROLE" class="boton">Actualizar Role</button>
 
 
-                </div>
+
             </div>
 
             <p>Nombre: {{user.name}}.</p>
