@@ -1,54 +1,61 @@
-<div class="Session">
+<div class="SessionContainer">
 
-    <div id="conteProfi">
+    <div style="display: flex; justify-content: center; gap: 2em; flex-direction: row; align-items: center;">
 
-        <div>
-            <a href="/products"><img src="https://i.ibb.co/mHPj0kW/Logo-volver-removebg-preview.png" alt="volver"
-                    border="0" class="logoS"
-                    style="position: absolute; margin-top: 1.5em; margin-left: 0em !important;"></a>
+        <div id="conteProfi" style="width: auto;">
 
-            <div class="divLogo">
-                <img src="https://i.ibb.co/hd9vsgK/Logo-BK-Grande.png" alt="Logo-BK-Grande" border="0" class="logoGRD">
+            <div
+                style="width: 100%; display: flex; justify-content: center; flex-direction: row; align-items: center; margin: 0em 2em;">
+
+                <a href="/products"> <img src="https://i.ibb.co/mHPj0kW/Logo-volver-removebg-preview.png" alt="volver"
+                        border="0" class="logoS" style=" margin-top: 0em; margin-left: 2em !important;">
+                </a>
+
+                <div class="divLogoChat">
+                    <img src="https://i.ibb.co/hd9vsgK/Logo-BK-Grande.png" alt="Logo-BK-Grande" border="0"
+                        class="logoGRDChat">
+                </div>
+
+            </div>
+
+
+            <div
+                style="width: 100%; display: flex; justify-content: space-around; flex-direction: row; align-items: center; gap:2em; ">
+
+                <div>
+
+                    <h1>Perfil:</h1>
+                    <br>
+
+                    <div id="sectionPerfil"
+                        style="width: 60vw !important; border: 0.1em solid #95d0f7; padding: 1em; border-radius: 1em;">
+                    </div>
+
+                </div>
+
             </div>
 
         </div>
 
-        <h1>Perfil:</h1>
 
-        <br>
+        <div id="conteProfi" style="width: 15vw !important; min-width: 200px;">
 
-
-
-        <div style="display: flex; justify-content: center; gap: 1em; flex-direction: row; align-items: center;">
-
-            <img src="https://i.ibb.co/Kxb8GDb/login.png" alt="login" border="0"
-                style="margin-top: 3em; height: 25vh; width: auto; margin-top: 0em">
-
-            <div class="inputRole"
-                style="display: flex; justify-content: center; gap: 1em; flex-direction: column; align-items: center;">
-                <!-- Campo de entrada de archivos oculto -->
-                <input type="file" id="archivoInput" style="display: none;" multiple>
-
-
-                <!-- Botón personalizado -->
-                <label for="archivoInput"
-                    style="padding: 10px;  font-family: 'Montserrat'; background-color: #bfe4fd; color: #002877; cursor: pointer; border-radius: 5px; border: none;">
-                    <span id="nombreArchivo">Seleccionar archivo</span>
-                </label>
-
-
-
-                <input class="boton" type="submit" value="Cargar Documentos">
-
-                <button id="ChangeROLE" class="boton">Actualizar Role</button>
-
-
-
+            <h2>Editar perfil:</h2>
+            <br>
+            <div id="btnsEditarPerfil">
             </div>
 
-            <p>Nombre: {{user.name}}.</p>
-            <p>Correo: {{user.email}}.</p>
-            <p>Rol: {{user.role}}.</p>
+            <br>
+
+            <h2>Session:</h2>
+            <br>
+            <button class="boton" id="btnCerrarSession">Cerrar session</button>
+
+            <br>
+
+            <h2>Cuenta:</h2>
+            <br>
+            <button class="boton" id="btnCerrarCuenta">Eliminar cuenta</button>
 
         </div>
 
@@ -56,20 +63,7 @@
 
 </div>
 
+<script id="inputFileCustom"></script>
 
-<script>
-    // Manejar el evento de cambio del campo de entrada de archivos
-    const archivoInput = document.getElementById('archivoInput');
-    const nombreArchivo = document.getElementById('nombreArchivo');
-
-    archivoInput.addEventListener('change', () => {
-        const archivos = archivoInput.files;
-        if (archivos.length > 0) {
-            // Mostrar el nombre archivo seleccionado en el botón
-            nombreArchivo.textContent = archivos[0].name;
-        } else {
-            // Cuando no hay archivos seleccionados, mostrar "Subir archivo"
-            nombreArchivo.textContent = "Seleccionar archivo";
-        }
-    });
-</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/js/profile.js"></script>

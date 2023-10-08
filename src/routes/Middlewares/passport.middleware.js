@@ -9,7 +9,7 @@ import {
 } from '../../config.js';
 
 // Imports DTO: 
-import { CurrentUserDTO } from '../../controllers/DTO/user.dto.js'
+import { CurrentUserDTO } from '../../controllers/DTO/user.dto.js';
 
 // Import GitHub estrategia:
 import { createBDUserGH } from '../../config/gitHub.passport.js';
@@ -146,13 +146,4 @@ export const authenticateWithGitHub = (req, res, next) => {
 // Current:
 export const getCurrentUser = (req, res) => {
     res.send(new CurrentUserDTO(req.user));
-};
-
-// Profile:
-export const getProfileUser = async (req, res) => {
-    const user = new CurrentUserDTO(req.user);
-    res.render('profile', {
-        title: 'Perfil',
-        user: user
-    });
 };

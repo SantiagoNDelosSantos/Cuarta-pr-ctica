@@ -58,9 +58,7 @@ export default class SessionDAO {
             if (result.matchedCount === 0) {
                 response.status = "not found user";
             } else if (result.matchedCount === 1){
-                let userUpdate = await userModel.findOne({  _id: uid });
                 response.status = "success";
-                response.result = userUpdate;
             };
         } catch (error) {
             response.status = "error";

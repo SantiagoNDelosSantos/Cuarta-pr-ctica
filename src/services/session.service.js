@@ -19,7 +19,8 @@ import {
 // Import variables de entorno:
 import {
     envResetPassToken,
-    envCoderTokenCookie
+    envCoderTokenCookie,
+    envCoderSecret
 } from '../config.js'
 
 // Clase para el Service de session: 
@@ -218,6 +219,51 @@ export default class SessionService {
         };
         return response;
     };
+
+    // Editar perfil - Service: 
+    async updateProfileSevice(req, res, uid, updateProfile) {
+
+        let response = {};
+
+        try {
+            const resultDAO = await this.sessionDAO.updateUser(uid, updateProfile);
+            if (resultDAO.status === "error") {
+                response.statusCode = 500;
+                response.message = resultDAO.message;
+            } else if (resultDAO.status === "not found user") {
+                response.statusCode = 404;
+                response.message = "Usuario no encontrado.";
+            } else if (resultDAO.status === "success") {
+                // Traemos al usuario actualizado:
+                const newUser = await this.sessionDAO.getUser(uid);
+                if (newUser.status = "success") {
+                    //  Actualizamos el email del usuario en el token: 
+                    let token = jwt.sign({
+                        email: newUser.result.email,
+                        first_name: newUser.result.first_name,
+                        role: newUser.result.role,
+                        cart: newUser.result.cart,
+                        userID: newUser.result._id
+                    }, envCoderSecret, {
+                        expiresIn: '7d'
+                    });
+                    // Sobrescribimos la cookie:
+                    res.cookie(envCoderTokenCookie, token, {
+                        httpOnly: true,
+                        signed: true,
+                        maxAge: 7 * 24 * 60 * 60 * 1000
+                    })
+                    response.statusCode = 200;
+                    response.message = "Usuario actualizado exitosamente.";
+                }
+            };
+        } catch (error) {
+            response.statusCode = 500;
+            response.message = "Error al actualizar los datos del usuario - Service: " + error.message;
+        };
+        return response;
+    };
+
 
     // Cerrar session - Service:
     async logoutService(req, res, uid) {

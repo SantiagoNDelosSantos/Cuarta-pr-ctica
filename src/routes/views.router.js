@@ -15,24 +15,6 @@ import {
 
 const viewsRouter = Router();
 
-viewsRouter.get('/products', passport.authenticate('jwt', {session: false, failureRedirect: '/login'}), (req, res) => {
-    res.render('products', {
-        title: 'Productos'
-    })
-});
-
-viewsRouter.get('/cart', (req, res) => {
-    res.render('cart', {
-        title: 'Carrito de Compras'
-    });
-});
-
-viewsRouter.get('/chat', passport.authenticate('jwt', { session: false, failureRedirect: '/login' }), rolesMiddlewareUser, (req, res) => {
-    res.render('chat', {
-        title: 'Chat'
-    })
-});
-
 viewsRouter.get('/register', (req, res) => {
     res.render('register', {
         title: 'Registro'
@@ -43,18 +25,6 @@ viewsRouter.get('/login', (req, res) => {
     res.render('login', {
         title: 'Iniciar Sesión'
     });
-});
-
-viewsRouter.get('/changeRole', (req, res) => {
-    res.render('changeRole', {
-        title: 'Cambiar Role'
-    })
-})
-
-viewsRouter.get('/completeProfile', (req, res) => {
-    res.render('extraForm', {
-        title: 'Formulario'
-    })
 });
 
 viewsRouter.get('/requestResetPassword', (req, res) => {
@@ -71,6 +41,50 @@ viewsRouter.get('/resetPasswordView', passport.authenticate('jwtResetPass', {
         title: 'Restablecer Contraseña'
     })
 })
+
+viewsRouter.get('/products', passport.authenticate('jwt', {session: false, failureRedirect: '/login'}), (req, res) => {
+    res.render('products', {
+        title: 'Productos'
+    })
+});
+
+viewsRouter.get('/chat', passport.authenticate('jwt', { session: false, failureRedirect: '/login' }), rolesMiddlewareUser, (req, res) => {
+    res.render('chat', {
+        title: 'Chat'
+    })
+});
+
+viewsRouter.get('/perfil',  passport.authenticate('jwt', { session: false, failureRedirect: '/login' }), rolesMiddlewareUser, (req, res) => {
+    res.render('profile', {
+        title: 'Perfil'
+    })
+});
+
+
+
+
+
+
+
+viewsRouter.get('/cart', (req, res) => {
+    res.render('cart', {
+        title: 'Carrito de Compras'
+    });
+});
+
+viewsRouter.get('/changeRole', (req, res) => {
+    res.render('changeRole', {
+        title: 'Cambiar Role'
+    })
+})
+
+viewsRouter.get('/completeProfile', (req, res) => {
+    res.render('extraForm', {
+        title: 'Formulario'
+    })
+});
+
+
 
 viewsRouter.get('/adminPanel', passport.authenticate('jwt', {
     session: false

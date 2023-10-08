@@ -353,19 +353,21 @@ a:hover {
 
 
 
-
+/* Contenedor para la vista del perfil de usuario:*/
 #conteProfi {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  -webkit-box-shadow: -1px 4px 67px 1px rgba(0, 0, 0, 0.38);
-  -moz-box-shadow: -1px 4px 67px 1px rgba(0, 0, 0, 0.38);
-  box-shadow: -1px 4px 67px 1px rgba(0, 0, 0, 0.38);
-  width: 70vw;
   padding: 1em;
-  border-radius: 2em;
-  height: 85vh;
+  width: 80vw;
+  height: 75vh;
+  margin: 1em auto;
+  background-color: #00000002;
+  -webkit-box-shadow: 1px 2px 20px 6px rgba(0, 0, 0, 0.103);
+  -moz-box-shadow: 1px 2px 20px 6px rgba(0, 0, 0, 0.103);
+  box-shadow: 1px 2px 20px 6px rgba(0, 0, 0, 0.13);
+  border-radius: 1em;
 }
 
 #profile {
@@ -379,6 +381,8 @@ a:hover {
   height: auto;
   margin-bottom: 1em;
 }
+
+
 
 
 
@@ -465,7 +469,7 @@ a:hover {
   border-radius: 2em !important;
   backdrop-filter: blur(6px) !important;
   background: rgb(255 255 255 / 68%) !important;
-  border-bottom: 0.1em solid rgb(188 188 188 / 78%)!important;
+  border-bottom: 0.1em solid rgb(188 188 188 / 78%) !important;
 }
 
 .swal2-popup.swal2-toast {
@@ -491,7 +495,7 @@ div#swal2-html-container {
   color: black;
 }
 
-.swal2-container.swal2-top-end.swal2-backdrop-show{
+.swal2-container.swal2-top-end.swal2-backdrop-show {
   width: auto !important;
 }
 

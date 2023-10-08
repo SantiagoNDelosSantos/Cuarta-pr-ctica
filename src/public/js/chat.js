@@ -17,7 +17,7 @@ socket.on("messages", (messageResult) => {
     htmlMessages += `
       <thead>
         <tr>
-            <th>Usuario</th>
+            <th>Usuarios</th>
             <th>Mensajes</th>
             <th>Date - Time</th>
             <th>Eliminar</th>
@@ -57,47 +57,58 @@ socket.on("messages", (messageResult) => {
 })
 
 // Eliminar mensajes: 
-function deleteMessage(messageId) {
-  if (messageId) {
-    fetch(`/api/chat/${messageId}`, {
-        method: 'DELETE',
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.statusCode === 200) {
-          Swal.fire({
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 550000,
-            title: data.message || 'El mensaje fue eliminado con éxito.',
-            icon: 'success'
-          });
-        } else if (data.statusCode === 403) {
-          Swal.fire({
-            title: 'Error al eliminar el mensaje',
-            text: data.message || 'El mensaje no pudo ser eliminado.',
-            icon: 'warning',
-          });
-        } else
-        if (data.statusCode === 500 || data.statusCode === 404) {
-          Swal.fire({
-            title: 'Error',
-            text: data.message || 'Hubo un problema al eliminar el mensaje.',
-            icon: 'error',
-          });
-        }
-      })
-      .catch(error => {
-        Swal.fire({
-          title: 'Error',
-          text: 'Error al eliminar el mensaje: ' + error,
-          icon: 'error',
-        });
-      });
-  }
-}
+async function deleteMessage(messageId) {
 
+  try {
+
+    const response = await fetch(`/api/chat/${messageId}`, {
+      method: 'DELETE',
+    })
+
+    const res = await response.json();
+    const statusCode = res.statusCode;
+    const message = res.message;
+    const customError = res.cause;
+
+    if (statusCode === 200) {
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 550000,
+        title: message || 'El mensaje fue eliminado con éxito.',
+        icon: 'success'
+      });
+    } else if (customError || statusCode === 403) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Error al eliminar el mensaje',
+        text: customError || message || 'Hubo un problema al eliminar el mensaje.',
+      });
+    } else if (statusCode === 404) {
+      Swal.fire({
+        icon: 'info',
+        title: 'Error al eliminar el mensaje',
+        text: message || 'Hubo un problema al eliminar el mensaje.',
+      });
+    } else if (statusCode === 500) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error al eliminar el mensaje',
+        text: message || 'Hubo un problema al eliminar el mensaje.',
+
+      });
+    }
+
+  } catch (error) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error en la solicitud de eliminar mensaje',
+      text: 'Error: ' + error.message
+    });
+  };
+
+}
 
 // Manejador para el evento de presionar la tecla "Enter" en el campo de mensaje:
 messageInput.addEventListener("keydown", (event) => {
@@ -113,70 +124,85 @@ btnEnviar.addEventListener("click", () => {
 });
 
 // Función para enviar el mensaje al servidor:
-function enviarMensaje() {
-  // Obtenemos el firstName del usuario:
-  fetch('/api/sessions/current')
-    .then((response) => response.json())
-    .then((data) => {
+async function enviarMensaje() {
 
-      const userName = data.name;
-      const userID = data.userId;
-      const messageText = messageInput.value;
+  try {
 
-      // Verificamos que el mensaje no esté vacío antes de enviarlo:
-      if (messageText.trim() !== "" || messageText.trim().length === 0) {
+    // Obtenemos el firstName del usuario:
+    const response = await fetch('/api/sessions/current', {
+      method: 'GET'
+    })
 
-        // Crear el objeto de mensaje:
-        const message = {
-          user: userName,
-          userId: userID,
-          message: messageText,
-          time: new Date().toLocaleDateString() + " - " + new Date().toLocaleTimeString()
-        };
+    // Conseguimos la información necesaria para el mensaje:
+    const res = await response.json();
+    const userID = res.userId;
+    const userName = res.name;
+    const messageText = messageInput.value;
 
-        // Enviar el mensaje al servidor:
-        fetch('/api/chat/', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(message),
-          })
-          .then(response => response.json())
-          .then(data => {
-            if (data.statusCode === 500) {
-              Swal.fire({
-                title: 'Error',
-                text: data.message || 'Hubo un problema al intentar enviar el mensaje.',
-                icon: 'error',
-              });
-            } else if (data.statusCode === 200) {
-              Swal.fire({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 5000,
-                title: data.message || `Mensaje enviado.`,
-                icon: 'success'
-              });
-              // Limpiar los campos de entrada:
-              messageInput.value = "";
-            }
-          })
-          .catch((error) => {
-            console.error("Error al enviar el mensaje: " + error.message);
-          });
-      } else {
-        // Muestra un Sweet Alert si el mensaje está vacío:
+    // Verificamos que el mensaje no esté vacío antes de enviarlo:
+    if (messageText.trim() !== "" || messageText.trim().length === 0) {
+
+      // Crear el objeto de mensaje:
+      const message = {
+        user: userName,
+        userId: userID,
+        message: messageText,
+        time: new Date().toLocaleDateString() + " - " + new Date().toLocaleTimeString()
+      };
+
+      // Enviamos el mensaje:
+      const responseEnv = await fetch('/api/chat/', {
+        method: 'POST',
+        body: JSON.stringify(message),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+
+      const resEnv = await responseEnv.json();
+      const statusCodeRes = resEnv.statusCode;
+      const messageRes = resEnv.message;
+      const customError = resEnv.message;
+
+      if (statusCodeRes === 200) {
+        messageInput.value = "";
+        Swal.fire({
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 5000,
+          title: messageRes || `Mensaje enviado.`,
+          icon: 'success'
+        });
+      } else if (customError) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Error al intentar enviar el mensaje',
+          text: customError || 'Hubo un problema al intentar enviar el mensaje.',
+        });
+      } else if (statusCodeRes === 500) {
         Swal.fire({
           icon: 'error',
-          title: 'Mensaje vacío',
-          text: 'Por favor, ingresa un mensaje antes de enviarlo.',
+          title: 'Error al intentar enviar el mensaje',
+          text: messageRes || 'Hubo un problema al intentar enviar el mensaje.',
         });
       }
-    })
-    .catch((error) => {
-      console.error("Error al obtener el nombre de usuario: " + error.message);
+
+    } else {
+      // Muestra un Sweet Alert si el mensaje está vacío:
+      Swal.fire({
+        icon: 'error',
+        title: 'Mensaje vacío',
+        text: 'Por favor, ingresa un mensaje antes de enviarlo.',
+      });
+    }
+
+  } catch (error) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error en la solicitud de enviar mensaje',
+      text: 'Error: ' + error.message
     });
+  }
 
 }

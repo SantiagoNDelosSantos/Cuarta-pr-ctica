@@ -32,19 +32,19 @@ export default class UserController {
         // Validamos que archivos se han subido y extreamos las rutas de estos archivos en variables:
         const parteComun = 'public\\';
 
-        if (req.files.identification) {
+        if (req.files && req.files.identification) {
             const identification = req.files.identification[0].path;
             const indice = identification.indexOf(parteComun);
             const ruta = identification.substring(indice + parteComun.length);
             rutaIdentification = ruta
         }
-        if (req.files.proofOfAddress) {
+        if (req.files && req.files.proofOfAddress) {
             const proofOfAddress = req.files.proofOfAddress[0].path;
             const indice = proofOfAddress.indexOf(parteComun);
             const ruta = proofOfAddress.substring(indice + parteComun.length);
             rutaProofOfAddres = ruta
         }
-        if (req.files.bankStatement) {
+        if (req.files && req.files.bankStatement) {
             const bankStatement = req.files.bankStatement[0].path;
             const indice = bankStatement.indexOf(parteComun);
             const ruta = bankStatement.substring(indice + parteComun.length);

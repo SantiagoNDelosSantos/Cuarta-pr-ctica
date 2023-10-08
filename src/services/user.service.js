@@ -79,7 +79,7 @@ export default class SessionService {
 
                 // Si el usuario quiere actualizar su role a premium, verificamos que tenga subidos todos los documentos requeridos: 
                 if (newRole === "premium") {
-                       // Si el usuario quiere actualizar su rol a premium, verificar los documentos
+                    // Si el usuario quiere actualizar su rol a premium, verificar los documentos
                     if (docsSubidos.length === 3) {
                         resultRolPremium = await this.userDAO.updateUser(uid, updateUser);
                     } else {
@@ -103,22 +103,24 @@ export default class SessionService {
                         response.message = `Usuario actualizado exitosamente, su rol a sido actualizado a ${newRole}.`;
                         // Traemos al usuario actualizado:
                         const newUser = await this.userDAO.getUser(uid);
-                        //  Actualizamos el role del usuario en el token: 
-                        let token = jwt.sign({
-                            email: newUser.result.email,
-                            first_name: newUser.result.first_name,
-                            role: newUser.result.role,
-                            cart: newUser.result.cart,
-                            userID: newUser.result._id
-                        }, envCoderSecret, {
-                            expiresIn: '7d'
-                        });
-                        // Sobrescribimos la cookie:
-                        res.cookie(envCoderTokenCookie, token, {
-                            httpOnly: true,
-                            signed: true,
-                            maxAge: 7 * 24 * 60 * 60 * 1000
-                        })
+                        if (newUser.status = "success") {
+                            //  Actualizamos el role del usuario en el token: 
+                            let token = jwt.sign({
+                                email: newUser.result.email,
+                                first_name: newUser.result.first_name,
+                                role: newUser.result.role,
+                                cart: newUser.result.cart,
+                                userID: newUser.result._id
+                            }, envCoderSecret, {
+                                expiresIn: '7d'
+                            });
+                            // Sobrescribimos la cookie:
+                            res.cookie(envCoderTokenCookie, token, {
+                                httpOnly: true,
+                                signed: true,
+                                maxAge: 7 * 24 * 60 * 60 * 1000
+                            })
+                        }
                     };
                 }
             };

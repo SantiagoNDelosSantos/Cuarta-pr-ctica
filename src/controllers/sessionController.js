@@ -10,7 +10,9 @@ import CustomError from "../errors/customError.class.js";
 import ErrorGenerator from "../errors/error.info.js";
 
 // Variable de entorno:
-import {envResetPassCookieEmail} from "../config.js"
+import {
+    envResetPassCookieEmail
+} from "../config.js"
 
 // Clase para el Controller de session: 
 export default class SessionController {
@@ -45,6 +47,9 @@ export default class SessionController {
 
     // Buscar usuario - Controller:
     async getUserController(req, res, identifier) {
+        if (!identifier) {
+            identifier = req.user.email;
+        }
         let response = {};
         try {
             const resultService = await this.sessionService.getUserService(identifier);
@@ -130,7 +135,8 @@ export default class SessionController {
                 res.cookie(envResetPassCookieEmail, userEmail, {
                     httpOnly: true,
                     signed: true,
-                    maxAge:  3600 * 1000});
+                    maxAge: 3600 * 1000
+                });
             };
         } catch (error) {
             response.statusCode = 500;
@@ -171,6 +177,86 @@ export default class SessionController {
         } catch (error) {
             response.statusCode = 500;
             response.message = "Error al restablecer contraseña - Controller: " + error.message;
+            req.logger.error(response.message);
+        };
+        return response;
+    };
+
+    // Editar perfil - Controller:
+    async editProfileController(req, res, next) {
+
+        const uid = req.user.userID;
+        const newName = req.body.name;
+        const newEmail = req.body.email;
+
+        let rutaPhotoProfile;
+
+        const parteComun = 'public\\';
+        if (req.file && req.file.path) {
+            const pathPhotoProfile = req.file.path;
+            const indice = pathPhotoProfile.indexOf(parteComun);
+            const ruta = pathPhotoProfile.substring(indice + parteComun.length);
+            rutaPhotoProfile = ruta
+        }
+
+        let updateProfile = {};
+
+        if (newName) {
+            updateProfile.first_name = newName;
+        };
+        if (newEmail) {
+            updateProfile.email = newEmail;
+        };
+        if (rutaPhotoProfile) {
+            updateProfile.photo = rutaPhotoProfile;
+        }
+
+        try {
+            if (!uid || !mongoose.Types.ObjectId.isValid(uid)) {
+                CustomError.createError({
+                    name: "Error al obtener al usuario por ID.",
+                    cause: ErrorGenerator.generateUserIdInfo(uid),
+                    message: "El ID de usuario proporcionado no es válido.",
+                    code: ErrorEnums.INVALID_ID_USER_ERROR
+                });
+            }
+            if (newEmail){
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(newEmail))
+                CustomError.createError({
+                    name: "Error en el proceso editar perfil.",
+                    cause: ErrorGenerator.generateResetPass1Info(newEmail),
+                    message: "El correo está incompleto o no es válido.",
+                    code: ErrorEnums.INVALID_EMAIL_USER
+                });
+            }
+        } catch (error) {
+            return next(error);
+        };
+
+        let response = {};
+
+        try {
+            if (Object.keys(updateProfile).length > 0) {
+                const resultService = await this.sessionService.updateProfileSevice(req, res, uid, updateProfile);
+                response.statusCode = resultService.statusCode;
+                response.message = resultService.message;
+                if (resultService.statusCode === 500) {
+                    req.logger.error(response.message);
+                } else if (resultService.statusCode === 404) {
+                    req.logger.warn(response.message);
+                } else if (resultService.statusCode === 200) {
+                    req.logger.debug(response.message);
+                };
+            } else {
+                response.statusCode = 400;
+                response.message = "No se realizaron cambios en el perfil.";
+                req.logger.warn(response.message);
+            }
+
+        } catch (error) {
+            response.statusCode = 500;
+            response.message = "Error al actualizar perfil del usuario - Controller: " + error.message;
             req.logger.error(response.message);
         };
         return response;
@@ -241,7 +327,7 @@ export default class SessionController {
             response.message = resultService.message;
             if (resultService.statusCode === 500) {
                 req.logger.error(response.message);
-            } else if (resultService.statusCode === 404 || resultService.statusCode === 400) {
+            } else if (resultService.statusCode === 404) {
                 req.logger.warn(response.message);
             } else if (resultService.statusCode === 200) {
                 req.logger.debug(response.message);

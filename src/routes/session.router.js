@@ -1,20 +1,34 @@
-import { Router } from 'express';
+import {
+    Router
+} from 'express';
 import passport from 'passport';
 
-import { registerUser,
+import {
+    registerUser,
     loginUser,
     getCurrentUser,
-    authenticateWithGitHub,
-    getProfileUser } from './Middlewares/passport.middleware.js';
+    authenticateWithGitHub
+} from './Middlewares/passport.middleware.js';
 
-import { completeProfile } from '../config/formExtra.js';
+import {
+    completeProfile
+} from '../config/formExtra.js';
 
 // Import SessionController
 import SessionController from '../controllers/sessionController.js';
 
 // Import Middleware User:
-import { rolesMiddlewareUser } from "./Middlewares/roles.middleware.js";
+import {
+    rolesMiddlewareUser
+} from "./Middlewares/roles.middleware.js";
+import {
+    ProfileUserDTO
+} from '../controllers/DTO/userProfile.dto.js';
 
+// Import Multer Profile: 
+import {
+    uploaderPofiles
+} from '../routes/Middlewares/multer.middleware.js'
 
 // Instancia de router: 
 const sessionRouter = Router();
@@ -40,10 +54,28 @@ sessionRouter.get('/githubcallback', authenticateWithGitHub);
 sessionRouter.post('/completeProfile', completeProfile);
 
 // Current user - Router:
-sessionRouter.get('/current', passport.authenticate('jwt', { session: false }), getCurrentUser);
+sessionRouter.get('/current', passport.authenticate('jwt', {
+    session: false,
+    failureRedirect: '/login'
+}), getCurrentUser);
 
 // Ver perfil usuario - Router: 
-sessionRouter.get('/profile', passport.authenticate('jwt', { session: false, failureRedirect: '/login' }), getProfileUser);
+sessionRouter.get('/profile', passport.authenticate('jwt', {
+    session: false,
+    failureRedirect: '/login'
+}), async (req, res) => {
+    const result = await sessionController.getUserController(req, res);
+    const resultFilter = new ProfileUserDTO(result.result);
+    let devolver
+    if (resultFilter) {
+        devolver = resultFilter
+    } else {
+        devolver = result
+    }
+    if (result !== undefined) {
+        res.status(result.statusCode).send(devolver);
+    }
+});
 
 // Enviar email para reestablecer contraseña - Router:
 sessionRouter.post('/requestResetPassword', async (req, res, next) => {
@@ -61,17 +93,30 @@ sessionRouter.post('/resetPassword', async (req, res, next) => {
     };
 });
 
+// Editar perfil - Router:
+sessionRouter.post('/editProfile', passport.authenticate('jwt', {
+    session: false
+}), rolesMiddlewareUser, uploaderPofiles.single('profile'), async (req, res, next) => {
+    const result = await sessionController.editProfileController(req, res, next);
+    if (result !== undefined) {
+        res.status(result.statusCode).send(result);
+    };
+});
+
 // Cerrar session - Router:
-sessionRouter.post('/logout', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
-        const result = await sessionController.logoutController(req, res, next);
-        if (result !== undefined) {
-            res.status(result.statusCode).send(result);
-        };
-    }
-);
+sessionRouter.post('/logout', passport.authenticate('jwt', {
+    session: false
+}), async (req, res, next) => {
+    const result = await sessionController.logoutController(req, res, next);
+    if (result !== undefined) {
+        res.status(result.statusCode).send(result);
+    };
+});
 
 // Eliminar cuenta - Router:  
-sessionRouter.post('/deleteAccount', passport.authenticate('jwt', { session: false }), rolesMiddlewareUser, 
+sessionRouter.post('/deleteAccount', passport.authenticate('jwt', {
+        session: false
+    }), rolesMiddlewareUser,
     async (req, res, next) => {
         const result = await sessionController.deleteUserController(req, res, next);
         if (result !== undefined) {
