@@ -301,6 +301,7 @@ export default class SessionController {
     async deleteUserController(req, res, next) {
         const uid = req.user.userID;
         const cid = req.user.cart;
+        const role = req.user.role;
         try {
             if (!uid || !mongoose.Types.ObjectId.isValid(uid)) {
                 CustomError.createError({
@@ -322,7 +323,7 @@ export default class SessionController {
         };
         let response = {};
         try {
-            const resultService = await this.sessionService.deleteUserService(uid, cid);
+            const resultService = await this.sessionService.deleteUserService(uid, cid, role);
             response.statusCode = resultService.statusCode;
             response.message = resultService.message;
             if (resultService.statusCode === 500) {

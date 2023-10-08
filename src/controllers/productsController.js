@@ -179,6 +179,46 @@ export default class ProductController {
         return response;
     };
 
+    // Eliminar todos los productos publicados por un usuario premium - Controller:
+    async deleteAllPremiumProductController(req, res, next) {
+        const uid = req.params.uid;
+        const role = req.user.role;
+        let userRequestId;
+        if (role !== "admin") {
+            userRequestId = req.user.userID;
+        }
+        try {
+            if (!uid || !mongoose.Types.ObjectId.isValid(uid)) {
+                CustomError.createError({
+                    name: "Error al eliminar todos los productos del usuario premium.",
+                    cause: ErrorGenerator.generateUserIdInfo(uid),
+                    message: "El ID de usuario proporcionado no es válido.",
+                    code: ErrorEnums.INVALID_ID_USER_ERROR
+                });
+            }
+        } catch (error) {
+            return next(error);
+        };
+        let response = {};
+        try {
+            const resultService = await this.productService.deleteAllPremiumProductService(uid, userRequestId, role);
+            response.statusCode = resultService.statusCode;
+            response.message = resultService.message;
+            if (resultService.statusCode === 500) {
+                req.logger.error(response.message);
+            } else if (resultService.statusCode === 404 || resultService.statusCode === 403) {
+                req.logger.warn(response.message);
+            } else if (resultService.statusCode === 200) {
+                req.logger.debug(response.message);
+            };
+        } catch (error) {
+            response.statusCode = 500;
+            response.message = "Error al eliminar todos los productos de usuario premium - Controller: " + error.message;
+            req.logger.error(response.message);
+        };
+        return response;
+    }
+
     // Actualizar un producto - Controller: 
     async updatedProductController(req, res, next) {
         const pid = req.params.pid;

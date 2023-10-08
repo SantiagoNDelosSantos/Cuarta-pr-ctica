@@ -41,7 +41,7 @@ cartRouter.get('/', async (req, res) => {
 
 // Agregar un producto a un carrito - Router:
 cartRouter.post('/:cid/products/:pid/quantity/:quantity', passport.authenticate('jwt', { session: false }), rolesMiddlewareUser, verificarPertenenciaCarrito, async (req, res, next) => {
-    const result = await cartController.addProductInCartController(req, res, next);
+    const result = await cartController.addProductInCartController(req, res, next); 
     if(result !== undefined) {
         res.status(result.statusCode).send(result);
     };
@@ -94,6 +94,5 @@ cartRouter.delete('/deleteCart/:cid', passport.authenticate('jwt', { session: fa
         res.status(result.statusCode).send(result);
     };
 });
-
 
 export default cartRouter;

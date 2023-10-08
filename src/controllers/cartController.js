@@ -392,7 +392,7 @@ export default class CartController {
             response.message = resultService.message;
             if (resultService.statusCode === 500) {
                 req.logger.error(response.message);
-            } else if (resultService.statusCode === 404 || resultService.statusCode === 409) {
+            } else if (resultService.statusCode === 404) {
                 req.logger.warn(response.message);
             } else if (resultService.statusCode === 200) {
                 response.result = resultService.result;

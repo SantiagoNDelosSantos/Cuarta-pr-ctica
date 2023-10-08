@@ -135,6 +135,51 @@ export default class ProductsDAO {
         return response;
     };
 
+    // Eliminar todos los productos publicados por un usuario premium - DAO:
+    async deleteAllPremiumProduct(uid) {
+        let response = {};
+        try {
+            // Buscar todos los productos con el campo 'owner' igual al uid del usuario indicado:
+            const productsToDelete = await productsModel.find({
+                owner: uid
+            });
+            // Verificar si se encontraron productos:
+            if (productsToDelete.length === 0) {
+                response.status = "not found products";
+            } else {
+                // Si se encuentran productos, primero los eliminamos de los carritos de otros usuarios: 
+                const productsPremiumPID = productsToDelete.map(producto => producto._id);
+                for (const pid of productsPremiumPID) {
+                    await cartModel.updateMany({
+                        'products.product': pid
+                    }, {
+                        $pull: {
+                            'products': {
+                                product: pid
+                            }
+                        }
+                    });
+                }
+                // Luego eliminamos los productos en la colección:
+                const result = await productsModel.deleteMany({
+                    owner: uid
+                });
+                // Validamos el resultado:
+                if (result.deletedCount > 0) {
+                    response.status = "success";
+                    response.message = `Se han eliminaron ${result.deletedCount} productos asociados a la cuenta.`;
+                } else {
+                    response.status = "error";
+                    response.message = "No se pudieron eliminar los productos (deleteMany).";
+                }
+            }
+        } catch (error) {
+            response.status = "error";
+            response.message = "Error al eliminar todos los productos de usuario premium - DAO: " + error.message;
+        }
+        return response;
+    };
+
     // Actualizar un producto - DAO:
     async updateProduct(pid, updateProduct) {
         let response = {};

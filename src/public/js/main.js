@@ -83,39 +83,47 @@ function allProducts() {
 
     });
 
-    function addToCart(productID, title, quantity) {
+    async function addToCart(productID, title, quantity) {
 
       // Hacemos una solicitud a la ruta '/api/sessions/current para obtener los datos del usuario
-      fetch('/api/sessions/current')
+      const response = await fetch('/api/sessions/current', {
+        method: 'GET',
+      })
 
-        .then((response) => response.json())
-        .then((data) => {
-          // Aquí recibimos los datos del usuario en la variable 'data'
-          let user = data;
+      const res = await response.json();
 
-          const cartID = user.cart;
-          const productIDValue = productID;
+      // Aquí recibimos los datos del usuario en la variable 'data'
+      let user = res;
 
-          if (cartID && productIDValue) {
-            fetch(`/api/carts/${cartID}/products/${productIDValue}/quantity/${quantity}`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-            })
+      const cartID = user.cart;
+      const productIDValue = productID;
 
-            if (quantity && title) {
-              Swal.fire({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 5000,
-                title: `${quantity} Unds. de ${title} se ha agregado a tu carrito`,
-                icon: 'success'
-              });
-            }
-          }
-        })
+      if (user && cartID && productIDValue) {
+        
+       // Realizar una solicitud POST al servidor con los datos del formulario:
+       const response = await fetch(`/api/carts/${cartID}/products/${productIDValue}/quantity/${quantity}`, {
+          method: 'POST',
+      })
+
+      const res = await response.json();
+      const statusCodeRes = res.statusCode;
+      const messageRes = res.message;
+      const customError = res.cause;
+
+      console.log(res)
+      
+        if (statusCodeRes === 200) {
+          Swal.fire({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 5000,
+            title: `${quantity} Unds. de ${title} se ha agregado a tu carrito`,
+            icon: 'success'
+          });
+        }
+      }
+
 
     }
 

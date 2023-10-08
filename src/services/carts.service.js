@@ -87,38 +87,40 @@ export default class CartService {
 
     // Agregar un producto a un carrito - Service:
     async addProductToCartService(cid, pid, quantity, userId) {
-        let response = {}
-        try {
-            const product = await this.productService.getProductByIdService(pid);
-            if (product.statusCode === 500 || product.statusCode === 404) {
-                response.statusCode = product.statusCode;
-                response.message = product.message;
-            } else {
-                if (product.result.owner === "admin" || !product.result.owner === userId) {
-                    // Si el owner es undefined (Sigfinica que fue creado por un admin) o si el producto no pertenece al user, en ambos casos se puede agregar el producto al carrito: 
-                    const resultDAO = await this.cartDao.addProductToCart(cid, product.result, quantity);
-                    if (resultDAO.status === "error") {
-                        response.statusCode = 500;
-                        response.message = resultDAO.message;
-                    } else if (resultDAO.status === "not found cart") {
-                        response.statusCode = 404;
-                        response.message = `No se encontró ningún carrito con ID ${cid}.`;
-                    } else if (resultDAO.status === "success") {
-                        response.statusCode = 200;
-                        response.message = "Producto agregado al carrito exitosamente.";
-                        response.result = resultDAO.result;
-                    };
-                } else if (product.result.owner === userId) {
-                    // Si el producto pertenece al user, no se le permite agregar el producto a su carrito: 
-                    response.statusCode = 403;
-                    response.message = "No puedes agregar tus propios productos a tu carrito.";
-                }
+        
+            let response = {}
+            try {
+                const product = await this.productService.getProductByIdService(pid);
+                if (product.statusCode === 500 || product.statusCode === 404) {
+                    response.statusCode = product.statusCode;
+                    response.message = product.message;
+                } else if (product.statusCode === 200) {
+                    if (product.result.owner === "admin" || product.result.owner !== userId) {
+                        // Si el owner es undefined (Sigfinica que fue creado por un admin) o si el producto no pertenece al user, en ambos casos se puede agregar el producto al carrito: 
+                        const resultDAO = await this.cartDao.addProductToCart(cid, product.result, quantity);
+                        if (resultDAO.status === "error") {
+                            response.statusCode = 500;
+                            response.message = resultDAO.message;
+                        } else if (resultDAO.status === "not found cart") {
+                            response.statusCode = 404;
+                            response.message = `No se encontró ningún carrito con ID ${cid}.`;
+                        } else if (resultDAO.status === "success") {
+                            response.statusCode = 200;
+                            response.message = "Producto agregado al carrito exitosamente.";
+                            response.result = resultDAO.result;
+                        };
+                    } else if (product.result.owner === userId) {
+                        // Si el producto pertenece al user, no se le permite agregar el producto a su carrito: 
+                        response.statusCode = 403;
+                        response.message = "No puedes agregar tus propios productos a tu carrito.";
+                    }
+                };
+            } catch (error) {
+                response.statusCode = 500;
+                response.message = "Error al agregar el producto al carrito - Service: " + error.message;
             };
-        } catch (error) {
-            response.statusCode = 500;
-            response.message = "Error al agregar el producto al carrito - Service: " + error.message;
-        };
-        return response;
+            return response;
+        
     };
 
     // Procesamiento de la compra del usuario:

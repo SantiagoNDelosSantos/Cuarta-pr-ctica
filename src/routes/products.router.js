@@ -46,6 +46,14 @@ productsRouter.delete('/:pid', passport.authenticate('jwt', { session: false }),
     };
 });
 
+// Eliminar todos los productos publicados por un usuario premium - router:
+productsRouter.delete('/deleteProdPremium/:uid', passport.authenticate('jwt', { session: false }), async (req, res, next) => {
+    const result = await productController.deleteAllPremiumProductController(req, res, next);
+    if (result !== undefined) {
+        res.status(result.statusCode).send(result);
+    };
+});
+
 // Actualizar un producto - Router:
 productsRouter.put('/:pid', passport.authenticate('jwt', { session: false }), rolesMiddlewareAdminAndPremiun, async (req, res, next) => {
     const result = await productController.updatedProductController(req, res, next);

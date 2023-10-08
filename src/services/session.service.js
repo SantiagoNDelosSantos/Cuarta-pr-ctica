@@ -4,6 +4,9 @@ import SessionDAO from "../DAO/mongodb/SessionMongo.dao.js";
 // Import CartService:
 import CartService from "./carts.service.js";
 
+// import ProductsService:
+import ProductService from "./products.service.js";
+
 // Import Nodemailer:
 import Mail from '../email/nodemailer.js'
 
@@ -30,6 +33,7 @@ export default class SessionService {
     constructor() {
         this.sessionDAO = new SessionDAO();
         this.cartService = new CartService();
+        this.productsService = new ProductService();
         this.mail = new Mail();
     }
 
@@ -300,7 +304,7 @@ export default class SessionService {
     };
 
     // Eliminar cuenta - Service: 
-    async deleteUserService(uid, cid) {
+    async deleteUserService(uid, cid, role) {
         let response = {};
         try {
             const resultDAO = await this.sessionDAO.deleteUser(uid);
@@ -311,11 +315,21 @@ export default class SessionService {
                 response.statusCode = 404;
                 response.message = `No se encontró ninguna cuenta con este ID, ${uid}.`;
             } else if (resultDAO.status === "success") {
-                const deleteCart = await this.cartService.deleteCartService(cid)
-                if (deleteCart.statusCode === 200) {
+                // Borramos el carrito del usuario:
+                const deleteCart = await this.cartService.deleteCartService(cid);
+                // Borramos todos los productos publicados por el usuario:
+                const deleteUserProducts = await this.productsService.deleteAllPremiumProductService(uid, uid, role);
+                // Validamos los resultados:
+                if (deleteCart.statusCode === "error" || deleteUserProducts.statusCode === "error") {
+                    response.statusCode = 500;
+                    response.message = "Error al eliminar la cuenta: " + deleteCart.message || deleteUserProducts.message;
+                } else if (deleteCart.statusCode === 200 && deleteUserProducts.statusCode === 404) {
                     response.statusCode = 200;
-                    response.message = "Cuenta eliminada exitosamente.";
-                };
+                    response.message = "Cuenta eliminada exitosamente. No se encontraron productos asociados a la cuenta.";
+                } else if (deleteCart.statusCode === 200 && deleteUserProducts.statusCode === 200) {
+                    response.statusCode = 200;
+                    response.message = "Cuenta eliminada exitosamente. " + deleteUserProducts.message;
+                }
             };
         } catch (error) {
             response.statusCode = 500;

@@ -1,49 +1,132 @@
-<div class="Session">
+<div class="SessionContainer">
 
-    <div id="conteProfi">
+    <div id="conteProfi" style="height: auto;">
 
-        <div class="divLogo">
-            <img src="https://i.ibb.co/hd9vsgK/Logo-BK-Grande.png" alt="Logo-BK-Grande" border="0" class="logoGRD">
+        <div
+            style="width: 100%; display: flex; justify-content: center; flex-direction: row; align-items: center; margin: 0em 2em;">
+
+            <a href="/products"> <img src="https://i.ibb.co/mHPj0kW/Logo-volver-removebg-preview.png" alt="volver"
+                    border="0" class="logoS" style=" margin-top: 0em; margin-left: 2em !important;">
+            </a>
+
+            <div class="divLogoChat">
+                <img src="https://i.ibb.co/hd9vsgK/Logo-BK-Grande.png" alt="Logo-BK-Grande" border="0"
+                    class="logoGRDChat" style="margin-left: -74px;">
+            </div>
+
         </div>
 
-        <br />
         <h1 style="margin-top: 0 !important">Convertirse en premium:</h1>
 
         <br />
+
+        <p style="margin: 0em 2em">Completa los campos con tu documentación y haz clic en "Cargar Documentos". Una vez
+            que
+            hayas proporcionado
+            toda la información requerida, se habilitará un botón de "Actualizar Rol". Al hacer clic en este botón,
+            podrás disfrutar de todos los beneficios exclusivos que ofrece ser un usuario premium en nuestra plataforma.
+        </p>
+
         <br />
 
-            <form id="uploadDocuments" enctype="multipart/form-data">
-                <div class="inputRole">
-                    <p style="margin-top: 14px !important">Identificación:</p>
-                    <input type="file" id="identification" name="identification">
+        <form id="uploadDocuments" enctype="multipart/form-data">
+
+            <div class="inputRole">
+
+                <p style="margin-top: 14px !important">Identificación:</p>
+
+                <div
+                    style="display: flex; justify-content: center; gap: 1em; flex-direction: column; align-items: center;">
+
+                    <input type="file" id="identification" name="identification" style="display: none;">
+
+                    <label for="identification"
+                        style="padding: 10px; font-family: 'Montserrat'; background-color: #bfe4fd; color: #002877; cursor: pointer; border-radius: 1em; border: none;">
+                        <span id="nombreArchivo1">Agrega tu documentación</span>
+                    </label>
+
                 </div>
 
-                <br />
+            </div>
 
-                <div class="inputRole">
-                    <p style="margin-top: 10px !important">Comprobante de domicilio:</p>
-                    <input type="file" id="proofOfAddress" name="proofOfAddress">
+            <br />
+
+            <div class="inputRole">
+
+                <p style="margin-top: 10px !important">Comprobante de domicilio:</p>
+
+                <div
+                    style="display: flex; justify-content: center; gap: 1em; flex-direction: column; align-items: center;">
+
+                    <input type="file" id="proofOfAddress" name="proofOfAddress" style="display: none;">
+
+                    <label for="proofOfAddress"
+                        style="padding: 10px; font-family: 'Montserrat'; background-color: #bfe4fd; color: #002877; cursor: pointer; border-radius: 1em; border: none;">
+                        <span id="nombreArchivo2">Agrega tu documentación</span>
+                    </label>
+
                 </div>
 
-                <br />
+            </div>
 
-                <div class="inputRole">
-                    <p style="margin-top: 8px !important">Comprobante de estado de cuenta:</p>
-                    <input type="file" id="bankStatement" name="bankStatement">
+            <br />
+
+            <div class="inputRole">
+
+                <p style="margin-top: 8px !important">Comprobante de estado de cuenta:</p>
+
+                <div
+                    style="display: flex; justify-content: center; gap: 1em; flex-direction: column; align-items: center;">
+
+                    <input type="file" id="bankStatement" name="bankStatement" style="display: none;">
+
+                    <label for="bankStatement"
+                        style="padding: 10px; font-family: 'Montserrat'; background-color: #bfe4fd; color: #002877; cursor: pointer; border-radius: 1em; border: none;">
+                        <span id="nombreArchivo3">Agrega tu documentación</span>
+                    </label>
+
                 </div>
 
-                <br />
-                <br />
+            </div>
 
-                <div class="inputRole">
-                    <input class="boton" type="submit" value="Cargar Documentos">
-                    <button id="ChangeROLE" class="boton">Actualizar Role</button>
-                </div>
-            </form>
+            <br />
+
+            <div class="inputRole">
+                <input class="boton" type="submit" value="Cargar Documentos">
+            </div>
+
+        </form>
 
     </div>
 
 </div>
+
+<script>
+
+    const archivoInputIdent = document.getElementById('identification');
+    const archivoInputDomi = document.getElementById('proofOfAddress');
+    const archivoInputBank = document.getElementById('bankStatement');
+
+    const nombreArchivo1 = document.getElementById('nombreArchivo1');
+    const nombreArchivo2 = document.getElementById('nombreArchivo2');
+    const nombreArchivo3 = document.getElementById('nombreArchivo3');
+
+    archivoInputIdent.addEventListener('change', () => {
+        const archivos = archivoInputIdent.files;
+        nombreArchivo1.textContent = archivos[0].name;
+    })
+
+    archivoInputDomi.addEventListener('change', () => {
+        const archivos = archivoInputDomi.files;
+        nombreArchivo2.textContent = archivos[0].name;
+    })
+
+    archivoInputBank.addEventListener('change', () => {
+        const archivos = archivoInputBank.files;
+        nombreArchivo3.textContent = archivos[0].name;
+    })
+
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="/js/changeRole.js"></script>

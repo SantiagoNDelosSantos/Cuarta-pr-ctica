@@ -103,7 +103,7 @@ async function editarPerfil() {
 
                     <div style="display: flex; justify-content: center; gap: 1em; flex-direction: column; align-items: center;">
                         
-                        <input type="file" id="archivoInputProfile" name="profile" style="display: none;" multiple>
+                        <input type="file" id="archivoInputProfile" name="profile" style="display: none;">
 
                         <label for="archivoInputProfile" style="padding: 10px; font-family: 'Montserrat'; background-color: #bfe4fd; color: #002877; cursor: pointer; border-radius: 1em; border: none;">
                             <span id="nombreArchivo">Agrega una foto de perfil</span>
@@ -143,22 +143,13 @@ async function editarPerfil() {
 
         btnsEditarPerfil.innerHTML = htmlEditarP;
 
-
-        let scriptInput = ""
-
-        scriptInput += `
         const archivoInputProfile = document.getElementById('archivoInputProfile');
         const nombreArchivo = document.getElementById('nombreArchivo');
+
         archivoInputProfile.addEventListener('change', () => {
             const archivos = archivoInputProfile.files;
-            if (archivos.length > 0) {
-                nombreArchivo.textContent = archivos[0].name;
-            } else {
-                nombreArchivo.textContent = "Agrega una foto de perfil";
-            }
-        });`
-
-        inputFileCustom.innerHTML = scriptInput
+            nombreArchivo.textContent = archivos[0].name;
+        })
 
         // Captura formulario: 
 
@@ -204,7 +195,7 @@ async function confirmarCambios(formEditProfile) {
             Swal.fire({
                 icon: 'warning',
                 title: 'Error al intentar actualizar perfil',
-                text: customError|| 'Hubo un problema al intentar actualizar perfil.',
+                text: customError || 'Hubo un problema al intentar actualizar perfil.',
             });
         } else if (statusCodeRes === 400) {
             Swal.fire({
@@ -306,8 +297,22 @@ async function cerrarSession() {
 const btnCerrarCuenta = document.getElementById('btnCerrarCuenta');
 
 // Escuchamos el envento del bóton:
-btnCerrarCuenta.addEventListener("click", () => {
-    cerrarCuenta();
+btnCerrarCuenta.addEventListener("click", async () => {
+
+    // Mostrar SweetAlert de confirmación
+    const confirmationResult = await Swal.fire({
+        title: 'Confirmar eliminación de cuenta',
+        text: '¿Estás seguro de que deseas eliminar tu cuenta? Ten en cuenta que esta acción conllevará la eliminación de tu carrito actual y todos los productos que hayas publicado como usuario premium.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, confirmar',
+        cancelButtonText: 'Cancelar',
+    });
+
+    if (confirmationResult.isConfirmed) {
+        cerrarCuenta();
+    }
+
 });
 
 async function cerrarCuenta() {
@@ -333,7 +338,7 @@ async function cerrarCuenta() {
 
             setTimeout(() => {
                 window.location.replace('/login');
-            }, 2000);
+            }, 4000);
 
         } else if (customError) {
             Swal.fire({

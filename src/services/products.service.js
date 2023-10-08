@@ -100,7 +100,6 @@ export default class ProductService {
                         response.statusCode = 404;
                         response.message = `No se encontró ningún producto con el ID ${pid}.`;
                     } else if (resultDAO.status === "success") {
-                        
                         response.statusCode = 200;
                         response.message = "Producto eliminado exitosamente.";
                         response.result = resultDAO.result;
@@ -114,6 +113,36 @@ export default class ProductService {
         } catch (error) {
             response.statusCode = 500;
             response.message = "Error al eliminar el producto - Service: " + error.message;
+        };
+        return response;
+    };
+
+    // Eliminar todos los productos publicados por un usuario premium - Service:
+    async deleteAllPremiumProductService(uid, userRequestId, role) {
+        let response = {};
+        try {
+            if (role === "admin" || uid === userRequestId) {
+                // Si el role es admin puede eliminar todos los productos publicados por cualquier usuario.
+                // Los usuarios solo pueden eliminar todos los productos que ellos mismos hayan publicado siendo usuarios premium.
+                const resultDAO = await this.productDao.deleteAllPremiumProduct(uid);
+                if (resultDAO.status === "error") {
+                    response.statusCode = 500;
+                    response.message = resultDAO.message;
+                } else if (resultDAO.status === "not found products") {
+                    response.statusCode = 404;
+                    response.message = `No se encontraron productos para eliminar.`;
+                } else if (resultDAO.status === "success") {
+                    response.statusCode = 200;
+                    response.message = resultDAO.message
+                };
+            } else { 
+                // Si el role no es admin y el id del usuario que hace la petición no coincide con el id del usuario cuyos productos se desea eliminar,  se deniega la acción:
+                response.statusCode = 403;
+                response.message = "Solo puedes eliminar los productos que te pertenecen.";
+            };
+        } catch (error) {
+            response.statusCode = 500;
+            response.message = "Error al eliminar todos los productos de usuario premium - Service: " + error.message;
         };
         return response;
     };
