@@ -29,7 +29,7 @@ const UserSchema = new mongoose.Schema({
     },
     photo: {
         type: String,
-        default: 'https://i.ibb.co/nnQFzM2/ADD-PHOTO-removebg-preview.png'
+        default: 'https://i.ibb.co/7SzQhXX/photo.webp'
     },
     cart: {
         type: mongoose.Schema.Types.ObjectId,

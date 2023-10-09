@@ -24,8 +24,8 @@ async function verPerfil() {
 
             <div style="display: flex; justify-content: center; gap: 0em; flex-direction: column; align-items: center; width: 80%; border-right: 0.1em solid #95d0f7; padding-right: 1.5em">
 
-                <img src=${res.photo} alt="ADD-PHOTO" border="0" style="height: 25vh; width: 17vw; margin-top: 0em; border-radius: 1em">
-
+            <img src=${res.photo} alt="ADD-PHOTO" border="0" style="height: 25vh; width: 25vh; object-fit: cover; object-position: center; border-radius: 1em; margin-bottom: 0em;" />
+            
             </div>
 
             <div style="display: flex; justify-content: center; gap: 2em; flex-direction: column; align-items: center; flex-grow: 1;">
@@ -93,11 +93,11 @@ async function editarPerfil() {
 
         htmlPerfil += `
 
-        <form id="editProfileForm" style="display: flex; justify-content: center; gap: 2em; flex-direction: row; align-items: center; margin: 0em 2em; ">
+        <form id="editProfileForm" style="display: flex; justify-content: center; gap: 2em; flex-direction: row; align-items: center; width: 100%;">
 
             <div style="display: flex; justify-content: center; gap: 0em; flex-direction: column; align-items: center; width: 80%; border-right: 0.1em solid #95d0f7; padding-right: 1.5em">
 
-                <img src=${res.photo} alt="ADD-PHOTO" border="0" style="height: 25vh; width: 17vw; margin-top: 0em; border-radius: 1em; margin-bottom: 1em">
+            <img src=${res.photo} alt="ADD-PHOTO" border="0" style="height: 25vh; width: 25vh; object-fit: cover; object-position: center; border-radius: 1em; margin-bottom: 1em;" />
         
                 <div>
 
@@ -167,6 +167,7 @@ async function editarPerfil() {
 }
 
 async function confirmarCambios(formEditProfile) {
+    
     // Crear un objeto FormData a partir del formulario
     const data = new FormData(formEditProfile);
 
