@@ -1,64 +1,96 @@
-<div class="SessionContainer">
+<div id="VistaDeCarga" style="display: block" ;>
 
-    <div style="display: flex; justify-content: center; gap: 2em; flex-direction: row; align-items: center;">
+    <div class="loader-container">
 
-        <div id="conteProfi" style="width: auto;">
+        <div class="item">
+            <div class="divLogoChat">
+                <img src="https://i.ibb.co/hd9vsgK/Logo-BK-Grande.png" alt="Logo-BK-Grande" border="0"
+                    class="logoGRDChat" style="width: 50%; margin-bottom: 1em;">
+            </div>
+        </div>
 
-            <div
-                style="width: 100%; display: flex; justify-content: center; flex-direction: row; align-items: center; margin: 0em 2em;">
+        <div class="item">
+            <img src="https://i.ibb.co/Ytn1ggx/Pantalla-de-carga.png" alt="Pantalla-de-carga" border="0"
+                style="width: 50%;">
+        </div>
 
-                <a href="/products"> <img src="https://i.ibb.co/mHPj0kW/Logo-volver-removebg-preview.png" alt="volver"
-                        border="0" class="logoS" style=" margin-top: 0em; margin-left: 2em !important;">
-                </a>
+        <div class="item" style="margin-top: 1em;">
+            <div class="loader"></div>
+        </div>
 
-                <div class="divLogoChat">
-                    <img src="https://i.ibb.co/hd9vsgK/Logo-BK-Grande.png" alt="Logo-BK-Grande" border="0"
-                        class="logoGRDChat" style="    margin-left: -80px;">
+        <div class="item" style="margin-top: 1em;">
+            <h1 style="font-size: 1.1em">Cargando... Por favor, espera.</h1>
+        </div>
+
+    </div>
+
+</div>
+
+<div id="contenedorVista" style=" display: none">
+
+    <div class="SessionContainer">
+
+        <div style="display: flex; justify-content: center; gap: 2em; flex-direction: row; align-items: center;">
+
+            <div id="conteProfi" style="width: auto;">
+
+                <div
+                    style="width: 100%; display: flex; justify-content: center; flex-direction: row; align-items: center; margin: 0em 2em;">
+
+                    <a href="/products"> <img src="https://i.ibb.co/mHPj0kW/Logo-volver-removebg-preview.png"
+                            alt="volver" border="0" class="logoS"
+                            style=" margin-top: 0em; margin-left: 2em !important;">
+                    </a>
+
+                    <div class="divLogoChat">
+                        <img src="https://i.ibb.co/hd9vsgK/Logo-BK-Grande.png" alt="Logo-BK-Grande" border="0"
+                            class="logoGRDChat" style="    margin-left: -80px;">
+                    </div>
+
                 </div>
 
-            </div>
+                <div
+                    style="width: 100%;  display: flex; justify-content: space-around; flex-direction: row; align-items: center; gap:2em;">
 
-            <div
-                style="width: 100%;  display: flex; justify-content: space-around; flex-direction: row; align-items: center; gap:2em;">
+                    <div>
 
-                <div>
+                        <h1>Perfil:</h1>
+                        <br>
 
-                    <h1>Perfil:</h1>
-                    <br>
+                        <div id="sectionPerfil"
+                            style="width: 92%; margin-left: 1.7em; border: 0.1em solid rgb(188 188 188 / 78%); padding: 1em; border-radius: 1em; margin-bottom: 1em !important;">
+                        </div>
 
-                    <div id="sectionPerfil"
-                        style="width: 92%; margin-left: 1.7em; !important; border: 0.1em solid #95d0f7; padding: 1em; border-radius: 1em; margin-bottom: 1em !important;">
                     </div>
 
                 </div>
 
             </div>
 
-        </div>
+            <div id="conteProfi" style="width: 15vw !important; min-width: 200px;">
 
-        <div id="conteProfi" style="width: 15vw !important; min-width: 200px;">
+                <h2>Editar perfil:</h2>
+                <br>
+                <div id="btnsEditarPerfil">
+                </div>
 
-            <h2>Editar perfil:</h2>
-            <br>
-            <div id="btnsEditarPerfil">
+                <br>
+
+                <h2>Session:</h2>
+                <br>
+                <button class="boton" id="btnCerrarSession">Cerrar session</button>
+
+                <br>
+
+                <h2>Cuenta:</h2>
+                <br>
+                <button class="boton" id="btnCerrarCuenta">Eliminar cuenta</button>
+
             </div>
-
-            <br>
-
-            <h2>Session:</h2>
-            <br>
-            <button class="boton" id="btnCerrarSession">Cerrar session</button>
-
-            <br>
-
-            <h2>Cuenta:</h2>
-            <br>
-            <button class="boton" id="btnCerrarCuenta">Eliminar cuenta</button>
 
         </div>
 
     </div>
-
 </div>
 
 <script id="inputFileCustom"></script>

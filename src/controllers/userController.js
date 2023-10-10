@@ -64,7 +64,7 @@ export default class UserController {
                 CustomError.createError({
                     name: "Error al subir documentación de usuario.",
                     cause: ErrorGenerator.uploadPremiumDocsErrorInfo(req.files.identification, req.files.proofOfAddress, req.files.bankStatement),
-                    message: "No se ha proporcionado ningun documento.",
+                    message: "La solicitud no incluye documentos para agregar o actualizar en este momento.",
                     code: ErrorEnums.INVALID_FORM_FILES_ERROR
                 });
             }

@@ -35,7 +35,7 @@ extraForm.addEventListener('submit', async (e) => {
             });
         } else if (statusCodeRes === 409) {
             Swal.fire({
-                icon: 'info',
+                icon: 'warning',
                 title: 'Error al completar el perfil',
                 text: messageRes || 'Error al completar el perfil. Inténtalo de nuevo.',
             });

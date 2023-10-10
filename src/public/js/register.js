@@ -34,7 +34,7 @@ form.addEventListener('submit', async (e) => {
             });
         } else if (statusCodeRes === 409) {
             Swal.fire({
-                icon: 'info',
+                icon: 'warning',
                 title: 'Error de registro',
                 text: messageRes || 'Error en el registro. Inténtalo de nuevo.',
             });

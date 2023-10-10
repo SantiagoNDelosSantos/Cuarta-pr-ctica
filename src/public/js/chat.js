@@ -1,3 +1,15 @@
+// Ocultar la vista de carga después de 1 segundo (1000 milisegundos):
+const carga = document.getElementById("VistaDeCarga");
+const vista = document.getElementById("contenedorVista");
+
+function pantallaCarga() {
+    setTimeout(() => {
+        carga.style = "display: none";
+        vista.style = "display: block";
+    }, 4000);
+};
+pantallaCarga();
+
 // Iniciar Socket:
 const socket = io();
 
@@ -87,7 +99,7 @@ async function deleteMessage(messageId) {
       });
     } else if (statusCode === 404) {
       Swal.fire({
-        icon: 'info',
+        icon: 'warning',
         title: 'Error al eliminar el mensaje',
         text: message || 'Hubo un problema al eliminar el mensaje.',
       });
@@ -195,14 +207,14 @@ async function enviarMensaje() {
         title: 'Mensaje vacío',
         text: 'Por favor, ingresa un mensaje antes de enviarlo.',
       });
-    }
+    };
 
   } catch (error) {
     Swal.fire({
       icon: 'error',
       title: 'Error en la solicitud de enviar mensaje',
       text: 'Error: ' + error.message
-    });
+    });;
   }
 
-}
+};

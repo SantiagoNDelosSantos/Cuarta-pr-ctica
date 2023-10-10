@@ -1,3 +1,15 @@
+// Ocultar la vista de carga después de 1 segundo (1000 milisegundos):
+const carga = document.getElementById("VistaDeCarga");
+const vista = document.getElementById("contenedorVista");
+
+function pantallaCarga() {
+    setTimeout(() => {
+        carga.style = "display: none";
+        vista.style = "display: block";
+    }, 1500);
+};
+pantallaCarga();
+
 // Captura sección de Perfil:
 const sectionPerfil = document.getElementById('sectionPerfil');
 
@@ -69,9 +81,9 @@ async function verPerfil() {
         btnEditarPerfil.addEventListener("click", () => {
             editarPerfil();
         });
-    }
+    };
 
-}
+};
 
 verPerfil();
 
@@ -163,8 +175,8 @@ async function editarPerfil() {
             confirmarCambios(formEditProfile);
         });
 
-    }
-}
+    };
+};
 
 async function confirmarCambios(formEditProfile) {
     
@@ -200,7 +212,7 @@ async function confirmarCambios(formEditProfile) {
             });
         } else if (statusCodeRes === 400) {
             Swal.fire({
-                icon: 'info',
+                icon: 'warning',
                 title: 'Sin cambios',
                 text: messageRes || 'No se realizaron cambios en el perfil.',
             })
@@ -209,7 +221,7 @@ async function confirmarCambios(formEditProfile) {
             }, 2000);
         } else if (statusCodeRes === 404) {
             Swal.fire({
-                icon: 'info',
+                icon: 'warning',
                 title: 'Error al intentar cerrar session',
                 text: messageRes || 'Hubo un problema al intentar intentar actualizar perfil.',
             });
@@ -219,7 +231,7 @@ async function confirmarCambios(formEditProfile) {
                 title: 'Error al intentar cerrar session',
                 text: messageRes || 'Hubo un problema al intentar intentar actualizar perfil.',
             });
-        }
+        };
 
     } catch (error) {
         Swal.fire({
@@ -227,7 +239,7 @@ async function confirmarCambios(formEditProfile) {
             title: 'Error en la solicitud de editar perfil',
             text: 'Error: ' + error.message
         });
-    }
+    };
 
 };
 
@@ -272,7 +284,7 @@ async function cerrarSession() {
             });
         } else if (statusCode === 404) {
             Swal.fire({
-                icon: 'info',
+                icon: 'warning',
                 title: 'Error al intentar cerrar session',
                 text: message || 'Hubo un problema al intentar cerrar la session.',
             });
@@ -282,7 +294,7 @@ async function cerrarSession() {
                 title: 'Error al intentar cerrar session',
                 text: message || 'Hubo un problema al intentar cerrar la session.',
             });
-        }
+        };
 
     } catch (error) {
         Swal.fire({
@@ -290,7 +302,7 @@ async function cerrarSession() {
             title: 'Error en la solicitud de cerrar session',
             text: 'Error: ' + error.message
         });
-    }
+    };
 
 };
 
@@ -312,7 +324,7 @@ btnCerrarCuenta.addEventListener("click", async () => {
 
     if (confirmationResult.isConfirmed) {
         cerrarCuenta();
-    }
+    };
 
 });
 
@@ -349,7 +361,7 @@ async function cerrarCuenta() {
             });
         } else if (statusCode === 404) {
             Swal.fire({
-                icon: 'info',
+                icon: 'warning',
                 title: 'Error al intentar eliminar cuenta',
                 text: message || 'Hubo un problema al intentar eliminar la cuenta.',
             });
@@ -359,7 +371,7 @@ async function cerrarCuenta() {
                 title: 'Error al intentar eliminar cuenta',
                 text: message || 'Hubo un problema al intentar eliminar la cuenta.',
             });
-        }
+        };
 
     } catch (error) {
         Swal.fire({
@@ -367,6 +379,6 @@ async function cerrarCuenta() {
             title: 'Error en la solicitud de eliminar cuenta',
             text: 'Error: ' + error.message
         });
-    }
+    };
 
 };

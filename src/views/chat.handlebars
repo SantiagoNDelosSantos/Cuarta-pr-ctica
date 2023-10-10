@@ -1,33 +1,67 @@
-<div class="container">
+<div id="VistaDeCarga" style="display: block" ;>
 
-    <a href="/products"><img src="https://i.ibb.co/mHPj0kW/Logo-volver-removebg-preview.png" alt="volver" border="0"
-            class="logoS" style="position: absolute; margin-top: 2em;"></a>
+    <div class="loader-container">
 
-    <div class="divLogoChat">
-        <img src="https://i.ibb.co/hd9vsgK/Logo-BK-Grande.png" alt="Logo-BK-Grande" border="0" class="logoGRDChat">
+        <div class="item">
+            <div class="divLogoChat">
+                <img src="https://i.ibb.co/hd9vsgK/Logo-BK-Grande.png" alt="Logo-BK-Grande" border="0"
+                    class="logoGRDChat" style="width: 50%; margin-bottom: 1em;">
+            </div>
+        </div>
+
+        <div class="item">
+            <img src="https://i.ibb.co/Ytn1ggx/Pantalla-de-carga.png" alt="Pantalla-de-carga" border="0"
+                style="width: 50%;">
+        </div>
+
+        <div class="item" style="margin-top: 1em;">
+            <div class="loader"></div>
+        </div>
+
+        <div class="item" style="margin-top: 1em;">
+            <h1 style="font-size: 1.1em">Cargando... Por favor, espera.</h1>
+        </div>
+
     </div>
 
-    <h1>Chat de usuarios:</h1>
+</div>
 
-    <p style="margin: 1em 2em 0em 2em;">Este espacio te brinda la oportunidad de compartir tus opiniones y experiencias
-        sobre
-        los productos que hayas comprado recientemente. Además, puedes consultar a otros usuarios sus reseñas respecto a
-        productos que han comprado y que tú estés considerando adquirir.</p>
+<div id="contenedorVista" style=" display: none">
+    
+    <div class="container">
 
-    <br>
+        <a href="/products"><img src="https://i.ibb.co/mHPj0kW/Logo-volver-removebg-preview.png" alt="volver" border="0"
+                class="logoS" style="position: absolute; margin-top: 2em;"></a>
 
-    <p style="margin-top: 0"> ¡Únete a la conversación y comparte tus experiencias con la comunidad!</p>
+        <div class="divLogoChat">
+            <img src="https://i.ibb.co/hd9vsgK/Logo-BK-Grande.png" alt="Logo-BK-Grande" border="0" class="logoGRDChat">
+        </div>
 
-    <table id="chat-table" class="table"></table>
+        <h1>Chat de usuarios:</h1>
 
-    <table class="table" id="sendMsg">
-        <tbody>
-            <tr>
-                <td><input type="text" id="message" placeholder="Mensaje" /></td>
-                <td id="tdBtnSendMsg"><button type="submit" class="boton botonEnv" id="btnEnv">Enviar</button></td>
-            </tr>
-        </tbody>
-    </table>
+        <p style="margin: 1em 2em 0em 2em;">Este espacio te brinda la oportunidad de compartir tus opiniones y
+            experiencias
+            sobre
+            los productos que hayas comprado recientemente. Además, puedes consultar a otros usuarios sus reseñas
+            respecto a
+            productos que han comprado y que tú estés considerando adquirir.</p>
+
+        <br>
+
+        <p style="margin-top: 0"> ¡Únete a la conversación y comparte tus experiencias con la comunidad!</p>
+
+        <table id="chat-table" class="table"></table>
+
+        <table class="table" id="sendMsg">
+            <tbody>
+                <tr>
+                    <td><input type="text" id="message" placeholder="Mensaje" /></td>
+                    <td id="tdBtnSendMsg"><button type="submit" class="boton botonEnv" id="btnEnv">Enviar</button></td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
 
 </div>
 

@@ -67,16 +67,15 @@ sessionRouter.get('/profile', passport.authenticate('jwt', {
 }), async (req, res) => {
     const result = await sessionController.getUserController(req, res);
     const resultFilter = new ProfileUserDTO(result.result);
-   
-    let devolver
+    let devolver;
     if (resultFilter) {
-        devolver = resultFilter
+        devolver = resultFilter;
     } else {
-        devolver = result
-    }
+        devolver = result;
+    };
     if (result !== undefined) {
         res.status(result.statusCode).send(devolver);
-    }
+    };
 });
 
 // Documentación de los usuarios - Router:
@@ -86,15 +85,15 @@ sessionRouter.get('/getDocsUser', passport.authenticate('jwt', {
 }), rolesMiddlewareUser, async (req, res) => {
     const result = await sessionController.getUserController(req, res);
     const resultFilter = new DocsUserDTO(result.result);
-    let devolver
+    let devolver;
     if (resultFilter) {
         devolver = resultFilter
     } else {
         devolver = result
-    }
+    };
     if (result !== undefined) {
         res.status(result.statusCode).send(devolver);
-    }
+    };
 });
 
 // Enviar email para reestablecer contraseña - Router:

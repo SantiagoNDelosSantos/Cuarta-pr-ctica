@@ -38,7 +38,7 @@ formResetPass1.addEventListener('submit', async (e) => {
             });
         } else if (statusCodeRes === 404) {
             Swal.fire({
-                icon: 'info',
+                icon: 'warning',
                 title: 'Error en el cambio de contraseña',
                 text: messageRes || 'Ha ocurrido un error al enviar el correo de reestablecimiento de contraseña. Inténtelo de nuevo.',
             });

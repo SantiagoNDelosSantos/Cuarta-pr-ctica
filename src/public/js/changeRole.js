@@ -1,5 +1,19 @@
+// Ocultar la vista de carga después de 1 segundo (1000 milisegundos):
+const carga = document.getElementById("VistaDeCarga");
+const vista = document.getElementById("contenedorVista");
+
+function pantallaCarga() {
+    setTimeout(() => {
+        carga.style = "display: none";
+        vista.style = "display: block";
+    }, 1500);
+};
+pantallaCarga();
+
+// Cpturamos el formulario:
 const form = document.getElementById('uploadDocuments');
 
+// Función que actualiza los nombres de los campos en base a la documentación existente en la DB:
 async function cargaChageRole() {
 
     const response = await fetch('/api/sessions/getDocsUser', {
@@ -11,7 +25,7 @@ async function cargaChageRole() {
     if (res.docs.length > 0) {
         for (let i = 0; i < res.docs.length; i++) {
             const documento = res.docs[i];
-            const nombreArchivo =  extractFileNameWithUID(documento.reference);
+            const nombreArchivo = extractFileNameWithUID(documento.reference);
 
             // Verifica el tipo de documento y actualiza el span correspondiente
             if (documento.name === "Identificación") {
@@ -26,8 +40,8 @@ async function cargaChageRole() {
             }
         }
     }
-}
 
+}
 cargaChageRole();
 
 // Función para extraer el nombre del archivo de una URL con uid:
@@ -71,9 +85,7 @@ async function cargarDocuments() {
             const docsRes = await uploadDocsRes.json();
             const statusCodeDocsRes = docsRes.statusCode;
             const messageRes = docsRes.message;
-            const customError = docsRes.cause;
-
-            console.log(docsRes)
+            const customError = docsRes.message;
 
             if (statusCodeDocsRes === 200) {
                 Swal.fire({
@@ -83,12 +95,10 @@ async function cargarDocuments() {
                 });
                 setTimeout(() => {
                     cargaChageRole();
-                    form.reset();
                 }, 2000);
-            }
-            if (statusCodeDocsRes === 206) {
+            } else if (statusCodeDocsRes === 206) {
                 Swal.fire({
-                    icon: 'ifo',
+                    icon: 'info',
                     title: 'Cargar documentación',
                     text: messageRes || 'Documentación actualizada exitosamente.',
                 });
@@ -103,7 +113,7 @@ async function cargarDocuments() {
                 });
             } else if (statusCodeDocsRes === 404) {
                 Swal.fire({
-                    icon: 'info',
+                    icon: 'warning',
                     title: 'Error al intentar cargar documentación',
                     text: messageRes || 'Hubo un problema al intentar cargar la documentación.',
                 });
@@ -125,72 +135,97 @@ async function cargarDocuments() {
 
 }
 
-
-
-
-
-
-
-/*
-
-
-
 const ChangeROLE = document.getElementById('ChangeROLE');
 
+ChangeROLE.addEventListener("click", async (event) => {
 
+    event.preventDefault();
 
-ChangeROLE.addEventListener('click', async (e) => {
+    const sessionResponse = await fetch('/api/sessions/current', {
+        method: 'GET',
+    });
+    const sessionRes = await sessionResponse.json();
+    const uid = sessionRes.userId;
+    const role = sessionRes.role;
 
-    e.preventDefault();
+    if (role === "user") {
+        // Mostrar SweetAlert de confirmación (User a Premium):
+        const confirmationResult = await Swal.fire({
+            title: 'Confirmar cambio de role',
+            text: '¿Deseas actualizar a "Premium"? Los usuarios premium pueden publicar, editar y eliminar productos, aunque el administrador puede eliminar contenido que incumpla nuestras políticas. ¿Confirmas el cambio?',
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, confirmar',
+            cancelButtonText: 'Cancelar',
+        });
+
+        if (confirmationResult.isConfirmed) {
+            cambiarRole(uid);
+        }
+    }
+    if (role === "premium") {
+        // Mostrar SweetAlert de confirmación (Premium a User):
+        const confirmationResult = await Swal.fire({
+            title: 'Confirmar cambio de role',
+            text: '¿Estás seguro de que deseas cambiar a role "User"? Ten en cuenta que si realizas este cambio, todos los productos que hayas publicado como usuario premium serán eliminados automáticamente de la plataforma. ¿Confirmas esta modificación?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, confirmar',
+            cancelButtonText: 'Cancelar',
+        });
+
+        if (confirmationResult.isConfirmed) {
+            cambiarRole(uid);
+        }
+    }
+
+});
+
+async function cambiarRole(uid) {
 
     try {
-        const sessionResponse = await fetch('/api/sessions/current');
-        if (sessionResponse.ok) {
-            const sessionData = await sessionResponse.json();
-            const uid = sessionData.userId;
 
-            const response = await changeRole(uid);
-            const data = await response.json();
-            if (response.ok) {
-                if (data.statusCode === 200) {
-                    Swal.fire({
-                        icon: 'success',
-                        text: data.message,
-                    });
-                }
-            } else if (data.statusCode === 422) {
-                Swal.fire({
-                    icon: 'info',
-                    text: data.message,
-                });
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: "Error en la solicitud - Actualizar Role",
-                    text: data.message,
-                });
-            }
+        // Solicitud de cambio de role:
+        const response = await fetch(`/api/users/premium/${uid}`, {
+            method: 'POST',
+        });
 
-        } else {
-            console.error('Error en la solicitud - Current Session: ' + sessionResponse - json());
+        const res = await response.json();
+        const statusCode = res.statusCode;
+        const message = res.message;
+        const customError = res.cause;
+
+        if (statusCode === 200) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Actualizar role',
+                text: message || 'Role actualizado exitosamente.',
+            });
+        } else if (customError) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Error al intentar actualizar role',
+                text: customError || 'Hubo un problema al intentar actualizar role del user.',
+            });
+        } else if (statusCode === 404 || statusCode === 422) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Error al intentar actualizar role',
+                text: message || 'Hubo un problema al intentar actualizar role del user.',
+            });
+        } else if (statusCode === 500) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error al intentar actualizar role',
+                text: message || 'Hubo un problema al intentar actualizar role del user.',
+            });
         }
     } catch (error) {
-        console.error('Error en la solicitud - changeRole.js 2: ' + error.message);
-    }
-});
+        Swal.fire({
+            icon: 'error',
+            title: 'Error en la solicitud de actualizar role',
+            text: 'Error: ' + error.message
+        });
+    };
 
-async function changeRole(uid) {
-    return fetch(`/api/users/premium/${uid}`, {
-        method: 'POST'
-    });
-}
-
-const cargarDocs = document.getElementById('cargarDocs');
-// Escuchamos el envento del bóton de Cargar docs:
-cargarDocs.addEventListener("click", () => {
-    cargarDocuments();
-});
-
-
-const ChangeROLE = document.getElementById('ChangeROLE');
-*/
+};
