@@ -2,13 +2,7 @@
 import mongoose from "mongoose";
 
 // Import del modelos:
-import {
-    productsModel
-
-} from "./models/products.model.js";
-import {
-    cartModel
-} from './models/carts.model.js'
+import { productsModel } from "./models/products.model.js";
 
 // Importación de variables de entorno:
 import {
@@ -114,16 +108,6 @@ export default class ProductsDAO {
                 if (result2.deletedCount === 0) {
                     response.status = "not found product";
                 } else if (result2.deletedCount === 1) {
-                    // Eliminar el producto de los carritos de los usuarios:
-                    await cartModel.updateMany({
-                        'products.product': pid
-                    }, {
-                        $pull: {
-                            'products': {
-                                product: pid
-                            }
-                        }
-                    });
                     response.status = "success";
                     response.result = result;
                 };
@@ -139,31 +123,22 @@ export default class ProductsDAO {
     async deleteAllPremiumProduct(uid) {
         let response = {};
         try {
+
             // Buscar todos los productos con el campo 'owner' igual al uid del usuario indicado:
             const productsToDelete = await productsModel.find({
                 owner: uid
             });
+
             // Verificar si se encontraron productos:
             if (productsToDelete.length === 0) {
                 response.status = "not found products";
             } else {
-                // Si se encuentran productos, primero los eliminamos de los carritos de otros usuarios: 
-                const productsPremiumPID = productsToDelete.map(producto => producto._id);
-                for (const pid of productsPremiumPID) {
-                    await cartModel.updateMany({
-                        'products.product': pid
-                    }, {
-                        $pull: {
-                            'products': {
-                                product: pid
-                            }
-                        }
-                    });
-                }
-                // Luego eliminamos los productos en la colección:
+
+                // Si se encontraron eliminamos los productos en la colección:
                 const result = await productsModel.deleteMany({
                     owner: uid
                 });
+
                 // Validamos el resultado:
                 if (result.deletedCount > 0) {
                     response.status = "success";
@@ -172,6 +147,7 @@ export default class ProductsDAO {
                     response.status = "error";
                     response.message = "No se pudieron eliminar los productos (deleteMany).";
                 }
+
             }
         } catch (error) {
             response.status = "error";

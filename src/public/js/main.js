@@ -1,6 +1,10 @@
 // Iniciar Socket:
 const socket = io();
 
+
+
+      const botomStore = document.getElementById("storeButtonPrem")
+
 // Hacemos una solicitud a la ruta '/api/sessions/current para obtener los datos del usuario
 fetch('/api/sessions/current')
 
@@ -10,11 +14,24 @@ fetch('/api/sessions/current')
     // Aquí recibimos los datos del usuario en la variable 'data'
     let user = data;
 
+    if(user.role === "premium"){
+      console.log("hOLA")
+
+      let botnPrem = ""
+
+      botnPrem += `<a href="/store"><img src="https://i.ibb.co/Ptq3Y46/tienda.png" alt="login" border="0" class="logoS"></a>`
+
+      botomStore.innerHTML = botnPrem;
+
+    }
+
+
     Swal.fire({
       icon: 'success',
       title: '¡Bienvenido!',
       text: `Hola ${user.name}, has iniciado sesión con éxito.`,
     });
+
   })
   .catch((error) => {
     console.error('Error al obtener los datos del usuario:', error);

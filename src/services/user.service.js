@@ -1,6 +1,9 @@
 // Import UserDAO: 
 import UserDAO from "../DAO/mongodb/UserMongo.dao.js";
 
+// Import productsService:
+import ProductService from "../services/products.service.js"
+
 // Import jwt: 
 import jwt from 'jsonwebtoken';
 
@@ -15,6 +18,7 @@ export default class SessionService {
 
     constructor() {
         this.userDAO = new UserDAO();
+        this.productService = new ProductService();
     }
 
     // Métodos para UserService: 
@@ -77,8 +81,12 @@ export default class SessionService {
                 // Creamos una variable para guardar luego el resultado del DAO: 
                 let resultRolPremium
 
+                // Resultado de borrar los productos del usuario premium, cuando vuelve a tener role user:
+                let deleteProdPremRes
+
                 // Si el usuario quiere actualizar su role a premium, verificamos que tenga subidos todos los documentos requeridos: 
                 if (newRole === "premium") {
+
                     // Si el usuario quiere actualizar su rol a premium, verificar los documentos
                     if (docsSubidos.length === 3) {
                         resultRolPremium = await this.userDAO.updateUser(uid, updateUser);
@@ -86,44 +94,60 @@ export default class SessionService {
                         response.statusCode = 422;
                         response.message = `No es posible efectuar el cambio de role a premium, ya que aún no se ha proporcionado toda la documentación requerida para dicha operación. Los documentos faltantes son  ${documentosFaltantes.join(', ')}.`;
                     }
+
                 } else if (newRole === "user") {
-                    // Si el usuario quiere volver a ser usuario, no validamos los docs: 
-                    resultRolPremium = await this.userDAO.updateUser(uid, updateUser);
-                }
-                // En los dos casos en que sí se puede acceder a la capa del DAO, validamos los resultados:
-                if (documentosFaltantes.length === 0) {
-                    if (resultRolPremium.status === "error") {
-                        response.statusCode = 500;
-                        response.message = resultRolPremium.message;
-                    } else if (resultRolPremium.status === "not found user") {
-                        response.statusCode = 404;
-                        response.message = "Usuario no encontrado.";
-                    } else if (resultRolPremium.status === "success") {
-                        response.statusCode = 200;
-                        response.message = `Usuario actualizado exitosamente, su rol a sido actualizado a ${newRole}.`;
-                        // Traemos al usuario actualizado:
-                        const newUser = await this.userDAO.getUser(uid);
-                        if (newUser.status = "success") {
-                            //  Actualizamos el role del usuario en el token: 
-                            let token = jwt.sign({
-                                email: newUser.result.email,
-                                first_name: newUser.result.first_name,
-                                role: newUser.result.role,
-                                cart: newUser.result.cart,
-                                userID: newUser.result._id
-                            }, envCoderSecret, {
-                                expiresIn: '7d'
-                            });
-                            // Sobrescribimos la cookie:
-                            res.cookie(envCoderTokenCookie, token, {
-                                httpOnly: true,
-                                signed: true,
-                                maxAge: 7 * 24 * 60 * 60 * 1000
-                            })
-                        }
+
+                    // Si el usuario premim se cambia de role a user, entocnes eliminamos todos sus productos:
+                    deleteProdPremRes = await this.productService.deleteAllPremiumProductService(uid, uid, userRole);
+
+                    if (deleteProdPremRes.statusCode === 200 || deleteProdPremRes.statusCode === 404) {
+                        // Si el usuario premium quiere volver a ser usuario, no validamos los docs: 
+                        resultRolPremium = await this.userDAO.updateUser(uid, updateUser);
                     };
+
                 }
-            };
+
+                if (resultRolPremium.status === "error") {
+                    response.statusCode = 500;
+                    response.message = resultRolPremium.message;
+                } else if (resultRolPremium.status === "not found user") {
+                    response.statusCode = 404;
+                    response.message = "Usuario no encontrado.";
+                } else if (resultRolPremium.status === "success") {
+
+                    // De preium a user:
+                    if ( resultRolPremium.status === "success" && newRole === "user") {
+                        response.statusCode = 200;
+                        response.message = `Usuario actualizado exitosamente, su rol ha sido actualizado a ${newRole}. ${deleteProdPremRes.message}`;
+                    } else if (resultRolPremium.status === "success" && newRole === "premium") {
+                       // De user a premium:
+                        response.statusCode = 200;
+                        response.message = `Usuario actualizado exitosamente, su rol ha sido actualizado a ${newRole}.`;
+                    }
+
+                    // Traemos al usuario actualizado:
+                    const newUser = await this.userDAO.getUser(uid);
+                    if (newUser.status = "success") {
+                        //  Actualizamos el role del usuario en el token: 
+                        let token = jwt.sign({
+                            email: newUser.result.email,
+                            first_name: newUser.result.first_name,
+                            role: newUser.result.role,
+                            cart: newUser.result.cart,
+                            userID: newUser.result._id
+                        }, envCoderSecret, {
+                            expiresIn: '7d'
+                        });
+                        // Sobrescribimos la cookie:
+                        res.cookie(envCoderTokenCookie, token, {
+                            httpOnly: true,
+                            signed: true,
+                            maxAge: 7 * 24 * 60 * 60 * 1000
+                        })
+                    }
+
+                };
+            }
         } catch (error) {
             response.statusCode = 500;
             response.message = "Error al modificar el rol del usuario - Service: " + error.message;

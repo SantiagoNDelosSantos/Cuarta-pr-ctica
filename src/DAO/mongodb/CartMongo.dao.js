@@ -41,18 +41,40 @@ export default class CartsDAO {
             const result = await cartModel.findOne({
                 _id: cid
             }).populate(['products.product', 'tickets.ticketsRef']);
+
             if (result === null) {
                 response.status = "not found cart";
             } else {
-                response.status = "success";
-                response.result = result;
-            };
+
+                // Filtra los productos válidos (No nulos):
+                const validProducts = result.products.filter(prod => prod.product !== null);
+                // Filtramos los productos nulos (No validos):
+                const removedProducts = result.products.filter(prod => prod.product === null);
+
+                if (validProducts.length < result.products.length) {
+                    
+                    // Reemplazamos la propiedad products del carrito con los productos válidos:
+                    result.products = validProducts;
+
+                    // Guardamos el carrito actualizado en la base de datos:
+                    await result.save();
+
+                    response.status = "success";
+                    response.result = result;
+                    response.delete = removedProducts.length;
+
+                } else {
+                    response.status = "success";
+                    response.result = result;
+                }
+            }
         } catch (error) {
             response.status = "error";
             response.message = "Error al obtener el carrito por ID - DAO: " + error.message;
-        };
+        }
         return response;
-    };
+    }
+
 
     // Traer todos los carritos - DAO: 
     async getAllCarts() {
@@ -76,35 +98,44 @@ export default class CartsDAO {
     async addProductToCart(cid, product, quantity) {
         let response = {};
         try {
+            // Obtener el carrito por ID
             const cart = await this.getCartById(cid);
+
+            // Verificar si el carrito existe
             if (cart.result === null) {
                 response.status = "not found cart";
             } else {
-                const productID = product._id.toString();
-                const existingProductIndex = cart.result.products.findIndex(p => p.product._id.toString() === productID);
+                // Filtrar los productos válidos (no nulos)
+                const validProducts = cart.result.products.filter(item => item.product !== null);
+
+                // Identificar el índice del producto en el carrito
+                const existingProductIndex = validProducts.findIndex(item => item.product._id.toString() === product._id.toString());
+
                 if (existingProductIndex !== -1) {
-                    // Si el producto ya está en el carrito, solo se actualiza el quantity.
-                    cart.result.products[existingProductIndex].quantity += parseInt(quantity, 10);
+                    // Si el producto ya está en el carrito, solo se actualiza la cantidad (quantity).
+                    validProducts[existingProductIndex].quantity += parseInt(quantity, 10);
                     await cart.result.save();
                     response.status = "success";
                     response.result = cart;
                 } else {
-                    // Si el producto no está en el carrito, se lo agregar con el quantity proporcionado.
-                    cart.result.products.push({
+                    // Si el producto no está en el carrito, se agrega con la cantidad proporcionada.
+                    validProducts.push({
                         product: product,
-                        quantity: quantity
+                        quantity: parseInt(quantity, 10)
                     });
+                    cart.result.products = validProducts; // Actualizar la propiedad products
                     await cart.result.save();
                     response.status = "success";
                     response.result = cart;
-                };
-            };
+                }
+            }
         } catch (error) {
             response.status = "error";
             response.message = "Error al agregar el producto al carrito - DAO: " + error.message;
-        };
+        }
         return response;
-    };
+    }
+
 
     // Agregar un ticket a un carrito - DAO:
     async addTicketToCart(cid, ticketID) {
