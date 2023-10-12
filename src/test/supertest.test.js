@@ -66,7 +66,7 @@ describe('Test Global Technology', () => {
 
         it('POST - /api/sessions/login (Se debe loguear al usuario correctamente y generarse la cookie con su respectivo token)', async () => {
 
-            // Extraemos del usaurio de prueba su correo y contraseña en userLog: 
+            // Extraemos del usuario de prueba su correo y contraseña en userLog: 
             const userLog = {
                 email: userRegLog.email,
                 password: userRegLog.password
@@ -112,7 +112,7 @@ describe('Test Global Technology', () => {
 
         }).timeout(10000);
 
-        it('POST - /api/sessions/premium/:uid (Se debe cambiar el role del usaurio a premium)', async () => {
+        it('POST - /api/sessions/premium/:uid (Se debe cambiar el role del usuario a premium)', async () => {
 
             // Enviamos el ID del usuario a la ruta de cambio de role: 
             const result = await requester.post(`/api/sessions/premium/${currentUser.userId}`)
@@ -122,7 +122,7 @@ describe('Test Global Technology', () => {
             expect(result.body.statusCode).to.equal(200);
             expect(result.body.message).to.equal('Usuario actualizado exitosamente, su rol a sido actualizado a premium.');
 
-            // Extraemos la cookie con el nuevo role del usaurio: 
+            // Extraemos la cookie con el nuevo role del usuario: 
             const newCookieResult = result.headers['set-cookie'][0];
             expect(newCookieResult).to.be.ok;
 

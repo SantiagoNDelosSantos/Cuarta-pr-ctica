@@ -22,10 +22,10 @@ export default class Mail {
         })
     };
 
-    async sendMail(user, subject, html) {
+    async sendMail(email, subject, html) {
         let result = await this.transport.sendMail({
             from: envAuthUserTransport,
-            to: user.email,
+            to: email,
             subject,
             html
         });

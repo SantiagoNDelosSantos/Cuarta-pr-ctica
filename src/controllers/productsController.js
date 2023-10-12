@@ -38,16 +38,20 @@ export default class ProductController {
         try {
             // Extraemos el role del owner: 
             const ownerRole = req.user.role;
-            let owner = ""
+            let owner = "";
+            let email = "";
             if (ownerRole === "premium") {
                 // Si es premium agregamos su id a owner:
                 owner = req.user.userID;
+                email = req.user.email;
             } else if (ownerRole === "admin") {
                 // Si es admin agregamos su role a owner:
                 owner = req.user.role;
+                email = null;
             }
             // Agregamos el owner a productData: 
-            productData.owner = owner
+            productData.owner = owner;
+            productData.email = email;
             // Enviamos toda la información del producto incluyendo el owner al service: 
             const resultService = await this.productService.createProductService(productData);
             response.statusCode = resultService.statusCode;
@@ -152,25 +156,31 @@ export default class ProductController {
         };
         let response = {};
         try {
-            // Extraemos el role del owner: 
-            const ownerRole = req.user.role;
-            // Creamos el owner que vamos a pasar al service: 
-            const owner = ownerRole === "premium" ? req.user.userID : ownerRole === "admin" ? req.user.role : undefined;
-            // Enviamos el pid y el owner al service: 
-            const resultService = await this.productService.deleteProductService(pid, owner);
-            response.statusCode = resultService.statusCode;
-            response.message = resultService.message;
-            if (resultService.statusCode === 500) {
-                req.logger.error(response.message);
-            } else if (resultService.statusCode === 404 || resultService.statusCode === 403) {
-                req.logger.warn(response.message);
-            } else if (resultService.statusCode === 200) {
-                response.result = resultService.result;
-                // Actualización Real Time: 
-                const products = await this.productService.getAllProductsService();
-                req.socketServer.sockets.emit('products', products.result);
-                req.logger.debug(response.message);
-            };
+
+            if (req.user && req.user.role && req.user.email) {
+                // Extraemos el role peticionante: 
+                const requesterRole = req.user.role;
+
+                // Creamos el requester que vamos a pasar al service: 
+                const requester = requesterRole === "premium" ? req.user.email : requesterRole === "admin" ? req.user.role : undefined;
+
+                // Enviamos el pid y el owner al service: 
+                const resultService = await this.productService.deleteProductService(pid, requester);
+                response.statusCode = resultService.statusCode;
+                response.message = resultService.message;
+                if (resultService.statusCode === 500) {
+                    req.logger.error(response.message);
+                } else if (resultService.statusCode === 404 || resultService.statusCode === 403) {
+                    req.logger.warn(response.message);
+                } else if (resultService.statusCode === 200) {
+                    response.result = resultService.result;
+                    // Actualización Real Time: 
+                    const products = await this.productService.getAllProductsService();
+                    req.socketServer.sockets.emit('products', products.result);
+                    req.logger.debug(response.message);
+                };
+            }
+
         } catch (error) {
             response.statusCode = 500;
             response.message = "Error al eliminar el producto - Controller: " + error.message;

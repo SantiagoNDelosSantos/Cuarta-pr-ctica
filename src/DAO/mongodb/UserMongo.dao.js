@@ -20,21 +20,11 @@ export default class UserDAO {
     // Métodos para el DAO de User:
 
     // Buscar un usuario - DAO:
-    async getUser(identifier) {
+    async getUser(uid) {
         let response = {};
         try {
-            const conditions = [{
-                email: identifier
-            }, {
-                first_name: identifier
-            }];
-            if (mongoose.Types.ObjectId.isValid(identifier)) {
-                conditions.push({
-                    _id: identifier
-                });
-            }
             const result = await userModel.findOne({
-                $or: conditions
+                _id: uid
             });
             if (result === null) {
                 response.status = "not found user";
@@ -102,7 +92,7 @@ export default class UserDAO {
                         }
                     }
                 }
-                
+
                 await user.save();
 
                 const docsSubidos = user.documents.map(doc => doc.name);
@@ -127,6 +117,73 @@ export default class UserDAO {
         } catch (error) {
             response.status = "error";
             response.message = "Error al actualizar los datos de usuario - DAO: " + error.message;
+        };
+        return response;
+    };
+
+    // Obtener todos los usuarios - DAO:
+    async getAllUsers() {
+        let response = {};
+        try {
+            const users = await userModel.find({}, 'first_name email role last_connection').exec();
+            if (users.length === 0) {
+                response.status = "not found users";
+            } else {
+                response.status = "success";
+                response.result = users;
+            }
+        } catch (error) {
+            response.status = "error";
+            response.message = "Error al obtener los usuarios - DAO: " + error.message;
+        };
+        return response;
+    };
+
+    // Eliminar usuarios inactivos (2 Días) - DAO:
+
+    async deleteInactivityUsers() {
+        let response = {};
+        try {
+
+            // Calcula la fecha (Dias):
+            const cutoffDate = new Date();
+            cutoffDate.setDate(cutoffDate.getDate() - 2);
+
+            // Milisegundos para puruebas:
+            //  cutoffDate.setMinutes(cutoffDate.getMilliseconds() - 10);
+
+            // Convertimos la fecha de corte, al mismo formato que se guarda en el last_connection de los users:
+            const cutoffDateString = `${cutoffDate.toLocaleDateString()} - ${cutoffDate.toLocaleTimeString()}`;
+
+            // Buscamos y los guardamos: 
+            const inactiveUsers = await userModel.find({
+                last_connection: {
+                    $lt: cutoffDateString
+                }
+            }).exec();
+
+            // Si hay usuarios inactivos:
+            if (inactiveUsers.length > 0) {
+
+                // Guardamos sus nombres y correos:
+                const deletedUserEmails = [];
+
+                response.status = "success";
+                response.result = deletedUserEmails;
+
+                // Luego eliminamos cada usuario inactivo:
+                for (const user of inactiveUsers) {
+                    await userModel.findByIdAndRemove(user._id);
+                    deletedUserEmails.push(user.first_name, user.email);
+                };
+
+            } else {
+                response.status = "not found inactivity users";
+            };
+
+        } catch (error) {
+            response.status = "error";
+            response.message = "Error al eliminar usuarios inactivos - DAO: " + error.message;
         };
         return response;
     };

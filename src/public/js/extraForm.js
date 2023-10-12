@@ -23,7 +23,6 @@ extraForm.addEventListener('submit', async (e) => {
         const messageRes = res.message;
         const customError = res.cause;
 
-        console.log(res)
         if (statusCodeRes === 200) {
             extraForm.reset();
             window.location.replace(res.redirectTo);

@@ -156,13 +156,13 @@ export default class SessionService {
                     </tr>
                 </table>`;
                 // Enviamos el correo al Nodemailer: 
-                const resultSendMail = await this.mail.sendMail(user, "Restablecimiento de contraseña.", html);
+                const resultSendMail = await this.mail.sendMail(user.email, "Restablecimiento de contraseña.", html);
                 // Verificamos si el correo se envió correctamente:
                 if (resultSendMail.accepted.length > 0) {
                     response.statusCode = 200;
                     response.message = "Correo enviado exitosamente.";
                     response.result = resultSendMail;
-                } else {
+                } else if (resultSendMail.rejected && resultSendMail.rejected.length > 0){
                     response.statusCode = 500;
                     response.message = "Error al enviar el correo electrónico. Por favor, inténtelo de nuevo más tarde.";
                 };
@@ -189,7 +189,7 @@ export default class SessionService {
                 response.statusCode = 404;
                 response.message = `No se encontró ninguna cuenta asociada a este correo, ${userEmail}.`;
             } else if (resultDAO.status === "success") {
-                // Si el usaurio existe, verificamos si la nueva contraseña es igual a la actual: 
+                // Si el usuario existe, verificamos si la nueva contraseña es igual a la actual: 
                 const user = resultDAO.result
                 // Si es igual retronamos un error y pedimos una nueva contraseña:
                 if (isValidPassword(user, newPass)) {
@@ -276,7 +276,7 @@ export default class SessionService {
             const lastConnection = {
                 last_connection: new Date().toLocaleDateString() + " - " + new Date().toLocaleTimeString()
             };
-            // Enviamos el id del usaurio y su last_connection:
+            // Enviamos el id del usuario y su last_connection:
             const resultUpdt = await this.sessionDAO.updateUser(uid, lastConnection);
             // Validamos los resultados:
             if (resultUpdt.status === "error") {

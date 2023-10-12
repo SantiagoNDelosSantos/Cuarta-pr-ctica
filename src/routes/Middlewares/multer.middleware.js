@@ -1,6 +1,5 @@
 import multer from "multer";
 import __dirname from '../../utils.js';
-console.log(__dirname)
 import {
     v4 as uuidV4
 } from 'uuid'

@@ -33,3 +33,12 @@ export const rolesMiddlewareUser = (req, res, next) => {
         res.status(401).send({error: 'No tienes acceso a esta ruta.' })
     }
 }
+
+// Cualquier usuario autenticado: 
+export const rolesMiddlewarePublic = (req, res, next) => {
+    if(req.user.role === 'user' || req.user.role === 'premium' || req.user.role === 'admin'){
+        next()
+    } else {
+        res.status(401).send({error: 'No tienes acceso a esta ruta.' })
+    }
+}

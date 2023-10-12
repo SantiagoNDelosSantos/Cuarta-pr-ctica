@@ -21,7 +21,7 @@ export default class UserController {
     // Subir documentación de usuario - Controller: 
     async uploadPremiumDocsController(req, res, next) {
 
-        // Obtenemos el ID del usaurio: 
+        // Obtenemos el ID del usuario: 
         const uid = req.params.uid
 
         // Creamos algunas variables para almacenar las rutas definitivas:
@@ -74,7 +74,7 @@ export default class UserController {
 
         // Una vez que se han extraido las rutas en sus respectivas variables, las guardamos en un arreglo que se pasara al service: 
 
-        const documentsRuta = [ rutaIdentification, rutaProofOfAddres, rutaBankStatement ];
+        const documentsRuta = [rutaIdentification, rutaProofOfAddres, rutaBankStatement];
 
         // Tambien creamos un arreglo para con los name que asignaremos a los documentos cuando se realice el push en el DAO:
         const documentNames = ["Identificación", "Comprobante de domicilio", "Comprobante de estado de cuenta"];
@@ -89,7 +89,7 @@ export default class UserController {
                 req.logger.error(response.message);
             } else if (resultService.statusCode === 404) {
                 req.logger.warn(response.message);
-            } else if (resultService.statusCode === 206 || resultService.statusCode === 200 ) {
+            } else if (resultService.statusCode === 206 || resultService.statusCode === 200) {
                 req.logger.debug(response.message);
             };
         } catch (error) {
@@ -104,6 +104,7 @@ export default class UserController {
     // Cambiar rol del usuario - Controller: 
     async changeRoleController(req, res, next) {
         const uid = req.params.uid
+        const requesterRole = req.user.role;
         try {
             if (!uid || !mongoose.Types.ObjectId.isValid(uid)) {
                 CustomError.createError({
@@ -118,12 +119,12 @@ export default class UserController {
         };
         let response = {};
         try {
-            const resultService = await this.userService.changeRoleService(res, uid);
+            const resultService = await this.userService.changeRoleService(res, uid, requesterRole);
             response.statusCode = resultService.statusCode;
             response.message = resultService.message;
             if (resultService.statusCode === 500) {
                 req.logger.error(response.message);
-            } else if (resultService.statusCode === 404 || resultService.statusCode === 422 ) {
+            } else if (resultService.statusCode === 404 || resultService.statusCode === 422) {
                 req.logger.warn(response.message);
             } else if (resultService.statusCode === 200) {
                 req.logger.debug(response.message);
@@ -131,6 +132,52 @@ export default class UserController {
         } catch (error) {
             response.statusCode = 500;
             response.message = "Error al modificar el rol del usuario - Controller: " + error.message;
+            req.logger.error(response.message);
+        };
+        return response;
+    };
+
+    // Obtener todos los usuarios - Controller: 
+    async getAllUsersController(req, res) {
+        let response = {};
+        try {
+            const resultService = await this.userService.getAllUsersService();
+            response.statusCode = resultService.statusCode;
+            response.message = resultService.message;
+            if (resultService.statusCode === 500) {
+                req.logger.error(response.message);
+            } else if (resultService.statusCode === 404) {
+                req.logger.warn(response.message);
+            } else if (resultService.statusCode === 200) {
+                response.result = resultService.result;
+                req.logger.debug(response.message);
+            };
+        } catch (error) {
+            response.statusCode = 500;
+            response.message = "Error al obtener los usuarios - Controller: " + error.message;
+            req.logger.error(response.message);
+        };
+        return response;
+    };
+
+    // Eliminar usuarios inactivos (2 Días) - Controller:
+    async deleteInactivityUsersController(req, res){
+        let response = {};
+        try {
+            const resultService = await this.userService.deleteInactivityUsersService();
+            response.statusCode = resultService.statusCode;
+            response.message = resultService.message;
+            if (resultService.statusCode === 500) {
+                req.logger.error(response.message);
+            } else if (resultService.statusCode === 404) {
+                req.logger.warn(response.message);
+            } else if (resultService.statusCode === 200) {
+                response.result = resultService.result;
+                req.logger.debug(response.message);
+            };
+        } catch (error) {
+            response.statusCode = 500;
+            response.message = "Error al eliminar usuarios inactivos - Controller: " + error.message;
             req.logger.error(response.message);
         };
         return response;

@@ -2,7 +2,9 @@
 import mongoose from "mongoose";
 
 // Import del modelos:
-import { productsModel } from "./models/products.model.js";
+import {
+    productsModel
+} from "./models/products.model.js";
 
 // Importación de variables de entorno:
 import {
@@ -120,7 +122,8 @@ export default class ProductsDAO {
     };
 
     // Eliminar todos los productos publicados por un usuario premium - DAO:
-    async deleteAllPremiumProduct(uid) {
+
+    async deleteAllPremiumProduct(uid, role) {
         let response = {};
         try {
 
@@ -141,14 +144,37 @@ export default class ProductsDAO {
 
                 // Validamos el resultado:
                 if (result.deletedCount > 0) {
-                    response.status = "success";
-                    response.message = `Se han eliminaron ${result.deletedCount} productos asociados a la cuenta.`;
+
+                    // Si el role es admin tambien devolvemos el correo del usuario cuyos productos se eliminaron:
+                    if (role === "admin") {
+
+                        //Extraemos el correo del usuario para enviarle su email de notificación, en caso de que la eliminación la solicitara el admin: 
+                        const userEmail = productsToDelete[0].email;
+
+                        // Extreamos todos los title de los productos para que el usuario sepa que productos se eliminaron exactamente: 
+                        const deletedProducts = [];
+                        for (const product of productsToDelete) {
+                            const title = product.title;
+                            deletedProducts.push(title);
+                        }
+
+                        response.status = "success";
+                        response.userEmail = userEmail;
+                        response.deletedProducts = deletedProducts;
+                        response.message = `Se han eliminaron ${result.deletedCount} productos asociados a la cuenta.`;
+
+                    } else {
+                        response.status = "success";
+                        response.message = `Se han eliminaron ${result.deletedCount} productos asociados a la cuenta.`;
+                    }
+
                 } else {
                     response.status = "error";
                     response.message = "No se pudieron eliminar los productos (deleteMany).";
                 }
 
             }
+
         } catch (error) {
             response.status = "error";
             response.message = "Error al eliminar todos los productos de usuario premium - DAO: " + error.message;
