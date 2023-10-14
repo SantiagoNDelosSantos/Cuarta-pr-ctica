@@ -25,10 +25,8 @@ form.addEventListener('submit', async (e) => {
 
         if (statusCodeRes === 200) {
             form.reset();
-            if (res.role === "user") {
+            if (res.role === "user" || res.role === "premium") {
                 window.location.replace('/products');
-            } else if (res.role === "premium") {
-                window.location.replace('/premiumView');
             } else if (res.role === "admin") {
                 window.location.replace('/adminPanel');
             }

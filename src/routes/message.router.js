@@ -8,7 +8,7 @@ import MessageController from "../controllers/messageController.js"
 import passport from "passport";
 
 // Import Middleware User: 
-import { rolesMiddlewareUser } from './Middlewares/roles.middleware.js';
+import { rolesRMiddlewareUsers } from './Middlewares/rolesRoutes.middleware.js';
 
 // Instancia de Router:
 const msmRouter = Router();
@@ -17,7 +17,7 @@ const msmRouter = Router();
 let messageController = new MessageController();
 
 // Crear un mensaje - Router:
-msmRouter.post('/', passport.authenticate('jwt', {session: false}), rolesMiddlewareUser, async (req, res, next) => {
+msmRouter.post('/', passport.authenticate('jwt', {session: false }), rolesRMiddlewareUsers, async (req, res, next) => {
     const result = await messageController.createMessageController(req, res, next);
     if(result !== undefined) {
         res.status(result.statusCode).send(result);
@@ -25,13 +25,13 @@ msmRouter.post('/', passport.authenticate('jwt', {session: false}), rolesMiddlew
 });
 
 // Traer todos los mensajes - Router: 
-msmRouter.get('/', passport.authenticate('jwt', {session: false}), rolesMiddlewareUser, async (req, res) => {
+msmRouter.get('/', passport.authenticate('jwt', {session: false }), rolesRMiddlewareUsers, async (req, res) => {
     const result = await messageController.getAllMessageController(req, res);
     res.status(result.statusCode).send(result);
 });
 
 // Borrar un mensaje - Router:
-msmRouter.delete('/:mid', passport.authenticate('jwt', {session: false}), rolesMiddlewareUser, async (req, res, next) => {
+msmRouter.delete('/:mid', passport.authenticate('jwt', {session: false}), rolesRMiddlewareUsers, async (req, res, next) => {
     const result = await messageController.deleteMessageController(req, res, next);
     if(result !== undefined) {
         res.status(result.statusCode).send(result);

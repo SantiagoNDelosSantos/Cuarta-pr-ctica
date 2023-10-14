@@ -19,17 +19,21 @@ import SessionController from '../controllers/sessionController.js';
 
 // Import Middleware User:
 import {
-    rolesMiddlewareUser
-} from "./Middlewares/roles.middleware.js";
+    rolesRMiddlewareUsers,
+    rolesRMiddlewarePublic
+} from "./Middlewares/rolesRoutes.middleware.js";
 import {
     ProfileUserDTO
 } from '../controllers/DTO/userProfile.dto.js';
-import { DocsUserDTO } from '../controllers/DTO/userDocs.dto.js'
+import {
+    DocsUserDTO
+} from '../controllers/DTO/userDocs.dto.js'
 
 // Import Multer Profile: 
 import {
     uploaderPofiles
 } from '../routes/Middlewares/multer.middleware.js'
+
 
 // Instancia de router: 
 const sessionRouter = Router();
@@ -55,15 +59,13 @@ sessionRouter.get('/githubcallback', authenticateWithGitHub);
 sessionRouter.post('/completeProfile', completeProfile);
 
 // Current user - Router:
-sessionRouter.get('/current', passport.authenticate('jwt', {
-    session: false,
-    failureRedirect: '/login'
-}), getCurrentUser);
+sessionRouter.get('/current', passport.authenticate('jwt', { session: false, failureRedirect: '/invalidToken'
+}), rolesRMiddlewarePublic, getCurrentUser);
 
 // Ver perfil usuario - Router: 
 sessionRouter.get('/profile', passport.authenticate('jwt', {
     session: false,
-    failureRedirect: '/login'
+    failureRedirect: '/notLoggedInRoute'
 }), async (req, res) => {
     const result = await sessionController.getUserController(req, res);
     const resultFilter = new ProfileUserDTO(result.result);
@@ -81,8 +83,8 @@ sessionRouter.get('/profile', passport.authenticate('jwt', {
 // Documentación de los usuarios - Router:
 sessionRouter.get('/getDocsUser', passport.authenticate('jwt', {
     session: false,
-    failureRedirect: '/login'
-}), rolesMiddlewareUser, async (req, res) => {
+    failureRedirect: '/notLoggedInRoute'
+}), rolesMiddlewareUsers, async (req, res) => {
     const result = await sessionController.getUserController(req, res);
     const resultFilter = new DocsUserDTO(result.result);
     let devolver;
@@ -114,8 +116,9 @@ sessionRouter.post('/resetPassword', async (req, res, next) => {
 
 // Editar perfil - Router:
 sessionRouter.post('/editProfile', passport.authenticate('jwt', {
-    session: false
-}), rolesMiddlewareUser, uploaderPofiles.single('profile'), async (req, res, next) => {
+    session: false,
+    failureRedirect: '/notLoggedInRoute'
+}), rolesMiddlewareUsers, uploaderPofiles.single('profile'), async (req, res, next) => {
     const result = await sessionController.editProfileController(req, res, next);
     if (result !== undefined) {
         res.status(result.statusCode).send(result);
@@ -124,7 +127,8 @@ sessionRouter.post('/editProfile', passport.authenticate('jwt', {
 
 // Cerrar session - Router:
 sessionRouter.post('/logout', passport.authenticate('jwt', {
-    session: false
+    session: false,
+    failureRedirect: '/notLoggedInRoute'
 }), async (req, res, next) => {
     const result = await sessionController.logoutController(req, res, next);
     if (result !== undefined) {
@@ -134,8 +138,9 @@ sessionRouter.post('/logout', passport.authenticate('jwt', {
 
 // Eliminar cuenta - Router:  
 sessionRouter.post('/deleteAccount', passport.authenticate('jwt', {
-        session: false
-    }), rolesMiddlewareUser,
+        session: false,
+        failureRedirect: '/notLoggedInRoute'
+    }), rolesMiddlewareUsers,
     async (req, res, next) => {
         const result = await sessionController.deleteUserController(req, res, next);
         if (result !== undefined) {

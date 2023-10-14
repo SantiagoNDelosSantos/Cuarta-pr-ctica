@@ -21,12 +21,41 @@ export default class ProductController {
 
     // Crear un producto - Controller:
     async createProductController(req, res, next) {
+
+        // Extraemos los datos string y number
         const productData = req.body;
+
+        // Creamos algunas variables para almacenar las rutas definitivas:
+        let rutaFrontImg;
+        let rutaBackImg;
+
+        // Validamos que archivos se han subido y extreamos las rutas de estos archivos en variables:
+        const parteComun = 'public\\';
+        if (req.files && req.files.frontImg) {
+            const frontImg = req.files.frontImg[0].path;
+            const indice = frontImg.indexOf(parteComun);
+            const ruta = frontImg.substring(indice + parteComun.length);
+            rutaFrontImg = ruta
+        };
+        if (req.files && req.files.backImg[0].path) {
+            const backImg = req.files.backImg[0].path;
+            const indice = backImg.indexOf(parteComun);
+            const ruta = backImg.substring(indice + parteComun.length);
+            rutaBackImg = ruta
+        };
+
+        // Conversiones a number:
+        const price = parseFloat(productData.price);
+        const stock = parseFloat(productData.stock);
+
         try {
-            if (!productData.title || typeof productData.title === 'number' || !productData.description || typeof productData.description === 'number' || !productData.code || typeof productData.code === 'number' || !productData.price || typeof productData.price === 'string' || productData.price <= 0 || !productData.stock || typeof productData.stock === 'string' || productData.stock <= 0 || !productData.category || typeof productData.category === 'number' || !productData.thumbnails || Object.keys(productData).length === 0) {
+            if (!productData.title || typeof productData.title === 'number' || !productData.description || typeof productData.description === 'number' ||
+                !productData.code || typeof productData.code === 'number' || !price || typeof price === 'string' || price <= 0 ||
+                !stock || typeof stock === 'string' || stock <= 0 || !productData.category || typeof productData.category === 'number' ||
+                rutaFrontImg === undefined || rutaBackImg === undefined || Object.keys(productData).length === 0) {
                 CustomError.createError({
                     name: "Error al crear el nuevo producto.",
-                    cause: ErrorGenerator.generateProductDataErrorInfo(productData),
+                    cause: ErrorGenerator.generateProductDataErrorInfo(productData, rutaFrontImg, rutaBackImg),
                     message: "La información para crear el producto está incompleta o no es válida.",
                     code: ErrorEnums.INVALID_PRODUCT_DATA
                 });
@@ -34,8 +63,22 @@ export default class ProductController {
         } catch (error) {
             return next(error);
         };
+
         let response = {};
         try {
+
+            // Agregamos las rutas de las imagenes al arreglo thumbnails del producto:
+            let thumbnails = [];
+            thumbnails.push({
+                name: "Front Img",
+                reference: `${rutaFrontImg}`
+            });
+            thumbnails.push({
+                name: "Back Img",
+                reference: `${rutaBackImg}`
+            });
+            productData.thumbnails = thumbnails;
+
             // Extraemos el role del owner: 
             const ownerRole = req.user.role;
             let owner = "";
@@ -52,6 +95,7 @@ export default class ProductController {
             // Agregamos el owner a productData: 
             productData.owner = owner;
             productData.email = email;
+
             // Enviamos toda la información del producto incluyendo el owner al service: 
             const resultService = await this.productService.createProductService(productData);
             response.statusCode = resultService.statusCode;

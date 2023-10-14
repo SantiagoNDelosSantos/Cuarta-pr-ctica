@@ -188,7 +188,7 @@ export const initializePassportLocal = (req, res) => {
                         const user = existDBSessionControl.result;
 
                         // Si el usuario existe en la base de datos, verificamos que la contraseña sea válida:
-                        if (!isValidPassword( user, password )) {
+                        if (!isValidPassword( user, password)) {
                             return done(null, false, {
                                 statusCode: 409,
                                 message: 'Existe una cuenta asociada a este correo, pero la contraseña ingresada es incorrecta.'

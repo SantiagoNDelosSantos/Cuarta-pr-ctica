@@ -34,8 +34,16 @@ const ProductsSchema = new mongoose.Schema({
         required: true
     },
     thumbnails: {
-        type: Array,
-        required: true
+        type: [{
+            name: {
+                type: String,
+                required: true
+            },
+            reference: {
+                type: String,
+                required: true
+            }
+        }]
     },
     owner: {
         type: String,

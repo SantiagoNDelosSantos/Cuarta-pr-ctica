@@ -36,19 +36,19 @@ export default class UserController {
             const identification = req.files.identification[0].path;
             const indice = identification.indexOf(parteComun);
             const ruta = identification.substring(indice + parteComun.length);
-            rutaIdentification = ruta
+            rutaIdentification = `${ruta}`
         }
         if (req.files && req.files.proofOfAddress) {
             const proofOfAddress = req.files.proofOfAddress[0].path;
             const indice = proofOfAddress.indexOf(parteComun);
             const ruta = proofOfAddress.substring(indice + parteComun.length);
-            rutaProofOfAddres = ruta
+            rutaProofOfAddres = `${ruta}`
         }
         if (req.files && req.files.bankStatement) {
             const bankStatement = req.files.bankStatement[0].path;
             const indice = bankStatement.indexOf(parteComun);
             const ruta = bankStatement.substring(indice + parteComun.length);
-            rutaBankStatement = ruta
+            rutaBankStatement = `${ruta}`
         }
 
         // Validamos el ID del usuario y que se haya enviado para subir, al menos 1 archivo/documento
@@ -73,7 +73,6 @@ export default class UserController {
         };
 
         // Una vez que se han extraido las rutas en sus respectivas variables, las guardamos en un arreglo que se pasara al service: 
-
         const documentsRuta = [rutaIdentification, rutaProofOfAddres, rutaBankStatement];
 
         // Tambien creamos un arreglo para con los name que asignaremos a los documentos cuando se realice el push en el DAO:

@@ -59,6 +59,7 @@ export default class SessionDAO {
                 response.status = "not found user";
             } else if (result.matchedCount === 1){
                 response.status = "success";
+                response.result = result;
             };
         } catch (error) {
             response.status = "error";

@@ -3,7 +3,7 @@ const socket = io();
 
 
 
-      const botomStore = document.getElementById("storeButtonPrem")
+const botomStore = document.getElementById("storeButtonPrem")
 
 // Hacemos una solicitud a la ruta '/api/sessions/current para obtener los datos del usuario
 fetch('/api/sessions/current')
@@ -14,12 +14,12 @@ fetch('/api/sessions/current')
     // Aquí recibimos los datos del usuario en la variable 'data'
     let user = data;
 
-    if(user.role === "premium"){
+    if (user.role === "premium") {
       console.log("hOLA")
 
       let botnPrem = ""
 
-      botnPrem += `<a href="/store"><img src="https://i.ibb.co/Ptq3Y46/tienda.png" alt="login" border="0" class="logoS"></a>`
+      botnPrem += `<a href="/storeProducts"><img src="https://i.ibb.co/Ptq3Y46/tienda.png" alt="login" border="0" class="logoS"></a>`
 
       botomStore.innerHTML = botnPrem;
 
@@ -72,8 +72,8 @@ function allProducts() {
           <tr>
             <td id="${product.title}">${product.title}</td>
             <td class="description">${product.description}</td>
-            <td><img src="${product.thumbnails[0]}" alt="${product.title}" class="Imgs"></td>
-            <td><img src="${product.thumbnails[1]}" alt="${product.title}" class="Imgs"></td>
+            <td><img src="${product.thumbnails[0].reference}" alt="${product.title}" class="Imgs"></td>
+            <td><img src="${product.thumbnails[1].reference}" alt="${product.title}" class="Imgs"></td>
             <td>${product.stock} Und.</td>
             <td>$${product.price}</td>
             <td><input type="number" id="cantidadInput${product._id}" min="1" max="${product.stock}" value="1"></td>
@@ -81,6 +81,7 @@ function allProducts() {
               <img id="agr${product._id}" src="https://i.ibb.co/rbtzRGS/A-adir-cart.png" alt="Agregar al carrito" class="cart-icon">
             </td>
           </tr>`;
+
     });
 
     tableProd.innerHTML = htmlProductos;
@@ -102,12 +103,30 @@ function allProducts() {
 
     async function addToCart(productID, title, quantity) {
 
+      
+      
+      
       // Hacemos una solicitud a la ruta '/api/sessions/current para obtener los datos del usuario
       const response = await fetch('/api/sessions/current', {
         method: 'GET',
       })
 
+      if (response.redirected) {
+        // La respuesta indica que se redirigió, por lo que podemos obtener la nueva URL
+        const newURL = response.url;
+        console.log('Se redirigió a:', newURL);
+        
+        // Realizar la redirección a la nueva URL
+        window.location.replace(newURL);
+      }
+    
+    
+    
+    
+    
+
       const res = await response.json();
+
 
       // Aquí recibimos los datos del usuario en la variable 'data'
       let user = res;
@@ -116,19 +135,19 @@ function allProducts() {
       const productIDValue = productID;
 
       if (user && cartID && productIDValue) {
-        
-       // Realizar una solicitud POST al servidor con los datos del formulario:
-       const response = await fetch(`/api/carts/${cartID}/products/${productIDValue}/quantity/${quantity}`, {
+
+        // Realizar una solicitud POST al servidor con los datos del formulario:
+        const response = await fetch(`/api/carts/${cartID}/products/${productIDValue}/quantity/${quantity}`, {
           method: 'POST',
-      })
+        })
 
-      const res = await response.json();
-      const statusCodeRes = res.statusCode;
-      const messageRes = res.message;
-      const customError = res.cause;
+        const res = await response.json();
+        const statusCodeRes = res.statusCode;
+        const messageRes = res.message;
+        const customError = res.cause;
 
-      console.log(res)
-      
+        console.log(res)
+
         if (statusCodeRes === 200) {
           Swal.fire({
             toast: true,

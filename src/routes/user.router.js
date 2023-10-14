@@ -9,7 +9,7 @@ import UserController from '../controllers/userController.js'
 
 // Import Middleware User:
 import {
-    rolesMiddlewareUser,
+    rolesMiddlewareUsers,
     rolesMiddlewareAdmin,
     rolesMiddlewarePublic 
 } from "./Middlewares/roles.middleware.js";
@@ -28,7 +28,7 @@ let userController = new UserController();
 // Subir documentación de usuario - Router:
 userRouter.post('/:uid/documents', passport.authenticate('jwt', {
     session: false
-}), rolesMiddlewareUser, uploaderDocuments.fields([{
+}), rolesMiddlewareUsers, uploaderDocuments.fields([{
         name: 'identification',
         maxCount: 1
     },

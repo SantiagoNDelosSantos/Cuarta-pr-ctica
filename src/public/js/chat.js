@@ -3,10 +3,10 @@ const carga = document.getElementById("VistaDeCarga");
 const vista = document.getElementById("contenedorVista");
 
 function pantallaCarga() {
-    setTimeout(() => {
-        carga.style = "display: none";
-        vista.style = "display: block";
-    }, 4000);
+  setTimeout(() => {
+    carga.style = "display: none";
+    vista.style = "display: block";
+  }, 4000);
 };
 pantallaCarga();
 
@@ -77,17 +77,31 @@ async function deleteMessage(messageId) {
       method: 'DELETE',
     })
 
+    if (response.redirected) {
+      const invalidTokenURL = response.url;
+      window.location.replace(invalidTokenURL);
+    }
+  
     const res = await response.json();
     const statusCode = res.statusCode;
     const message = res.message;
     const customError = res.cause;
 
-    if (statusCode === 200) {
+    if(statusCode === 401){
+      Swal.fire({
+        title: res.h1,
+        text: res.message,
+        imageUrl: res.img,
+        imageWidth: 70,
+        imageHeight: 70,
+        imageAlt: res.h1,
+      })
+    } else if (statusCode === 200) {
       Swal.fire({
         toast: true,
         position: 'top-end',
         showConfirmButton: false,
-        timer: 550000,
+        timer: 5000,
         title: message || 'El mensaje fue eliminado con éxito.',
         icon: 'success'
       });
@@ -108,7 +122,6 @@ async function deleteMessage(messageId) {
         icon: 'error',
         title: 'Error al eliminar el mensaje',
         text: message || 'Hubo un problema al eliminar el mensaje.',
-
       });
     }
 

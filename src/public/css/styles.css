@@ -465,7 +465,7 @@ a:hover {
 .swal2-popup.swal2-modal.swal2-icon-error.swal2-show,
 .swal2-popup.swal2-modal.swal2-icon-info.swal2-show,
 .swal2-popup.swal2-modal.swal2-icon-warning.swal2-show,
-.swal2-popup.swal2-toast {
+.swal2-popup.swal2-toast, .swal2-container.swal2-center>.swal2-popup  {
   border-radius: 2em !important;
   backdrop-filter: blur(6px) !important;
   background: rgb(255 255 255 / 68%) !important;
