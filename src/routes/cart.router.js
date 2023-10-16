@@ -25,7 +25,7 @@ cartRouter.post("/", async (req, res) => {
     res.status(result.statusCode).send(result);
 })
 
-// Traer un carrito por su ID - Router:
+// Traer un carrito por su ID - Router: (USER, PREMIUM)
 cartRouter.get("/:cid", passport.authenticate('jwt', { session: false, failureRedirect: '/invalidToken'
 }), rolesRMiddlewareUsers, async (req, res, next) => {
     const result = await cartController.getCartByIdController(req, res, next);
@@ -59,7 +59,7 @@ cartRouter.post('/:cid/purchase', passport.authenticate('jwt', { session: false,
     };
 })
 
-// Eliminar un producto en carrito - Router:
+// Eliminar un producto en carrito - Router: (USER, PREMIUM)
 cartRouter.delete('/:cid/products/:pid', passport.authenticate('jwt', { session: false, failureRedirect: '/invalidToken'
 }), rolesRMiddlewareUsers, verificarPertenenciaCarrito, async (req, res, next) => {
     const result = await cartController.deleteProductFromCartController(req, res, next);
@@ -86,7 +86,7 @@ cartRouter.put('/:cid',passport.authenticate('jwt', { session: false, failureRed
     };
 });
 
-// Actualizar la cantidad de un produco en carrito - Router:
+// Actualizar la cantidad de un produco en carrito - Router: (USER, PREMIUM)
 cartRouter.put('/:cid/products/:pid', passport.authenticate('jwt', { session: false, failureRedirect: '/invalidToken'
 }), rolesRMiddlewareUsers, verificarPertenenciaCarrito, async (req, res, next) => {
     const result = await cartController.updateProductInCartController(req, res, next);
@@ -95,7 +95,7 @@ cartRouter.put('/:cid/products/:pid', passport.authenticate('jwt', { session: fa
     };
 });
 
-// Eliminar un carrito - Router:
+// Eliminar un carrito - Router: (USER, PREMIUM, ADMIN)
 cartRouter.delete('/deleteCart/:cid', passport.authenticate('jwt', { session: false, failureRedirect: '/invalidToken'
 }), rolesRMiddlewarePublic, async (req, res, next) => {
     const result = await cartController.deleteCartController(req, res, next);

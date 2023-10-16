@@ -52,7 +52,7 @@ export default class CartsDAO {
                 const removedProducts = result.products.filter(prod => prod.product === null);
 
                 if (validProducts.length < result.products.length) {
-                    
+
                     // Reemplazamos la propiedad products del carrito con los productos válidos:
                     result.products = validProducts;
 
@@ -271,16 +271,12 @@ export default class CartsDAO {
                 if (product === undefined) {
                     response.status = "not found product";
                 } else {
-                    if (product.quantity === quantity) {
-                        response.status = "update is equal to current";
-                    } else {
-                        product.quantity = quantity;
-                        await cart.result.save();
-                        response.status = "success";
-                        response.result = {
-                            productId: pid,
-                            newQuantity: product.quantity
-                        };
+                    product.quantity = quantity;
+                    await cart.result.save();
+                    response.status = "success";
+                    response.result = {
+                        productId: pid,
+                        newQuantity: product.quantity
                     };
                 };
             };

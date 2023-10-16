@@ -338,7 +338,7 @@ export default class CartController {
                     message: "El ID de producto proporcionado no es válido.",
                     code: ErrorEnums.INVALID_ID_PRODUCT_ERROR
                 });
-            } else if (!quantity || !Number.isFinite(quantity) || quantity <= 0) {
+            } else if (!quantity || !Number.isFinite(quantity)) {
                 CustomError.createError({
                     name: "Error al intentar actualizar el producto en carrito",
                     cause: ErrorGenerator.generateUpdatesProdInCartErrorInfo(quantity),
@@ -356,7 +356,7 @@ export default class CartController {
             response.message = resultService.message;
             if (resultService.statusCode === 500) {
                 req.logger.error(response.message);
-            } else if (resultService.statusCode === 404 || resultService.statusCode === 409) {
+            } else if (resultService.statusCode === 404) {
                 req.logger.warn(response.message);
             } else if (resultService.statusCode === 200) {
                 response.result = resultService.result;

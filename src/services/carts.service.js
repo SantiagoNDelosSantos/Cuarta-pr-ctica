@@ -52,7 +52,11 @@ export default class CartService {
                 response.message = `No se encontró ningún carrito con ID ${cid}.`;
             } else if (resultDAO.status === "success" && resultDAO.delete) {
                 response.statusCode = 200;
-                response.message = `${resultDAO.delete} producto/s que tenías en tu carrito han sido eliminados`;
+                if (resultDAO.delete === 1) {
+                    response.message = `${resultDAO.delete} producto que tenias en tu carrito ha sido retirado o eliminado de la plataforma.`;
+                } else {
+                    response.message = `${resultDAO.delete} de los productos que tenías en tu carrito han sido retirados o eliminados de la plataforma.`;
+                }
                 response.result = resultDAO.result;
             } else if (resultDAO.status === "success") {
                 response.statusCode = 200;
@@ -323,9 +327,6 @@ export default class CartService {
             } else if (resultDAO.status === "not found product") {
                 response.statusCode = 404;
                 response.message = `No se encontró ningún producto con el ID ${pid}, en el carrito con el ID ${cid}.`;
-            } else if (resultDAO.status === "update is equal to current") {
-                response.statusCode = 409;
-                response.message = `La actualización es igual a la versión actual de los datos del carrito con el ID ${cid}.`;
             } else if (resultDAO.status === "success") {
                 response.statusCode = 200;
                 response.message = "Producto actualizado exitosamente.";

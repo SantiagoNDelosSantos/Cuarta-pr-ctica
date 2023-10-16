@@ -148,8 +148,10 @@ tbody {
 
 .container {
   max-width: 80vw;
-  margin: 2em auto;
-  padding: 1em;
+  min-height: 90vh;
+  margin: 5vh 10vw;
+  padding: 1.5em;
+  
   background-color: #00000002;
   -webkit-box-shadow: 1px 2px 20px 6px rgba(0, 0, 0, 0.103);
   -moz-box-shadow: 1px 2px 20px 6px rgba(0, 0, 0, 0.103);
@@ -473,13 +475,17 @@ a:hover {
 }
 
 .swal2-popup.swal2-toast {
-  font-size: 1em;
+  font-size: 1em !important;
 }
 
 button.swal2-cancel.swal2-styled {
   border-radius: 2em;
   backdrop-filter: blur(6px);
   background-color: #ffffff00;
+}
+
+.swal2-popup.swal2-toast.swal2-icon-success.swal2-show{
+  padding: 0.2em;
 }
 
 .swal2-container.swal2-center.swal2-backdrop-show {
@@ -489,6 +495,8 @@ button.swal2-cancel.swal2-styled {
 
 h2#swal2-title {
   color: black;
+  font-size: 1em !important;
+  padding: 0.2em;
 }
 
 div#swal2-html-container {

@@ -60,7 +60,7 @@ sessionRouter.get('/githubcallback', authenticateWithGitHub);
 // Formulario extra GitHub - Router:
 sessionRouter.post('/completeProfile', completeProfile);
 
-// Current user - Router:
+// Current user - Router: (USER, PREMIUM)
 sessionRouter.get('/current', passport.authenticate('jwt', { session: false, failureRedirect: '/invalidToken' }), rolesRMiddlewarePublic, getCurrentUser);
 
 // Ver perfil usuario - Router: 
