@@ -23,6 +23,11 @@ export const verificarPertenenciaCarrito = (req, res, next) =>{
     if(req.user.cart === req.params.cid){
         next()
     } else {
-        res.status(401).send({error: 'Solo puedes agregar, eliminar o actualizar productos en tu propio carrito. Lo mismo aplica al procesamiento de compras y la actualización del carrito.'});
-    } 
-}
+        res.status(401).send({
+            statusCode: 401,
+            h1: "Petición denegada",
+            message: "Solo puedes agregar, eliminar o actualizar productos en tu propio carrito. Lo mismo aplica al procesamiento de compras y la actualización del carrito.",
+            img: 'https://i.ibb.co/7y1KTNc/acceso.png'
+        });
+    } ;
+};

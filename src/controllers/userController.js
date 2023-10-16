@@ -160,10 +160,11 @@ export default class UserController {
     };
 
     // Eliminar usuarios inactivos (2 Días) - Controller:
-    async deleteInactivityUsersController(req, res){
+    async deleteInactivityUsersController(req, res) {
+        const adminRole = req.user.role;
         let response = {};
         try {
-            const resultService = await this.userService.deleteInactivityUsersService();
+            const resultService = await this.userService.deleteInactivityUsersService(adminRole);
             response.statusCode = resultService.statusCode;
             response.message = resultService.message;
             if (resultService.statusCode === 500) {

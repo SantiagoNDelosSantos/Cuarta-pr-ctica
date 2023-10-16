@@ -4,6 +4,9 @@ import UserDAO from "../DAO/mongodb/UserMongo.dao.js";
 // Import productsService:
 import ProductService from "../services/products.service.js"
 
+// Import cartService: 
+import CartService from '../services/carts.service.js'
+
 // Import jwt: 
 import jwt from 'jsonwebtoken';
 
@@ -21,7 +24,8 @@ export default class SessionService {
 
     constructor() {
         this.userDAO = new UserDAO();
-        this.productService = new ProductService();
+        this.productsService = new ProductService();
+        this.cartService = new CartService();
         this.mail = new Mail();
     }
 
@@ -95,10 +99,12 @@ export default class SessionService {
                     if (docsSubidos.length === 3) {
                         resultRolPremium = await this.userDAO.updateUser(uid, updateUser);
                     } else {
-                        resultRolPremium = { status: "incomplete documents" };
+                        resultRolPremium = {
+                            status: "incomplete documents"
+                        };
                     }
                 } else if (newRole === "user") {
-                    // Si el usuario premim se cambia de role a user, entonces eliminamos todos sus productos:
+                    // Si el usuario premium se cambia de role a user, entonces eliminamos todos sus productos:
                     deleteProdPremRes = await this.productService.deleteAllPremiumProductService(uid, uid, userRole);
                     if (deleteProdPremRes.statusCode === 200 || deleteProdPremRes.statusCode === 404) {
                         // Si el usuario premium quiere volver a ser usuario, no validamos los docs: 
@@ -184,7 +190,7 @@ export default class SessionService {
     };
 
     // Eliminar usuarios inactivos (2 Días) - Service:
-    async deleteInactivityUsersService() {
+    async deleteInactivityUsersService(adminRole) {
         let response = {};
         try {
             const resultDAO = await this.userDAO.deleteInactivityUsers();
@@ -196,20 +202,60 @@ export default class SessionService {
                 response.message = "No se han encontrado usuarios inactivos.";
             } else if (resultDAO.status === "success") {
 
-                const user = [];
+                // Usuarios regulares (Solo tienen carrito):
+                let cartDeletedError = [];
+                let cartDeletedSuccess = [];
 
-                for (let i = 0; i < resultDAO.result.length; i += 2) {
-                    user.push([resultDAO.result[i], resultDAO.result[i + 1]]);
-                }
+                // Usuarios premium (Pueden tener o no productos publicados):
+                let productsDeletedError = [];
+                let productsDeletedSuccess = [];
 
                 // Variable para validar si todos los correos se enviaron correctamente:
                 let envioExitoso = [];
                 let envioFallido = [];
 
-                // Procesar cada par de nombre y correo para enviar el correo
-                for (const [name, email] of user) {
+                for (let i = 0; i < resultDAO.result.length; i++) {
 
-                    const html = `
+                    const user = resultDAO.result[i];
+
+                    // Extraemos los datos de cada usuario:
+                    let name = user[0];
+                    let email = user[1];
+                    let uid = user[2].toString();
+                    let cid = user[3].toString();
+                    let userRole = user[4];
+
+                    // Borramos el carrito del usuarios:
+                    let deleteCart = await this.cartService.deleteCartService(cid);
+
+                    // Validamos los resultados:
+                    if (deleteCart) {
+                        if (deleteCart.statusCode === "error") {
+                            // Error al eliminar carrito:
+                            cartDeletedError.push(" " + email);
+                        } else if (deleteCart.statusCode === 200) {
+                            // Exito al eliminar carrito:
+                            cartDeletedSuccess.push(" " + email)
+                        }
+                    }
+
+                    // Si el usuario es premium ademas de su carrito se debe elimianar los productos que tenga publicados.
+                    if (userRole === "premium") {
+
+                        // Borramos todos los productos publicados por el usuario (Enviamos el adminRole para activar la notificación de que ha sido el admin quien han eliminado los productos):
+                        let deleteUserProducts = await this.productsService.deleteAllPremiumProductService(uid, uid, adminRole);
+
+                        if (deleteUserProducts.statusCode === "error") {
+                            // Error al eliminar productos del usuario premium: 
+                            productsDeletedError.push(" " + email);
+                        } else if (deleteUserProducts.statusCode === 404 || deleteUserProducts.statusCode === 200) {
+                            // El usuario premium puede tener o no productos publicados, si devuelve 404 igual es success:
+                            productsDeletedSuccess.push(" " + email)
+                        }
+                    };
+
+                    // Creamos el cuerpo del correo: 
+                    let html = `
                     <table cellspacing="0" cellpadding="0" width="100%">
                         <tr>
                             <td style="text-align: center;">
@@ -235,26 +281,67 @@ export default class SessionService {
                         </tr>
                     </table>`
 
-                    // Envía el correo utilizando la dirección de correo electrónico proporcionada en 'email'
-                    const resultSendMail = await this.mail.sendMail(email, "Notificación de eliminación de cuenta", html);
-
-                    if (resultSendMail.accepted.length > 0) {
-                        envioExitoso.push(email);
-                    } else if (resultSendMail.rejected && resultSendMail.rejected.length > 0) {
-                        envioFallido.push(email);
-                    };
+                    if (email) {
+                        // Envía el correo utilizando la dirección de correo electrónico proporcionada en 'email'
+                        let resultSendMail = await this.mail.sendMail(email, "Notificación de eliminación de cuenta", html);
+                        if (resultSendMail.accepted.length > 0) {
+                            envioExitoso.push(" " + email);
+                        } else if (resultSendMail.rejected && resultSendMail.rejected.length > 0) {
+                            envioFallido.push(" " + email);
+                        };
+                    }
 
                 };
 
-                if (envioFallido.length === 0) {
+                if (envioFallido.length === 0 && cartDeletedError.length === 0 && productsDeletedError.length === 0) {
+
+                    let result = {};
+
+                    if (envioExitoso.length > 0) {
+                        result.envioExitoso = "Usuarios eliminados y notificados:" + envioExitoso + "."
+                    }
+                    if (cartDeletedSuccess.length > 0) {
+                        result.cartDeletedSuccess = "Se han eliminado los carritos de los siguientes usuarios:" + cartDeletedSuccess + "."
+                    }
+                    if (productsDeletedSuccess.length > 0) {
+                        result.productsDeletedSuccess = "Se han eliminado los productos de los siguiente usuarios premium:" + productsDeletedSuccess + "."
+                    }
+
                     response.statusCode = 200;
-                    response.message = "Usuarios inactivos eliminados y notificados exitosamente.";
-                    response.result = "Correos de usuarios eliminados: " + envioExitoso;
-                } else {
+                    response.message = "Usuarios inactivos eliminados exitosamente.";
+                    response.result = result
+
+                } else if (envioFallido.length > 0 || cartDeletedError.length > 0 || productsDeletedError.length > 0) {
+
+                    let result = {}
+
+                    if (envioExitoso.length > 0) {
+                        result.envioExitoso = "Usuarios eliminados y notificados:" + envioExitoso + "."
+                    }
+                    if (cartDeletedSuccess.length > 0) {
+                        result.cartDeletedSuccess = "Se han eliminado los carritos de los siguientes usuarios:" + cartDeletedSuccess + "."
+                    }
+                    if (productsDeletedSuccess.length > 0) {
+                        result.productsDeletedSuccess = "Se han eliminado los productos de los siguiente usuarios premium:" + productsDeletedSuccess + "."
+                    }
+
+                    if (envioFallido.length > 0) {
+                        result.usersNotNotified = "Usuarios elminimados y no se han sido notificados:" + envioFallido + "."
+                    }
+                    if (cartDeletedError.length > 0) {
+                        result.cartDeletedError = "Usuarios cuyos carrito no se ha podido eliminar:" + cartDeletedError + "."
+                    }
+                    if (productsDeletedError.length > 0) {
+                        result.productsDeletedError = "Usuarios cuyos productos no se ha podido eliminar:" + productsDeletedError + "."
+                    }
+
                     response.statusCode = 500;
-                    response.message = "Error al enviar los correos de notificación. Usuarios a los que no se ha podido notificar: " + envioFallido;
+                    response.message = "Ha ocurrido un error en la eliminacion de uno o mas usuarios.";
+                    response.result = result;
                 };
+
             };
+
         } catch (error) {
             response.statusCode = 500;
             response.message = "Error al eliminar usuarios inactivos - Service: " + error.message;

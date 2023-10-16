@@ -125,7 +125,7 @@ export default class UserDAO {
     async getAllUsers() {
         let response = {};
         try {
-            const users = await userModel.find({}, 'first_name email role last_connection').exec();
+            const users = await userModel.find({}, 'first_name email role last_connection _id' ).exec();
             if (users.length === 0) {
                 response.status = "not found users";
             } else {
@@ -150,7 +150,7 @@ export default class UserDAO {
             cutoffDate.setDate(cutoffDate.getDate() - 2);
 
             // Milisegundos para puruebas:
-            //  cutoffDate.setMinutes(cutoffDate.getMilliseconds() - 10);
+            // cutoffDate.setMinutes(cutoffDate.getMilliseconds() - 10);
 
             // Convertimos la fecha de corte, al mismo formato que se guarda en el last_connection de los users:
             const cutoffDateString = `${cutoffDate.toLocaleDateString()} - ${cutoffDate.toLocaleTimeString()}`;
@@ -166,15 +166,24 @@ export default class UserDAO {
             if (inactiveUsers.length > 0) {
 
                 // Guardamos sus nombres y correos:
-                const deletedUserEmails = [];
+                const deletedUser = [];
 
                 response.status = "success";
-                response.result = deletedUserEmails;
+                response.result = deletedUser;
 
                 // Luego eliminamos cada usuario inactivo:
                 for (const user of inactiveUsers) {
+
+                    deletedUser.push([
+                        user.first_name, 
+                        user.email, 
+                        user._id, 
+                        user.cart, 
+                        user.role
+                    ]);
+                    
                     await userModel.findByIdAndRemove(user._id);
-                    deletedUserEmails.push(user.first_name, user.email);
+
                 };
 
             } else {

@@ -220,15 +220,15 @@ export default class SessionController {
                     code: ErrorEnums.INVALID_ID_USER_ERROR
                 });
             }
-            if (newEmail){
+            if (newEmail) {
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(newEmail))
-                CustomError.createError({
-                    name: "Error en el proceso editar perfil.",
-                    cause: ErrorGenerator.generateResetPass1Info(newEmail),
-                    message: "El correo está incompleto o no es válido.",
-                    code: ErrorEnums.INVALID_EMAIL_USER
-                });
+                if (!emailRegex.test(newEmail))
+                    CustomError.createError({
+                        name: "Error en el proceso editar perfil.",
+                        cause: ErrorGenerator.generateResetPass1Info(newEmail),
+                        message: "El correo está incompleto o no es válido.",
+                        code: ErrorEnums.INVALID_EMAIL_USER
+                    });
             }
         } catch (error) {
             return next(error);
@@ -299,9 +299,13 @@ export default class SessionController {
 
     // Eliminar cuenta - Controller:
     async deleteUserController(req, res, next) {
-        const uid = req.user.userID;
-        const cid = req.user.cart;
         const role = req.user.role;
+        let uid;
+        if (role === "admin") {
+            uid = req.params.uid;
+        } else {
+            uid = req.user.userID;
+        };
         try {
             if (!uid || !mongoose.Types.ObjectId.isValid(uid)) {
                 CustomError.createError({
@@ -310,20 +314,13 @@ export default class SessionController {
                     message: "El ID de usuario proporcionado no es válido.",
                     code: ErrorEnums.INVALID_ID_USER_ERROR
                 });
-            } else if (!cid || !mongoose.Types.ObjectId.isValid(cid)) {
-                CustomError.createError({
-                    name: "Error al eliminar cuenta.",
-                    cause: ErrorGenerator.generateCidErrorInfo(cid),
-                    message: "El ID de carrito proporcionado no es válido.",
-                    code: ErrorEnums.INVALID_ID_CART_ERROR
-                });
             }
         } catch (error) {
             return next(error);
         };
         let response = {};
         try {
-            const resultService = await this.sessionService.deleteUserService(uid, cid, role);
+            const resultService = await this.sessionService.deleteUserService(uid, role);
             response.statusCode = resultService.statusCode;
             response.message = resultService.message;
             if (resultService.statusCode === 500) {

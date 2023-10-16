@@ -179,7 +179,7 @@ async function editarPerfil() {
 };
 
 async function confirmarCambios(formEditProfile) {
-    
+
     // Crear un objeto FormData a partir del formulario
     const data = new FormData(formEditProfile);
 
@@ -330,10 +330,18 @@ btnCerrarCuenta.addEventListener("click", async () => {
 
 async function cerrarCuenta() {
 
+    const sessionResponse = await fetch('/api/sessions/current', {
+        method: 'GET',
+    });
+
+    const sessionRes = await sessionResponse.json();
+    const uid = sessionRes.userId;
+    const cid = sessionRes.cart;
+
     try {
 
-        const response = await fetch('/api/sessions/deleteAccount', {
-            method: 'POST',
+        const response = await fetch(`api/sessions/deleteAccount/${uid}`, {
+            method: 'DELETE',
         })
 
         const res = await response.json();

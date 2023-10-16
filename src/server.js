@@ -15,6 +15,7 @@ import ticketRouter from "./routes/ticket.router.js";
 import mockRouter from './routes/mock.router.js'
 import loggerRouter from './routes/loggerTest.router.js'
 import userRouter from './routes/user.router.js';
+import stripeRouter from './routes/stripe.router.js'
 
 // Import de controladores: 
 import ViewsController from './controllers/viewsController.js';
@@ -41,6 +42,9 @@ import { logger, addLogger } from './logs/logger.config.js';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUiExpress from 'swagger-ui-express';
 
+// Import Cors:
+import cors from 'cors'
+
 // Iniciamos el servidor Express:
 const app = express();
 
@@ -49,6 +53,9 @@ const connection = mongoose.connect(envMongoURL, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 });
+
+// Inicialización de cors:
+app.use(cors())
 
 // Configuración de Middlewares
 app.use(express.json());
@@ -145,6 +152,7 @@ app.use('/', viewsRouter);
 app.use('/mockProducts', mockRouter);
 app.use('/loggerTest', loggerRouter);
 app.use('/api/users', userRouter);
+app.use('/api/payments', stripeRouter);
 
 // Middleware Error:
 app.use(errorMiddleware);

@@ -9,15 +9,12 @@ import ProductController from "../controllers/productsController.js";
 // Passport:
 import passport from "passport";
 
-// Import Middleware Admin:
-import {
-    rolesMiddlewareAdminAndPremium
-} from "./Middlewares/roles.middleware.js";
+// Import Middleware - Routes: 
+import { rolesRMiddlewareAdminAndPremium, rolesRMiddlewarePublic
+} from "./Middlewares/rolesRoutes.middleware.js";
 
 // Import multer products:
-import {
-    uploaderProducts
-} from "./Middlewares/multer.middleware.js";
+import { uploaderProducts } from "./Middlewares/multer.middleware.js";
 
 // Instancia de Router:
 const productsRouter = Router();
@@ -26,9 +23,7 @@ const productsRouter = Router();
 let productController = new ProductController();
 
 // Crear un producto - Router:
-productsRouter.post('/', passport.authenticate('jwt', {
-    session: false
-}), rolesMiddlewareAdminAndPremium, uploaderProducts.fields([{
+productsRouter.post('/', passport.authenticate('jwt', { session: false, failureRedirect: '/invalidToken'}), rolesRMiddlewareAdminAndPremium, uploaderProducts.fields([{
     name: 'frontImg',
     maxCount: 1
 }, {
@@ -42,7 +37,7 @@ productsRouter.post('/', passport.authenticate('jwt', {
 });
 
 // Traer un producto por su ID - Router: 
-productsRouter.get('/:pid', async (req, res, next) => {
+productsRouter.get('/:pid', passport.authenticate('jwt', { session: false, failureRedirect: '/invalidToken'}), rolesRMiddlewarePublic, async (req, res, next) => {
     const result = await productController.getProductByIDController(req, res, next);
     if (result !== undefined) {
         res.status(result.statusCode).send(result);
@@ -50,15 +45,13 @@ productsRouter.get('/:pid', async (req, res, next) => {
 });
 
 // Traer todos los productos - Router: 
-productsRouter.get('/', async (req, res) => {
+productsRouter.get('/', passport.authenticate('jwt', { session: false, failureRedirect: '/invalidToken'}), rolesRMiddlewarePublic, async (req, res) => {
     const result = await productController.getAllProductsController(req, res);
     res.status(result.statusCode).send(result);
 });
 
 // Eliminar un producto por su ID - Router:
-productsRouter.delete('/:pid', passport.authenticate('jwt', {
-    session: false
-}), rolesMiddlewareAdminAndPremium, async (req, res, next) => {
+productsRouter.delete('/:pid', passport.authenticate('jwt', { session: false, failureRedirect: '/invalidToken'}), rolesRMiddlewareAdminAndPremium, async (req, res, next) => {
     const result = await productController.deleteProductController(req, res, next);
     if (result !== undefined) {
         res.status(result.statusCode).send(result);
@@ -66,9 +59,7 @@ productsRouter.delete('/:pid', passport.authenticate('jwt', {
 });
 
 // Eliminar todos los productos publicados por un usuario premium - router:
-productsRouter.delete('/deleteProdPremium/:uid', passport.authenticate('jwt', {
-    session: false
-}), async (req, res, next) => {
+productsRouter.delete('/deleteProdPremium/:uid', passport.authenticate('jwt', { session: false, failureRedirect: '/invalidToken'}), rolesRMiddlewareAdminAndPremium, async (req, res, next) => {
     const result = await productController.deleteAllPremiumProductController(req, res, next);
     if (result !== undefined) {
         res.status(result.statusCode).send(result);
@@ -76,9 +67,7 @@ productsRouter.delete('/deleteProdPremium/:uid', passport.authenticate('jwt', {
 });
 
 // Actualizar un producto - Router:
-productsRouter.put('/:pid', passport.authenticate('jwt', {
-    session: false
-}), rolesMiddlewareAdminAndPremium, async (req, res, next) => {
+productsRouter.put('/:pid', passport.authenticate('jwt', { session: false, failureRedirect: '/invalidToken'}), rolesRMiddlewareAdminAndPremium, async (req, res, next) => {
     const result = await productController.updatedProductController(req, res, next);
     if (result !== undefined) {
         res.status(result.statusCode).send(result);

@@ -7,12 +7,12 @@ import passport from 'passport';
 // Import UserController: 
 import UserController from '../controllers/userController.js'
 
-// Import Middleware User:
+// Import Middleware - Routes:
 import {
-    rolesMiddlewareUsers,
-    rolesMiddlewareAdmin,
-    rolesMiddlewarePublic 
-} from "./Middlewares/roles.middleware.js";
+    rolesRMiddlewareUsers,
+    rolesRMiddlewareAdmin,
+    rolesRMiddlewarePublic
+} from "./Middlewares/rolesRoutes.middleware.js";
 
 // Import Multer Documents:
 import {
@@ -26,9 +26,8 @@ const userRouter = Router();
 let userController = new UserController();
 
 // Subir documentación de usuario - Router:
-userRouter.post('/:uid/documents', passport.authenticate('jwt', {
-    session: false
-}), rolesMiddlewareUsers, uploaderDocuments.fields([{
+userRouter.post('/:uid/documents',
+passport.authenticate('jwt', { session: false, failureRedirect: '/invalidToken'}), rolesRMiddlewareUsers, uploaderDocuments.fields([{
         name: 'identification',
         maxCount: 1
     },
@@ -48,9 +47,7 @@ userRouter.post('/:uid/documents', passport.authenticate('jwt', {
 });
 
 // Cambiar rol del usuario - Router: 
-userRouter.post('/premium/:uid', passport.authenticate('jwt', {
-    session: false
-}),  rolesMiddlewarePublic, async (req, res, next) => {
+userRouter.post('/premium/:uid', passport.authenticate('jwt', { session: false, failureRedirect: '/invalidToken'}), rolesRMiddlewarePublic, async (req, res, next) => {
     const result = await userController.changeRoleController(req, res, next);
     if (result !== undefined) {
         res.status(result.statusCode).send(result);
@@ -58,17 +55,13 @@ userRouter.post('/premium/:uid', passport.authenticate('jwt', {
 });
 
 // Obtener todos los usuarios - Router: 
-userRouter.get('/allUsers', passport.authenticate('jwt', {
-    session: false
-}), rolesMiddlewareAdmin, async (req, res) => {
+userRouter.get('/getAllUsers', passport.authenticate('jwt', { session: false,  failureRedirect: '/invalidToken'}), rolesRMiddlewareAdmin, async (req, res) => {
     const result = await userController.getAllUsersController(req, res);
     res.status(result.statusCode).send(result);
 });
 
 // Eliminar usuarios inactivos (2 Días) - Router:
-userRouter.delete('/deleteInactivityUsers', passport.authenticate('jwt', {
-    session: false
-}), rolesMiddlewareAdmin, async (req, res) => {
+userRouter.delete('/deleteInactivityUsers', passport.authenticate('jwt', { session: false,  failureRedirect: '/invalidToken'}), rolesRMiddlewareAdmin, async (req, res) => {
     const result = await userController.deleteInactivityUsersController(req, res);
     res.status(result.statusCode).send(result);
 });
