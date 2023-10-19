@@ -217,16 +217,38 @@ export const errorMiddleware = (error, req, res, next) => {
             break;
 
             // User:
-            
-            case ErrorEnums.INVALID_FORM_FILES_ERROR:
-                res.status(400).send({
-                    status: "error",
-                    error: error.name,
-                    cause: error.cause,
-                    message: error.message,
-                    code: ErrorEnums.INVALID_FORM_FILES_ERROR
-                });
-                break;
+
+        case ErrorEnums.INVALID_FORM_FILES_ERROR:
+            res.status(400).send({
+                status: "error",
+                error: error.name,
+                cause: error.cause,
+                message: error.message,
+                code: ErrorEnums.INVALID_FORM_FILES_ERROR
+            });
+            break;
+
+            // Stripe:
+
+        case ErrorEnums.INVALID_AMOUNT_ORDER:
+            res.status(400).send({
+                status: "error",
+                error: error.name,
+                cause: error.cause,
+                message: error.message,
+                code: ErrorEnums.INVALID_AMOUNT_ORDER
+            });
+            break;
+
+        case ErrorEnums.INVALID_PRODUCT_ORDER_DATA:
+            res.status(400).send({
+                status: "error",
+                error: error.name,
+                cause: error.cause,
+                message: error.message,
+                code: ErrorEnums.INVALID_PRODUCT_ORDER_DATA
+            });
+            break;
 
         default:
             res.status(500).send({

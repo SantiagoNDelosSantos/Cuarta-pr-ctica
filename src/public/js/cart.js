@@ -16,8 +16,9 @@ const tableCarts = document.getElementById('tableCarts');
 // Captura div cierre:
 const cierreCompra = document.getElementById('cierreCompra');
 
-// Declaramos de manera global el cid:
+// Declaramos de manera global el cid y el email del usuario:
 let cid;
+let email;
 
 // Creamos una función general para la carga del carrito y sus actualizaciones:
 async function loadCart() {
@@ -53,6 +54,7 @@ async function loadCart() {
     try {
 
       cid = sessionRes.cart;
+      email = sessionRes.email;
 
       // Obtenemos el carrito del usuario: 
       const cartResponse = await fetch(`/api/carts/${cid}`, {
@@ -103,8 +105,10 @@ async function loadCart() {
           // Si no hay productos:
           if (resultCart.products.length === 0) {
             tableCarts.innerHTML = `<div style="display: flex; align-items: center; justify-content: center; margin-top: 0em; flex-direction: column;">
-            <img style="width: 11vw; margin-top:2em; margin-bottom: 4em;" src="https://i.ibb.co/GTbyDDP/CARTVACIO-removebg-preview.png">
-            <h2>Tu carrito de compras está vacío. ¡Agrega productos para comenzar a comprar!</h2>
+            <img style="width: 11vw; margin-top:1.5em; margin-bottom: 3em;" src="https://i.ibb.co/GTbyDDP/CARTVACIO-removebg-preview.png">
+            <h2>Tu carrito de compras está vacío.</h2> 
+            <br> 
+            <h2>¡Agrega productos para comenzar a comprar!</h2>
             </div>`
 
             cierreCompra.innerHTML = ""
@@ -200,11 +204,16 @@ async function loadProducts(resultCart) {
     deleteAllProds();
   })
 
-
   cierreCompra.innerHTML = `<h2>Total a pagar $ <span id="totalPrice">${total}</span></h2> <br />
-  <h2 id="finalizarCompraBtn" style="width: 60%; margin-left: 20%; margin-right: 20%;" class="boton" id="finalizarCompra">Finalizar Compra</h2> <br />`;
+  <h2 id="generarOrden" style="width: 60%; margin-left: 20%; margin-right: 20%;" class="boton" id="finalizarCompra">Generar orden de compra</h2> <br />`;
 
-}
+  const generarOrden = document.getElementById('generarOrden');
+
+  generarOrden.addEventListener("click", async () => {
+    orderGeneration();
+  });
+
+};
 
 // addEventListener para modificar quantity:
 document.addEventListener('input', async (event) => {
@@ -474,123 +483,156 @@ async function deleteAllProds() {
   }
 }
 
+// Función de para generar orden de compra:
+async function orderGeneration() {
 
+  try {
 
-
-/*
-
-
-
-
-// Función para actualizar el precio total y el botón de finalizar compra
-function updateTotalPrice(products) {
-  const totalPrice = calculateTotalPrice(products);
-  const totalPriceSpan = document.getElementById('totalPrice');
-  totalPriceSpan.textContent = ` $ ${totalPrice}`;
-
-  // DOM boton finalizar compra: 
-  const finalizarCompraBtn = document.getElementById('finalizarCompraBtn');
-  finalizarCompraBtn.addEventListener('click', async () => {
-    // Mostrar SweetAlert de confirmación
-    const confirmationResult = await Swal.fire({
-      title: 'Confirmar compra',
-      text: '¿Estás seguro de que deseas finalizar la compra?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonText: 'Sí, confirmar',
-      cancelButtonText: 'Cancelar',
-    });
-
-    if (confirmationResult.isConfirmed) {
-      // Continuar con la compra
-      processPurchase(products);
-
-      // Mostrar SweetAlert de procesamiento
-      const processingAlert = await Swal.fire({
-        title: 'Compra finalizada',
-        text: 'En breve podrás acceder a la boleta de tu compra en la sección de tickets del carrito. ',
-        icon: 'success',
-        showConfirmButton: false,
-        timer: 6000,
-        timerProgressBar: true,
-        allowOutsideClick: false
-      });
-
-    }
-  });
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-function processPurchase(products) {
-  fetch('/api/sessions/current')
-    .then(response => response.json())
-    .then(data => {
-      const cartID = data.cart;
-      const userEmailAddress = data.email;
-
-      // Crear un array de productos para enviar al servidor
-      const productsToSend = products.map(product => {
-        return {
-          cartProductID: product._id, // _id del producto en carrito
-          databaseProductID: product.product._id, // _id del producto en la base de datos
-          quantity: product.quantity,
-          title: product.product.title,
-          price: product.product.price
-        };
-      });
-
-      // Crear un objeto con los datos de la compra
-      const purchaseData = {
-        cartID: cartID,
-        products: productsToSend, // Usar el array modificado
-        userEmailAddress
-      };
-
-      // Mostrar los datos en la consola antes de enviarlos:
-      console.log('Datos de compra a enviar:', purchaseData);
-
-      // Enviar la información al servidor
-      fetch(`/api/carts/${cartID}/purchase`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(purchaseData)
-        })
-        .then(response => response.json())
-        .then(data => {
-          // Manejar la respuesta del servidor aquí si es necesario
-          console.log(data);
-        })
-        .catch(error => {
-          console.error('Error al procesar la compra:', error);
-        });
+    const orderResponse = await fetch(`/api/carts/${cid}/orderGeneration`, {
+      method: 'POST',
     })
-    .catch(error => {
-      console.error('Error al obtener el ID del carrito:', error);
+
+    // Si falla la validación del token:
+    if (orderResponse.redirected) {
+      const invalidTokenURL = orderResponse.url;
+      window.location.replace(invalidTokenURL);
+    }
+
+    // Pasamos a la respuesta a json: 
+    const orderRes = await orderResponse.json();
+
+    // Si no se cumplen con los permisos para acceder a la ruta: 
+    if (orderRes.status === 401) {
+
+      Swal.fire({
+        title: orderRes.h1,
+        text: orderRes.message,
+        imageUrl: orderRes.img,
+        imageWidth: 70,
+        imageHeight: 70,
+        imageAlt: orderRes.h1,
+      })
+
+    } else {
+
+      const statusCodeRes = orderRes.statusCode;
+      const messageRes = orderRes.message;
+      const customError = orderRes.cause;
+      const order = orderRes.result;
+
+      if (statusCodeRes === 200) {
+
+        if (order.failedProducts.length > 0) {
+
+          // Mostrar SweetAlert de confirmación
+          const confirmationResult = await Swal.fire({
+            title: 'Confirmar compra',
+            text: 'El carrito contiene productos con una cantidad superior al stock disponible. Puedes eliminarlos de tu carrito antes de realizar la compra o simplemente continuar sin que se incluyan en el procesamiento de la misma. ¿Deseas continuar con la compra?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, confirmar',
+            cancelButtonText: 'Cancelar',
+          });
+
+          if (confirmationResult.isConfirmed) {
+            stripe(order);
+          };
+
+        } else {
+          stripe(order);
+        }
+
+      } else if (customError || statusCodeRes === 404) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Error al generar orden de compra',
+          text: customError || messageRes
+        });
+      } else if (statusCodeRes === 500) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al generar orden de compra',
+          text: messageRes
+        });
+      }
+    }
+  } catch (error) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error en la solicitud de generar orden de compra',
+      text: 'Error: ' + error.message
     });
+  }
+
 }
 
-*/
+// Stripe: 
+async function stripe(order) {
+
+  if (order.successfulProducts.length > 0) {
+
+    try {
+
+      // Solicitamos el intento de pago: 
+      const paymentsIntentsResponse = await fetch('/api/payments/paymentsIntents', {
+        method: 'GET',
+      })
+
+      // Si falla la validación del token:
+      if (paymentsIntentsResponse.redirected) {
+        const invalidTokenURL = paymentsIntentsResponse.url;
+        window.location.replace(invalidTokenURL);
+      }
+
+      // Pasamos a la respuesta a json: 
+      const paymentIntRes = await paymentsIntentsResponse.json();
+
+      // Si no se cumplen con los permisos para acceder a la ruta: 
+      if (paymentIntRes.status === 401) {
+        Swal.fire({
+          title: paymentIntRes.h1,
+          text: paymentIntRes.message,
+          imageUrl: paymentIntRes.img,
+          imageWidth: 70,
+          imageHeight: 70,
+          imageAlt: paymentIntRes.h1,
+        })
+      } else {
+
+        const statusCodeRes = paymentIntRes.statusCode;
+        const messageRes = paymentIntRes.message;
+        const customError = paymentIntRes.cause;
+        const url = paymentIntRes.result;
+
+        if (statusCodeRes === 200) {
+          window.location.href = url;
+        } else if (customError) {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Error al generar intento de pago',
+            text: customError
+          });
+        } else if (statusCodeRes === 500) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error al generar intento de pago',
+            text: messageRes
+          });
+        }
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error en la solicitud de generar intento de pago',
+        text: 'Error: ' + error.message
+      });
+    }
+  } else {
+    Swal.fire({
+      icon: 'error',
+      title: 'Error al generar orden de compra',
+      text: 'Debe tener al menos un producto válido en su carrito para generar la orden.'
+    });
+  };
+
+};

@@ -289,7 +289,22 @@ export default class ProductService {
                 response.statusCode = 404;
                 response.message = `No se encontró ningún producto con el ID ${pid}.`;
             } else if (productInfo.status === "success") {
-                if (owner === "admin" || productInfo.result.owner === owner) {
+                // Para actualizar stock de productos comprados:
+                if( owner === "stock"){
+                    const resultDAO = await this.productDao.updateProduct(pid, updateProduct);
+                    if (resultDAO.status === "error") {
+                        response.statusCode = 500;
+                        response.message = resultDAO.message;
+                    } else if (resultDAO.status === "not found product") {
+                        response.statusCode = 404;
+                        response.message = `No se encontró ningún producto con el ID ${pid}.`;
+                    }  else if (resultDAO.status === "success") {
+                        response.statusCode = 200;
+                        response.message = "Producto actualizado exitosamente.";
+                        response.result = "Stock actualizado."
+                    };
+                }
+                if (owner === "admin" || productInfo.result.owner === owner ) {
                     // Si el owner es admin o uindefined (Todos los productos antes de esta integración no tienen campo owner) puede actualizar cualquier producto. En el caso del user premium este solo puede actualizar los productos que le pertenezcan: 
                     const resultDAO = await this.productDao.updateProduct(pid, updateProduct);
                     if (resultDAO.status === "error") {

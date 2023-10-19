@@ -573,7 +573,7 @@ body.swal2-shown.swal2-height-auto {
   justify-content: center;
   align-items: center;
   flex-direction: column;
-  margin: 5%;
+  margin-top: 5%;
 }
 
 .loader-container {

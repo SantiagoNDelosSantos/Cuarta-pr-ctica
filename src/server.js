@@ -15,7 +15,7 @@ import ticketRouter from "./routes/ticket.router.js";
 import mockRouter from './routes/mock.router.js'
 import loggerRouter from './routes/loggerTest.router.js'
 import userRouter from './routes/user.router.js';
-import stripeRouter from './routes/stripe.router.js'
+import paymentsRouter from './routes/payments.router.js'
 
 // Import de controladores: 
 import ViewsController from './controllers/viewsController.js';
@@ -152,7 +152,7 @@ app.use('/', viewsRouter);
 app.use('/mockProducts', mockRouter);
 app.use('/loggerTest', loggerRouter);
 app.use('/api/users', userRouter);
-app.use('/api/payments', stripeRouter);
+app.use('/api/payments', paymentsRouter);
 
 // Middleware Error:
 app.use(errorMiddleware);

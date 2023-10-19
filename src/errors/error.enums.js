@@ -47,7 +47,7 @@ const ErrorEnums = {
 
     INVALID_REGISTER_DATA: 16,
 
-    INVALID_LOGIN_DATA: 17, 
+    INVALID_LOGIN_DATA: 17,
 
     INVALID_EMAIL_USER: 18,
 
@@ -58,6 +58,12 @@ const ErrorEnums = {
     // User:
 
     INVALID_FORM_FILES_ERROR: 30,
+
+    // Stripe:
+
+    INVALID_AMOUNT_ORDER: 31,
+
+    INVALID_PRODUCT_ORDER_DATA: 32,
 
 }
 

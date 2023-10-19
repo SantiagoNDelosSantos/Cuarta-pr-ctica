@@ -145,14 +145,14 @@ export default class UserDAO {
         let response = {};
         try {
 
-            // Calcula la fecha (Dias):
+            // Calcular la fecha (Dias):
             const cutoffDate = new Date();
             cutoffDate.setDate(cutoffDate.getDate() - 2);
 
             // Milisegundos para puruebas:
             // cutoffDate.setMinutes(cutoffDate.getMilliseconds() - 10);
 
-            // Convertimos la fecha de corte, al mismo formato que se guarda en el last_connection de los users:
+            // Convertimos la fecha, al mismo formato que se guarda en el last_connection de los users:
             const cutoffDateString = `${cutoffDate.toLocaleDateString()} - ${cutoffDate.toLocaleTimeString()}`;
 
             // Buscamos y los guardamos: 

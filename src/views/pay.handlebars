@@ -30,41 +30,30 @@
 
     <div class="container">
 
-        <a href="/products"><img src="https://i.ibb.co/mHPj0kW/Logo-volver-removebg-preview.png" alt="volver" border="0"
+        <a href="/cart"><img src="https://i.ibb.co/mHPj0kW/Logo-volver-removebg-preview.png" alt="volver" border="0"
                 class="logoS" style="position: absolute; margin-top: 2em;"></a>
-
-        <a href="/tickets"><img src="https://i.ibb.co/58kXCRF/ti.png" alt="volver" border="0" class="logoS" style="position: absolute; border-radius: 0.7em !important; margin-top: 2.5em; margin-left: 65% !important;"></a>
 
         <div class="divLogoChat">
             <img src="https://i.ibb.co/hd9vsgK/Logo-BK-Grande.png" alt="Logo-BK-Grande" border="0" class="logoGRDChat">
         </div>
 
-        <h1>Carrito:</h1>
+        <div>
 
-        <table id="tableCarts" class="table">
+        </div>
 
-            <thead>
-                <tr>
-                    <th>Modelo</th>
-                    <th>Img Front</th>
-                    <th>Stock</th>
-                    <th>Unds. a comprar</th>
-                    <th>Precio x Und.</th>
-                    <th>Subtotal</th>
-                    <th>Eliminar del carrito</th>
-                </tr>
-            </thead>
+        <h1>Pago exitoso:</h1>
 
-            <tbody id="tableProdCartID"></tbody>
+    
+        <div style="display: flex; justify-content: center; align-items: center; margin-top: 0.5em">
+            <img style="width: 18vw" src="https://i.ibb.co/VLW5Rt6/pago-Succes.jpg" alt="Pago-check-1" border="0">
+        </div>
 
-        </table>
+        <div id="parrafo"></div>
 
-        <div id="cierreCompra" style="margin-top: -3em; margin-bottom: -0.7em;"></div>
+        <p><a href="/tickets">Ver tus tickets</a></p>
 
     </div>
 
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="/socket.io/socket.io.js"></script>
-<script src="/js/cart.js" type="module"></script>
+<script src="/js/pay.js"></script>

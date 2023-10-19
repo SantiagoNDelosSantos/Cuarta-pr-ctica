@@ -1,4 +1,97 @@
-<button id="pagar">Pagar</button>
+<div id="VistaDeCarga" style="display: block" ;>
+
+    <div class="loader-container">
+
+        <div class="item">
+            <div class="divLogoChat">
+                <img src="https://i.ibb.co/hd9vsgK/Logo-BK-Grande.png" alt="Logo-BK-Grande" border="0"
+                    class="logoGRDChat" style="width: 50%; margin-bottom: 1em;">
+            </div>
+        </div>
+
+        <div class="item">
+            <img src="https://i.ibb.co/Ytn1ggx/Pantalla-de-carga.png" alt="Pantalla-de-carga" border="0"
+                style="width: 50%;">
+        </div>
+
+        <div class="item" style="margin-top: 1em;">
+            <div class="loader"></div>
+        </div>
+
+        <div class="item" style="margin-top: 1em;">
+            <h1 style="font-size: 1.1em">Cargando... Por favor, espera.</h1>
+        </div>
+
+    </div>
+
+</div>
+
+<div id="contenedorVista" style=" display: none">
+
+    <div class="container">
+
+        <a href="/products"><img src="https://i.ibb.co/mHPj0kW/Logo-volver-removebg-preview.png" alt="volver" border="0"
+                class="logoS" style="position: absolute; margin-top: 2em;"></a>
+
+        <div class="divLogoChat">
+            <img src="https://i.ibb.co/hd9vsgK/Logo-BK-Grande.png" alt="Logo-BK-Grande" border="0" class="logoGRDChat">
+        </div>
+
+
+        <!-- ... Tu código HTML anterior ... -->
+
+        <h1>Publicar productos:</h1>
+
+        <table id="newProductTable" class="table">
+            <thead>
+                <tr>
+                    <th>Modelo</th>
+                    <th>Descripción</th>
+                    <th>Img Front</th>
+                    <th>Img Back</th>
+                    <th>Stock</th>
+                    <th>Precio</th>
+                    <th>Publicar</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><input type="text" name="model" placeholder="Modelo"></td>
+                    <td><input type="text" name="description" placeholder="Descripción"></td>
+                    <td><input type="file" name="imgFront"></td>
+                    <td><input type="file" name="imgBack"></td>
+                    <td><input type="number" name="stock" placeholder="Stock"></td>
+                    <td><input type="number" name="price" placeholder="Precio"></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- ... Tu código HTML posterior ... -->
+
+        <h1 style="margin-top: 1em;">Tus productos publicados:</h1>
+
+        <table id="yourProductsTable" class="table">
+
+            <thead>
+                <tr>
+                    <th>Modelo</th>
+                    <th>Descripción</th>
+                    <th>Img Front</th>
+                    <th>Img Back</th>
+                    <th>Stock</th>
+                    <th>Precio</th>
+                    <th>Editar</th>
+                    <th>Eliminar</th>
+                </tr>
+            </thead>
+
+        </table>
+
+    </div>
+
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="/js/store.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/store.js" type="module"></script>

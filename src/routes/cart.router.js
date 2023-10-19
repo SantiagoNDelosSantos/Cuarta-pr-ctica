@@ -32,7 +32,7 @@ cartRouter.get("/:cid", passport.authenticate('jwt', { session: false, failureRe
     if(result !== undefined) {
         res.status(result.statusCode).send(result);
     };
-})
+});
 
 // Traer todos los carritos - Router: 
 cartRouter.get('/', passport.authenticate('jwt', { session: false, failureRedirect: '/invalidToken'
@@ -41,7 +41,7 @@ cartRouter.get('/', passport.authenticate('jwt', { session: false, failureRedire
     res.status(result.statusCode).send(result);
 });
 
-// Agregar un producto a un carrito - Router:
+// Agregar un producto a un carrito - Router: 
 cartRouter.post('/:cid/products/:pid/quantity/:quantity', passport.authenticate('jwt', { session: false, failureRedirect: '/invalidToken'
 }), rolesRMiddlewareUsers, verificarPertenenciaCarrito, async (req, res, next) => {
     const result = await cartController.addProductInCartController(req, res, next); 
@@ -50,14 +50,22 @@ cartRouter.post('/:cid/products/:pid/quantity/:quantity', passport.authenticate(
     };
 });
 
-// Procesamiento de la compra del usuario: 
-cartRouter.post('/:cid/purchase', passport.authenticate('jwt', { session: false, failureRedirect: '/invalidToken'
-}), rolesRMiddlewareUsers, verificarPertenenciaCarrito, async (req, res, next) => {
-    const result = await cartController.purchaseProductsInCartController(req, res, next);
+// Generar orden de compra para el usuario - Router: (USER, PREMIUM) 
+cartRouter.post('/:cid/orderGeneration', passport.authenticate('jwt', { session: false, failureRedirect: '/invalidToken' }), rolesRMiddlewareUsers, verificarPertenenciaCarrito, async (req, res, next) => {
+    const result = await cartController.purchaseOrderController(req, res, next);
     if(result !== undefined) {
         res.status(result.statusCode).send(result);
     };
-})
+});
+
+// Actualizar products, cart y generar el ticket si el pago de la compra fue exitoso - Router: (USER, PREMIUM) 
+cartRouter.post('/:cid/purchaseSuccess', passport.authenticate('jwt', { session: false, failureRedirect: '/invalidToken'
+}), rolesRMiddlewareUsers, verificarPertenenciaCarrito, async (req, res, next) => {
+    const result = await cartController.purchaseSuccessController(req, res, next);
+    if(result !== undefined) {
+        res.status(result.statusCode).send(result);
+    };
+});
 
 // Eliminar un producto en carrito - Router: (USER, PREMIUM)
 cartRouter.delete('/:cid/products/:pid', passport.authenticate('jwt', { session: false, failureRedirect: '/invalidToken'
@@ -66,9 +74,9 @@ cartRouter.delete('/:cid/products/:pid', passport.authenticate('jwt', { session:
     if(result !== undefined) {
         res.status(result.statusCode).send(result);
     };
-})
+});
 
-// Eliminar todos los productos de un carrito - Router:
+// Eliminar todos los productos de un carrito - Router: (USER, PREMIUM)
 cartRouter.delete('/:cid', passport.authenticate('jwt', { session: false, failureRedirect: '/invalidToken'
 }), rolesRMiddlewareUsers, verificarPertenenciaCarrito, async (req, res, next) => {
     const result = await cartController.deleteAllProductsFromCartController(req, res, next);

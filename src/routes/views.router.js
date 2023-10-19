@@ -27,6 +27,12 @@ viewsRouter.get('/login', (req, res) => {
     });
 });
 
+viewsRouter.get('/completeProfile', (req, res) => {
+    res.render('extraForm', {
+        title: 'Formulario'
+    });
+});
+
 viewsRouter.get('/requestResetPassword', (req, res) => {
     res.render('requestResetPassword', {
         title: 'Restablecer Contraseña - Solicitar Correo'
@@ -42,7 +48,8 @@ viewsRouter.get('/resetPasswordView', passport.authenticate('jwtResetPass', {
     });
 });
 
-// Esta vista en a la que se va a redirigir cuando el usuario no ha inisiado session, osea intenta acceder a una vistas sin estar logueado (Vistas):
+
+// Esta vista en a la que se va a redirigir cuando el usuario no ha iniciado session, osea intenta acceder a una vistas sin estar logueado (Vistas):
 viewsRouter.get('/notLoggedIn', (req, res) => {
     res.render('notLoggedIn', {
         title: 'Acceso denegado'
@@ -94,18 +101,30 @@ viewsRouter.get('/cart', passport.authenticate('jwt', {
     });
 });
 
+viewsRouter.get('/paySuccess', passport.authenticate('jwt', {
+    session: false,
+    failureRedirect: '/notLoggedIn'
+}), rolesVMiddlewareUsers, (req, res) => {
+    res.render('pay', {
+        title: 'Pago exitoso'
+    });
+});
+
+viewsRouter.get('/tickets', passport.authenticate('jwt', {
+    session: false,
+    failureRedirect: '/notLoggedIn'
+}), rolesVMiddlewareUsers, (req, res) => {
+    res.render('tickets', {
+        title: 'Tickets'
+    });
+});
+
 viewsRouter.get('/changeRole', passport.authenticate('jwt', {
     session: false,
     failureRedirect: '/notLoggedIn'
 }), rolesVMiddlewareUsers, (req, res) => {
     res.render('changeRole', {
         title: 'Cambiar Role'
-    });
-});
-
-viewsRouter.get('/completeProfile', (req, res) => {
-    res.render('extraForm', {
-        title: 'Formulario'
     });
 });
 
@@ -130,13 +149,5 @@ viewsRouter.get('/storeProducts', passport.authenticate('jwt', {
         title: 'Publicar productos'
     });
 });
-
-
-
-
-
-
-
-
 
 export default viewsRouter;

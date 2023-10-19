@@ -58,6 +58,9 @@ export const envResetPassCookieEmail = process.env.RESET_PASSWORD_COOKIE;
 export const envStripeKeyPublic = process.env.STRIPE_KEY_PUBLIC;
 export const envStripeKeySecret = process.env.STIRPE_KEY_SECRET;
 
+// Cookie con la orden de compra: 
+export const envPurchaseOrder = process.env.PURCHASE_ORDER;
+
 console.log(program.opts())
 
 // Cargar variables de entorno, antes de levantar el servidor: 

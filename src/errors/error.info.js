@@ -157,9 +157,25 @@ export default class ErrorGenerator {
 
     static uploadPremiumDocsErrorInfo(identification, proofOfAddress, bankStatement) {
         return `No se han proporcionado ninguno de los documentos requeridos:
-        - Como documento de identificación se ha recibido, ${identification}.
-        - Como comprobante de domicilio se ha recibido, ${proofOfAddress}.
-        - Como comprobante de estado de cuenta se recibido, ${bankStatement}.`
+        * Como documento de identificación se ha recibido, ${identification}.
+        * Como comprobante de domicilio se ha recibido, ${proofOfAddress}.
+        * Como comprobante de estado de cuenta se recibido, ${bankStatement}.`
     }
 
+    // Stripe: 
+
+    static generateAmountEInfo(amount) {
+        return `El monto total está incompleto o no es válido, se recibió $ ${amount}.`;
+    }
+
+    static generateProductOrderEInfo(product) {
+        return `Una o más propiedades en los datos de registro están faltando o no son válidas.
+        Propiedades requeridas:
+        * pid: Debe ser un string, se recibio ${product._id}.
+        * title: Debe ser un string, se recibió ${product.title}.
+        * quantity: Debe ser un número válido, se recibió ${product.quantity}.
+        * code: Debe ser un string válido, se recibió ${product.code}.
+        * price: Debe ser un string, se recibió $ ${product.price}.`;
+    }
+    
 }
