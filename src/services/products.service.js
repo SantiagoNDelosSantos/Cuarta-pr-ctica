@@ -255,7 +255,7 @@ export default class ProductService {
                             response.statusCode = 200;
                             response.message = "Productos eliminados y correo de notificación enviado al usuario premium exitosamente.";
                             response.result = resultDAO.result;
-                        } else if (resultSendMail.rejected && resultSendMail.rejected.length > 0){
+                        } else if (resultSendMail.rejected && resultSendMail.rejected.length > 0) {
                             response.statusCode = 500;
                             response.message = "Error al enviar el correo electrónico. Por favor, inténtelo de nuevo más tarde.";
                         };
@@ -289,7 +289,7 @@ export default class ProductService {
                 response.message = `No se encontró ningún producto con el ID ${pid}.`;
             } else if (productInfo.status === "success") {
                 // Para actualizar stock de productos comprados:
-                if( owner === "stock"){
+                if (owner === "stock") {
                     const resultDAO = await this.productDao.updateProduct(pid, updateProduct);
                     if (resultDAO.status === "error") {
                         response.statusCode = 500;
@@ -297,14 +297,14 @@ export default class ProductService {
                     } else if (resultDAO.status === "not found product") {
                         response.statusCode = 404;
                         response.message = `No se encontró ningún producto con el ID ${pid}.`;
-                    }  else if (resultDAO.status === "success") {
+                    } else if (resultDAO.status === "success") {
                         response.statusCode = 200;
                         response.message = "Producto actualizado exitosamente.";
                         response.result = "Stock actualizado."
                     };
                 }
-                if (owner === "admin" || productInfo.result.owner === owner ) {
-                    // Si el owner es admin o uindefined (Todos los productos antes de esta integración no tienen campo owner) puede actualizar cualquier producto. En el caso del user premium este solo puede actualizar los productos que le pertenezcan: 
+                if (owner === "admin" && productInfo.result.owner === "admin" || productInfo.result.owner === owner) {
+                    // El admin solo puede actualizar sus propios productos (Por seguridad), lo mismo aplica a los usuarios premium:
                     const resultDAO = await this.productDao.updateProduct(pid, updateProduct);
                     if (resultDAO.status === "error") {
                         response.statusCode = 500;
