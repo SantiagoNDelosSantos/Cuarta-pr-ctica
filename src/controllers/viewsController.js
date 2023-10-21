@@ -32,9 +32,9 @@ export default class ViewsController {
                 response.message = 'El valor ingresado para el filtro "Mostrar" (Cantidad de productos a mostrar por página), no es válido. Por favor, ingresa un número positivo mayor a 0.'
             } else if (pageV === "0") {
                 response.message = 'El valor ingresado para el filtro "Página" (Página del catálogo), no es válido. Por favor, ingresa un número positivo mayor a 0.'
-            } else if(filtroV === "price" && filtroValV === "0"){
+            } else if (filtroV === "price" && filtroValV === "0") {
                 response.message = 'El valor ingresado para el filtro "Precio" (Busqueda de productos por su precio), no es válido. Por favor, ingresa un número positivo mayor a 0.'
-            } else if(filtroV === "stock" && filtroValV === "0"){
+            } else if (filtroV === "stock" && filtroValV === "0") {
                 response.message = 'El valor ingresado para el filtro "Stock" (Busqueda de productos por según su stock), no es válido. Por favor, ingresa un número positivo mayor a 0.'
             };
 
@@ -48,7 +48,7 @@ export default class ViewsController {
                 };
             } catch (error) {
                 response.statusCode = 500;
-                response.message = "Error al obtener los productos - Controller: " + error.message;
+                response.message = "Error al obtener los productos - Controller View: " + error.message;
             };
         }
         return response;
@@ -68,7 +68,7 @@ export default class ViewsController {
             };
         } catch (error) {
             response.statusCode = 500;
-            response.message = "Error al obtener los mensajes - Controller: " + error.message;
+            response.message = "Error al obtener los mensajes - Controller View: " + error.message;
         };
         return response;
     };

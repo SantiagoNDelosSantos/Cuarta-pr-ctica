@@ -42,22 +42,26 @@ async function saludoYAccesoPrem() {
         botomStore.innerHTML = botnPrem;
       }
 
-      // Saludo de bienvenida:
-      const saludoYaMostrado = localStorage.getItem('saludoMostrado');
-      const duracionSaludoEnMilisegundos = 12 * 60 * 60 * 1000;
-      if (!saludoYaMostrado) {
-        Swal.fire({
-          icon: 'success',
-          title: '¡Bienvenido!',
-          text: `Hola ${sessionRes.name}, has iniciado sesión con éxito.`,
-        });
-        // Marcar que el saludo:
-        localStorage.setItem('saludoMostrado', Date.now().toString());
+      setTimeout(() => {
 
-        setTimeout(() => {
-          localStorage.removeItem('saludoMostrado');
-        }, duracionSaludoEnMilisegundos);
-      }
+        // Saludo de bienvenida:
+        const saludoYaMostrado = localStorage.getItem('saludoMostrado');
+        const duracionSaludoEnMilisegundos = 12 * 60 * 60 * 1000;
+        if (!saludoYaMostrado) {
+          Swal.fire({
+            icon: 'success',
+            title: '¡Bienvenido!',
+            text: `Hola ${sessionRes.name}, has iniciado sesión con éxito.`,
+          });
+          // Marcar que el saludo:
+          localStorage.setItem('saludoMostrado', Date.now().toString());
+
+          setTimeout(() => {
+            localStorage.removeItem('saludoMostrado');
+          }, duracionSaludoEnMilisegundos);
+        }
+
+      }, 600);
 
     }
 
@@ -438,3 +442,15 @@ function cambiarPagina(currentPage, newPage) {
   filtrarProducts(limit, newCurrentPage, sort, filtro, filtroVal);
 
 };
+
+// Ocultar la vista de carga después de 1 segundo (1000 milisegundos):
+const carga = document.getElementById("VistaDeCarga");
+const vista = document.getElementById("contenedorVista");
+
+function pantallaCarga() {
+  setTimeout(() => {
+    carga.style = "display: none";
+    vista.style = "display: block";
+  }, 500);
+};
+pantallaCarga();

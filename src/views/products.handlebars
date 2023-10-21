@@ -1,33 +1,66 @@
-<div class="container">
+<div id="VistaDeCarga" style="display: block" ;>
 
-    <div class="logoSession">
+    <div class="loader-container">
 
-        <div>
-            <a href="/products"><img src="https://i.ibb.co/hd9vsgK/Logo-BK-Grande.png" alt="Logo-BK-Grande" border="0"
-                    class="logoGRD"></a>
+        <div class="item">
+            <div class="divLogoChat">
+                <img src="https://i.ibb.co/hd9vsgK/Logo-BK-Grande.png" alt="Logo-BK-Grande" border="0"
+                    class="logoGRDChat" style="width: 50%; margin-bottom: 1em;">
+            </div>
         </div>
 
-        <div style="display: flex;">
+        <div class="item">
+            <img src="https://i.ibb.co/Ytn1ggx/Pantalla-de-carga.png" alt="Pantalla-de-carga" border="0"
+                style="width: 50%;">
+        </div>
 
-            <a href="/chat"><img
-                    src="https://i.ibb.co/ftwkrSb/png-transparent-email-computer-icons-message-icon-design-bass-miscellaneous-angle-black-1-1.png"
-                    alt="login" border="0" class="logoS"></a>
+        <div class="item" style="margin-top: 1em;">
+            <div class="loader"></div>
+        </div>
 
-            <a href="/perfil"><img src="https://i.ibb.co/Kxb8GDb/login.png" alt="login" border="0" class="logoS"></a>
-
-            <a href="/changeRole"><img src="https://i.ibb.co/f8TCwG1/VIP-modified.png" alt="VIP-modified" border="0"
-                    class="logoS"></a>
-
-            <div id="storeButtonPrem">
-            </div>
-
-            <a href="/cart"><img src="https://i.ibb.co/8DFrsw8/cart1.png" alt="cart" border="0" class="logoS"></a>
-
+        <div class="item" style="margin-top: 1em;">
+            <h1 style="font-size: 1.1em">Cargando... Por favor, espera.</h1>
         </div>
 
     </div>
 
-    <div style="display: flex; flex-direction: row; justify-content: center; margin-top: 0.6em; margin-bottom: 1em;">
+</div>
+
+<div id="contenedorVista" style=" display: none">
+
+
+    <div class="container">
+
+        <div class="logoSession">
+
+            <div>
+                <a href="/products"><img src="https://i.ibb.co/hd9vsgK/Logo-BK-Grande.png" alt="Logo-BK-Grande"
+                        border="0" class="logoGRD"></a>
+            </div>
+
+            <div style="display: flex;">
+
+                <a href="/chat"><img
+                        src="https://i.ibb.co/ftwkrSb/png-transparent-email-computer-icons-message-icon-design-bass-miscellaneous-angle-black-1-1.png"
+                        alt="login" border="0" class="logoS"></a>
+
+                <a href="/perfil"><img src="https://i.ibb.co/Kxb8GDb/login.png" alt="login" border="0"
+                        class="logoS"></a>
+
+                <a href="/changeRole"><img src="https://i.ibb.co/f8TCwG1/VIP-modified.png" alt="VIP-modified" border="0"
+                        class="logoS"></a>
+
+                <div id="storeButtonPrem">
+                </div>
+
+                <a href="/cart"><img src="https://i.ibb.co/8DFrsw8/cart1.png" alt="cart" border="0" class="logoS"></a>
+
+            </div>
+
+        </div>
+
+        <div
+            style="display: flex; flex-direction: row; justify-content: center; margin-top: 0.6em; margin-bottom: 1em;">
 
             <div style="display: flex; flex-direction: row; justify-content: center; gap: 0.5em; padding: 0.3em;">
 
@@ -51,15 +84,17 @@
 
             </div>
 
+        </div>
+
+        <h1>Catálogo:</h1>
+
+
+        <table id="tableProd" class="table">
+        </table>
+
+        <div id="Pags"></div>
+
     </div>
-
-    <h1>Catálogo:</h1>
-
-
-    <table id="tableProd" class="table">
-    </table>
-
-    <div id="Pags"></div>
 
 </div>
 

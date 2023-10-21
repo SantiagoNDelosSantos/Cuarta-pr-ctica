@@ -6,15 +6,17 @@ const chatTable = document.getElementById('chat-table');
 const btnEnviar = document.getElementById('btnEnv');
 const messageInput = document.getElementById("message");
 
-// Escucha el evento "messages" enviado por el servidor:
-socket.on("messages", (messageResult) => {
+function loadMessages() {
 
-  if (messageResult !== null) {
+  // Escucha el evento "messages" enviado por el servidor:
+  socket.on("messages", (messageResponse) => {
 
-    let htmlMessages = "";
+    if (messageResponse.statusCode === 200) {
 
-    // Recorremos los mensajes y los mostramos en el HTML:
-    htmlMessages += `
+      let htmlMessages = "";
+
+      // Recorremos los mensajes y los mostramos en el HTML:
+      htmlMessages += `
       <thead>
         <tr>
             <th>Usuarios</th>
@@ -24,8 +26,8 @@ socket.on("messages", (messageResult) => {
         </tr>
       </thead>`;
 
-    messageResult.forEach((message) => {
-      htmlMessages += `
+      messageResponse.result.forEach((message) => {
+        htmlMessages += `
       <tbody>
         <tr>
           <td>${message.user}</td>
@@ -34,27 +36,46 @@ socket.on("messages", (messageResult) => {
           <td><button type="submit" class="btnDeleteSMS boton" id="Eliminar${message._id}">Eliminar</button></td>
         </tr>
       </tbody>`;
-    });
-
-    // Insertamos los mensajes en el HTML:
-    chatTable.innerHTML = htmlMessages;
-
-    // Agregar evento click al botón de eliminar:
-    messageResult.forEach((message) => {
-      const deleteButton = document.getElementById(`Eliminar${message._id}`);
-      deleteButton.addEventListener("click", () => {
-        deleteMessage(message._id);
       });
-    });
 
-  } else {
-    let notMessages = "";
-    notMessages += `<p style="margin-bottom: 1em;">No hay mensajes disponibles.</p>`;
-    chatTable.innerHTML = notMessages;
-    return;
-  }
+      // Insertamos los mensajes en el HTML:
+      chatTable.innerHTML = htmlMessages;
 
-})
+      // Agregar evento click al botón de eliminar:
+      messageResponse.result.forEach((message) => {
+        const deleteButton = document.getElementById(`Eliminar${message._id}`);
+        deleteButton.addEventListener("click", () => {
+          deleteMessage(message._id);
+        });
+      });
+
+    } else if (messageResponse.statusCode === 404) {
+
+      let notMessages = "";
+
+      notMessages += `<div style="display: flex; align-items: center; justify-content: center; margin-top: 0em; flex-direction: column;">
+
+      <img style="width: 10vw; margin-top: 0.7em; margin-bottom: 2em;" src="https://i.ibb.co/C1r34FX/MSM.png" alt="MSM" border="0">
+
+      <h2 style="margin-bottom: 0.5em;" > En este momento no hay mensajes disponibles.</h2>
+
+      </div>`;
+
+      chatTable.innerHTML = notMessages;
+
+    } else if (messageResponse.statusCode === 500) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Error al intentar obtener los mensajes',
+        text: messageResponse.message
+      });
+    };
+
+  });
+
+};
+
+loadMessages()
 
 // Eliminar mensajes: 
 async function deleteMessage(messageId) {
@@ -268,7 +289,7 @@ async function enviarMensaje() {
       text: 'Error: ' + error.message
     });;
   };
-  
+
 };
 
 // Ocultar la vista de carga después de 1 segundo (1000 milisegundos):

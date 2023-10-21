@@ -134,8 +134,8 @@ socketServer.on("connection", async (socket) => {
     // MESSAGES: 
 
     // Enviamos todos los mensajes al usuario:
-    const messages = await viewsController.getAllMessageControllerV();
-    socket.emit("messages", messages.result);
+    const messagesResponse = await viewsController.getAllMessageControllerV();
+    socket.emit("messages", messagesResponse);
     
 });
 
