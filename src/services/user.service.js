@@ -105,7 +105,7 @@ export default class SessionService {
                     }
                 } else if (newRole === "user") {
                     // Si el usuario premium se cambia de role a user, entonces eliminamos todos sus productos:
-                    deleteProdPremRes = await this.productService.deleteAllPremiumProductService(uid, uid, userRole);
+                    deleteProdPremRes = await this.productsService.deleteAllPremiumProductService(uid, uid, userRole);
                     if (deleteProdPremRes.statusCode === 200 || deleteProdPremRes.statusCode === 404) {
                         // Si el usuario premium quiere volver a ser usuario, no validamos los docs: 
                         resultRolPremium = await this.userDAO.updateUser(uid, updateUser);

@@ -1,4 +1,4 @@
-// Estoy middlewares de role son para regular el acceso a las vistas (Con res.render):
+// Este middlewares de role son para regular el acceso a las vistas (Con res.render):
 
 // Denegar la petición a cualquiera que no sea admin - Router:
 export const rolesVMiddlewareAdmin = (req, res, next) => {

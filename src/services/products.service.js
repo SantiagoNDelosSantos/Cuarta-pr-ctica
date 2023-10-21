@@ -68,12 +68,11 @@ export default class ProductService {
                 response.message = resultDAO.message;
             } else if (resultDAO.status === "not found products") {
                 response.statusCode = 404;
-                response.message = `No se encontraron productos. El resultado fue de ${resultDAO.result.products.docs.length} productos.`;
+                response.message = `No se encontraron productos.`
             } else if (resultDAO.status === "success") {
                 response.statusCode = 200;
                 response.message = "Productos obtenidos exitosamente.";
                 response.result = resultDAO.result.products;
-                response.hasNextPage = resultDAO.result.hasNextPage;
             };
         } catch (error) {
             response.statusCode = 500;

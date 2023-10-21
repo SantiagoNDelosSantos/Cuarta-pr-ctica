@@ -20,7 +20,7 @@ import SessionController from '../controllers/sessionController.js';
 // Import Middleware User:
 import {
     rolesRMiddlewareUsers,
-    rolesRMiddlewarePublic 
+    rolesRMiddlewarePublic
 } from "./Middlewares/rolesRoutes.middleware.js";
 
 // Import DTO:
@@ -60,36 +60,43 @@ sessionRouter.get('/githubcallback', authenticateWithGitHub);
 // Formulario extra GitHub - Router:
 sessionRouter.post('/completeProfile', completeProfile);
 
-// Current user - Router: (USER, PREMIUM)
-sessionRouter.get('/current', passport.authenticate('jwt', { session: false, failureRedirect: '/invalidToken' }), rolesRMiddlewarePublic, getCurrentUser);
+// Current user - Router: 
+sessionRouter.get('/current', passport.authenticate('jwt', {
+    session: false,
+    failureRedirect: '/invalidToken'
+}), rolesRMiddlewarePublic, getCurrentUser);
 
-// Ver perfil usuario - Router: 
-sessionRouter.get('/profile', passport.authenticate('jwt', { session: false, failureRedirect: '/invalidToken' }),  rolesRMiddlewareUsers, async (req, res) => {
+// Ver perfil usuario - Router:
+sessionRouter.get('/profile', passport.authenticate('jwt', {
+    session: false,
+    failureRedirect: '/invalidToken'
+}), rolesRMiddlewareUsers, async (req, res) => {
     const result = await sessionController.getUserController(req, res);
-    const resultFilter = new ProfileUserDTO(result.result);
-    let devolver;
-    if (resultFilter) {
-        devolver = resultFilter;
-    } else {
-        devolver = result;
-    };
+    if (result.statusCode === 200) {
+        const resultFilter = new ProfileUserDTO(result.result);
+        if (resultFilter) {
+            result.result = resultFilter;
+        };
+    }
     if (result !== undefined) {
-        res.status(result.statusCode).send(devolver);
+        res.status(result.statusCode).send(result);
     };
 });
 
-// Documentación de los usuarios - Router:
-sessionRouter.get('/getDocsUser', passport.authenticate('jwt', { session: false, failureRedirect: '/invalidToken' }),  rolesRMiddlewareUsers, async (req, res) => {
+// Documentación de los usuarios - Router: 
+sessionRouter.get('/getDocsUser', passport.authenticate('jwt', {
+    session: false,
+    failureRedirect: '/invalidToken'
+}), rolesRMiddlewareUsers, async (req, res) => {
     const result = await sessionController.getUserController(req, res);
-    const resultFilter = new DocsUserDTO(result.result);
-    let devolver;
-    if (resultFilter) {
-        devolver = resultFilter
-    } else {
-        devolver = result
-    };
+    if (result.statusCode === 200) {
+        const resultFilter = new DocsUserDTO(result.result);
+        if (resultFilter) {
+            result.result = resultFilter;
+        };
+    }
     if (result !== undefined) {
-        res.status(result.statusCode).send(devolver);
+        res.status(result.statusCode).send(result);
     };
 });
 
@@ -110,7 +117,10 @@ sessionRouter.post('/resetPassword', async (req, res, next) => {
 });
 
 // Editar perfil - Router:
-sessionRouter.post('/editProfile', passport.authenticate('jwt', { session: false, failureRedirect: '/invalidToken' }), rolesRMiddlewareUsers, uploaderPofiles.single('profile'), async (req, res, next) => {
+sessionRouter.post('/editProfile', passport.authenticate('jwt', {
+    session: false,
+    failureRedirect: '/invalidToken'
+}), rolesRMiddlewareUsers, uploaderPofiles.single('profile'), async (req, res, next) => {
     const result = await sessionController.editProfileController(req, res, next);
     if (result !== undefined) {
         res.status(result.statusCode).send(result);
@@ -118,7 +128,10 @@ sessionRouter.post('/editProfile', passport.authenticate('jwt', { session: false
 });
 
 // Cerrar session - Router:
-sessionRouter.post('/logout', passport.authenticate('jwt', { session: false, failureRedirect: '/invalidToken' }), rolesRMiddlewarePublic, async (req, res, next) => {
+sessionRouter.post('/logout', passport.authenticate('jwt', {
+    session: false,
+    failureRedirect: '/invalidToken'
+}), rolesRMiddlewarePublic, async (req, res, next) => {
     const result = await sessionController.logoutController(req, res, next);
     if (result !== undefined) {
         res.status(result.statusCode).send(result);
@@ -126,7 +139,10 @@ sessionRouter.post('/logout', passport.authenticate('jwt', { session: false, fai
 });
 
 // Eliminar cuenta - Router:  
-sessionRouter.delete('/deleteAccount/:uid', passport.authenticate('jwt', { session: false, failureRedirect: '/invalidToken' }), rolesRMiddlewarePublic,
+sessionRouter.delete('/deleteAccount/:uid', passport.authenticate('jwt', {
+        session: false,
+        failureRedirect: '/invalidToken'
+    }), rolesRMiddlewarePublic,
     async (req, res, next) => {
         const result = await sessionController.deleteUserController(req, res, next);
         if (result !== undefined) {

@@ -62,6 +62,10 @@ export default class ErrorGenerator {
         return `La información del producto es incompleta o incorrecta, se recibió: ${updatedFields}.`;
     }
 
+    static generateFilterErrorInfo(){
+        return `El valor ingresado para el filtro no es válido. Por favor, ingresa un número positivo mayor a 0.`
+    }
+
     // Mensajes: 
 
     static generateMessageDataErrorInfo(messageData) {

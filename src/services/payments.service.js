@@ -50,13 +50,10 @@ export default class PaymentsService {
                 response.statusCode = 200;
                 response.message = "Intento de pago generado exitosamente.";
                 response.result = paymentIntent.url;
-
-
             } else {
                 response.statusCode = 500;
                 response.message = "Error al obtener la URL de Stripe.";
             }
-
         } catch (error) {
             response.statusCode = 500;
             response.message = "Error al generar intento de pago - Service: " + error.message;

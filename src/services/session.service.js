@@ -307,10 +307,13 @@ export default class SessionService {
     async deleteUserService(uid, role) {
         let response = {};
         try {
+
             let cid;
             let email;
             let name;
+
             const userInfo = await this.getUserService(uid)
+
             if (userInfo.statusCode === 500) {
                 response.statusCode = 500;
                 response.message = userInfo.message;
@@ -318,12 +321,15 @@ export default class SessionService {
                 response.statusCode = 404;
                 response.message = `No se encontró ningún usuario con el Email, Nombre o ID, ${identifier}.`;
             } else if (userInfo.statusCode === 200) {
+
                 // Extraemos al info necesaria:
                 cid = userInfo.result.cart;
                 email = userInfo.result.email;
                 name = userInfo.result.first_name;
+
                 // Eliminamos al usuario: 
                 const resultDAO = await this.sessionDAO.deleteUser(uid);
+
                 // Validamos la eliminación:
                 if (resultDAO.status === "error") {
                     response.statusCode = 500;
@@ -332,47 +338,73 @@ export default class SessionService {
                     response.statusCode = 404;
                     response.message = `No se encontró ninguna cuenta con este ID, ${uid}.`;
                 } else if (resultDAO.status === "success") {
+
                     // Borramos el carrito del usuario:
                     const deleteCart = await this.cartService.deleteCartService(cid);
+
                     // Borramos todos los productos publicados por el usuario:
                     const deleteUserProducts = await this.productsService.deleteAllPremiumProductService(uid, uid, role);
-                    // Creamos el cuerpo del correo: 
-                    let html = `
-                    <table cellspacing="0" cellpadding="0" width="100%">
-                        <tr>
-                            <td style="text-align: center;">
-                                <img src="https://i.ibb.co/hd9vsgK/Logo-BK-Grande.png" alt="Logo-BK-Grande" border="0" style="max-width: 40% !important;">
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="text-align: center;">
-                                <h2 style="font-size: 24px; margin: 0;">Notificación de eliminación de cuenta por inactividad</h2>
-                                <p style="font-size: 16px;">
-                                    Estimado ${name}, lamentamos informarte que tu cuenta ha sido eliminada por el administrador. Esta acción fue necesaria para mantener la calidad y seguridad de nuestra plataforma, si consideras que cometimos un error, tienes alguna pregunta o necesitas asistencia, no dudes en ponerte en contacto con nuestro equipo de soporte.
-                                </p>
-                                <p style="font-size: 16px; font-weight: bold;">
-                                    - Fecha y hora de eliminación: ${new Date().toLocaleDateString()} - ${new Date().toLocaleTimeString()}
-                                </p>
-                                <p style="font-size: 16px;">
-                                    Gracias por tu comprensión.
-                                </p>
-                            </td>
-                        </tr>
-                    </table>`
-                    // Envía el correo utilizando la dirección de correo electrónico proporcionada en 'email':
-                    const resultSendMail = await this.mail.sendMail(email, "Notificación de eliminación de cuenta", html);
+
+                    let errorCorreo;
+
+                    if (role === "admin") {
+
+                        // Creamos el cuerpo del correo: 
+                        let html = `
+                        <table cellspacing="0" cellpadding="0" width="100%">
+                            <tr>
+                                <td style="text-align: center;">
+                                    <img src="https://i.ibb.co/hd9vsgK/Logo-BK-Grande.png" alt="Logo-BK-Grande" border="0" style="max-width: 40% !important;">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center;">
+                                    <h2 style="font-size: 24px; margin: 0;">Notificación de eliminación de cuenta</h2>
+                                    <p style="font-size: 16px;">
+                                        Estimado ${name}, lamentamos informarte que tu cuenta ha sido eliminada por el administrador. Esta acción fue necesaria para mantener la calidad y seguridad de nuestra plataforma, si consideras que cometimos un error, tienes alguna pregunta o necesitas asistencia, no dudes en ponerte en contacto con nuestro equipo de soporte.
+                                    </p>
+                                    <p style="font-size: 16px; font-weight: bold;">
+                                        - Fecha y hora de eliminación: ${new Date().toLocaleDateString()} - ${new Date().toLocaleTimeString()}
+                                    </p>
+                                    <p style="font-size: 16px;">
+                                        Gracias por tu comprensión.
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>`
+
+                        // Envía el correo utilizando la dirección de correo electrónico proporcionada en 'email':
+                        const resultSendMail = await this.mail.sendMail(email, "Notificación de eliminación de cuenta", html);
+
+                        if (resultSendMail.rejected && resultSendMail.rejected.length > 0) {
+                            errorCorreo = true;
+                            errorCorreo.message = "La cuenta, se ha eliminado pero ocurrio un error al intantar enviar el correo de notificación al usuario."
+                        }
+                    }
+
+
                     // Validamos los resultados:
-                    if (deleteCart.statusCode === "error" || deleteUserProducts.statusCode === "error" || resultSendMail.rejected && resultSendMail.rejected.length > 0) {
+                    if (deleteCart.statusCode === "error" || deleteUserProducts.statusCode === "error" || errorCorreo === true) {
                         response.statusCode = 500;
-                        response.message = "Error al eliminar la cuenta: " + deleteCart.message || deleteUserProducts.message || "La cuenta, se ha eliminado pero ocurrio un error al intantar enviar el correo de notificación al usuario."
+                        response.message = "Error al eliminar la cuenta: " + deleteCart.message || deleteUserProducts.message || errorCorreo.message
                     } else if (deleteCart.statusCode === 200 && deleteUserProducts.statusCode === 404) {
                         response.statusCode = 200;
                         response.message = "Cuenta eliminada exitosamente. No se encontraron productos asociados a la cuenta.";
-                    } else if (deleteCart.statusCode === 200 && deleteUserProducts.statusCode === 200 || resultSendMail.accepted.length > 0) {
+                    } else if (deleteCart.statusCode === 200 && deleteUserProducts.statusCode === 200) {
                         response.statusCode = 200;
                         response.message = "Cuenta eliminada exitosamente. " + deleteUserProducts.message;
                     }
                 }
+
+
+
+
+
+
+
+
+
+
             };
         } catch (error) {
             response.statusCode = 500;

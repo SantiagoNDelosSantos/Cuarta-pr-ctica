@@ -18,7 +18,7 @@ const paymentsRouter = Router();
 // Instancia de PaymentsController:
 let paymentsController = new PaymentsController();
 
-// Generar intento de pago - Router: (USER, PREMIUM) 
+// Generar intento de pago - Router:
 paymentsRouter.get('/paymentsIntents', passport.authenticate('jwt', {
     session: false,
     failureRedirect: '/invalidToken'

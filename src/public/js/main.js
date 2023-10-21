@@ -1,74 +1,109 @@
 // Iniciar Socket:
 const socket = io();
 
-
-
 const botomStore = document.getElementById("storeButtonPrem")
 
-// Hacemos una solicitud a la ruta '/api/sessions/current para obtener los datos del usuario
-fetch('/api/sessions/current')
+async function saludoYAccesoPrem() {
 
-  .then((response) => response.json())
-  .then((data) => {
+  try {
 
-    // Aquí recibimos los datos del usuario en la variable 'data'
-    let user = data;
+    // Obtenemos los datos del usuario: 
+    const sessionResponse = await fetch('/api/sessions/current', {
+      method: 'GET',
+    });
 
-    if (user.role === "premium") {
-      console.log("hOLA")
+    // Si falla la validación del token:
+    if (sessionResponse.redirected) {
+      let invalidTokenURL = sessionResponse.url;
+      window.location.replace(invalidTokenURL);
+    };
 
-      let botnPrem = ""
+    // Pasamos la respuesta a json:
+    const sessionRes = await sessionResponse.json();
 
-      botnPrem += `<a href="/storeProducts"><img src="https://i.ibb.co/Ptq3Y46/tienda.png" alt="login" border="0" class="logoS"></a>`
+    // Si no se cumplen con los permisos para acceder a la ruta: 
+    if (sessionRes.status === 401) {
 
-      botomStore.innerHTML = botnPrem;
+      Swal.fire({
+        title: sessionRes.h1,
+        text: sessionRes.message,
+        imageUrl: sessionRes.img,
+        imageWidth: 70,
+        imageHeight: 70,
+        imageAlt: sessionRes.h1,
+      });
+
+    } else {
+
+      // Acceso a la vista de publicar, editar y elimiar productos: 
+      if (sessionRes.role === "premium") {
+        let botnPrem = ""
+        botnPrem += `<a href="/storeProducts"><img src="https://i.ibb.co/Ptq3Y46/tienda.png" alt="login" border="0" class="logoS"></a>`
+        botomStore.innerHTML = botnPrem;
+      }
+
+      // Saludo de bienvenida:
+      const saludoYaMostrado = localStorage.getItem('saludoMostrado');
+      const duracionSaludoEnMilisegundos = 12 * 60 * 60 * 1000;
+      if (!saludoYaMostrado) {
+        Swal.fire({
+          icon: 'success',
+          title: '¡Bienvenido!',
+          text: `Hola ${sessionRes.name}, has iniciado sesión con éxito.`,
+        });
+        // Marcar que el saludo:
+        localStorage.setItem('saludoMostrado', Date.now().toString());
+
+        setTimeout(() => {
+          localStorage.removeItem('saludoMostrado');
+        }, duracionSaludoEnMilisegundos);
+      }
 
     }
 
-
+  } catch (error) {
     Swal.fire({
-      icon: 'success',
-      title: '¡Bienvenido!',
-      text: `Hola ${user.name}, has iniciado sesión con éxito.`,
+      icon: 'error',
+      title: 'Error en la solicitud de obtener datos del usuario',
+      text: 'Error: ' + error.message
     });
+  };
 
-  })
-  .catch((error) => {
-    console.error('Error al obtener los datos del usuario:', error);
-  });
+};
 
+saludoYAccesoPrem();
 
 // Capturamos la tabla de productos del DOM:
 const tableProd = document.getElementById('tableProd');
 
+// Esta variable es para limitar el filtro de limit segun el total:
+let totalDocs;
+
 function allProducts() {
 
   // Primera carga de todos los productos:
+  socket.on("products", (productsResponse) => {
 
-  console.log("Primera carga - General")
+    if (productsResponse.statusCode === 200) {
 
-  socket.on("products", (products) => {
+      let htmlProductos = "";
 
-    let productos = products;
-
-    let htmlProductos = "";
-
-    htmlProductos += `
-    <thead>
-      <tr>
-          <th>Modelo</th>
-          <th>Descripción</th>
-          <th>Img Front</th>  
-          <th>Img Back</th> 
-          <th>Stock</th>
-          <th>Precio</th>
-          <th>Unds. a comprar</th>
-          <th>+ Cart</th>
-      </tr>
-    </thead>`;
-
-    productos.docs.forEach((product) => {
       htmlProductos += `
+      <thead>
+        <tr>
+            <th>Modelo</th>
+            <th>Descripción</th>
+            <th>Img Front</th>  
+            <th>Img Back</th> 
+            <th>Stock</th>
+            <th>Precio</th>
+            <th>Unds. a comprar</th>
+            <th>+ Cart</th>
+        </tr>
+      </thead>`;
+
+      productsResponse.result.docs.forEach((product) => {
+        htmlProductos += `
           <tr>
             <td id="${product.title}">${product.title}</td>
             <td class="description">${product.description}</td>
@@ -82,71 +117,155 @@ function allProducts() {
             </td>
           </tr>`;
 
-    });
-
-    tableProd.innerHTML = htmlProductos;
-
-    // Obtengo el id de cada boton +Cart:
-
-    products.docs.forEach((product) => {
-      const botonAgregar = document.getElementById(`agr${product._id}`);
-      const titleElement = document.getElementById(`${product.title}`);
-      const title = titleElement.textContent;
-
-      botonAgregar.addEventListener('click', () => {
-        const cantidadInput = document.getElementById(`cantidadInput${product._id}`);
-        const quantity = cantidadInput.value;
-        addToCart(product._id, title, quantity);
       });
 
-    });
+      tableProd.innerHTML = htmlProductos;
 
-    async function addToCart(productID, title, quantity) {
+      // Obtengo el id de cada boton agregar al carrito:
+      productsResponse.result.docs.forEach((product) => {
 
-      
-      
-      
-      // Hacemos una solicitud a la ruta '/api/sessions/current para obtener los datos del usuario
-      const response = await fetch('/api/sessions/current', {
-        method: 'GET',
+        const botonAgregar = document.getElementById(`agr${product._id}`);
+        const titleElement = document.getElementById(`${product.title}`);
+        const title = titleElement.textContent;
+
+        botonAgregar.addEventListener('click', () => {
+          const cantidadInput = document.getElementById(`cantidadInput${product._id}`);
+          const quantity = cantidadInput.value;
+          addToCart(product._id, title, quantity);
+        });
+
+      });
+
+      // Gaurdamos en la variable el total de los productos devueltos: 
+      totalDocs = productsResponse.result.totalDocs;
+
+      // Captura div de Pags:
+      const Pags = document.getElementById('Pags');
+
+      // Paginación:
+      const hasPrevPage = productsResponse.result.hasPrevPage;
+      const currentPage = productsResponse.result.page;
+      const hasNextPage = productsResponse.result.hasNextPage;
+
+      let htmlPag = "";
+
+      htmlPag +=
+        `<button class="boton" id="Prev">Prev</button>
+        <h2 class="pag pagNumber" id="numberPag">${currentPage}</h2>
+        <button class="boton" id="Next">Next</button>`;
+
+      Pags.innerHTML = htmlPag;
+
+      const prevButton = document.getElementById('Prev');
+      const nextButton = document.getElementById('Next');
+
+      prevButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (hasPrevPage === true) {
+          cambiarPagina(currentPage, "prev");
+        }
+      });
+
+      nextButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (hasNextPage === true) {
+          cambiarPagina(currentPage, "next");
+        }
       })
 
-      if (response.redirected) {
-        // La respuesta indica que se redirigió, por lo que podemos obtener la nueva URL
-        const newURL = response.url;
-        console.log('Se redirigió a:', newURL);
-        
-        // Realizar la redirección a la nueva URL
-        window.location.replace(newURL);
-      }
-    
-    
-    
-    
-    
+    } else if (productsResponse.statusCode === 400) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Filtro no válido',
+        text: productsResponse.message
+      });
+    } else if (productsResponse.statusCode === 404) {
+      Swal.fire({
+        icon: 'warning',
+        title: `${productsResponse.message}`,
+        text: "No se encontraron productos que coincidan con la búsqueda."
+      });
+    } else if (productsResponse.statusCode === 500) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Error al intentar obtener los productos',
+        text: productsResponse.message
+      });
+    };
 
-      const res = await response.json();
+  })
+}
 
+allProducts()
 
-      // Aquí recibimos los datos del usuario en la variable 'data'
-      let user = res;
+async function addToCart(productID, title, quantity) {
 
-      const cartID = user.cart;
-      const productIDValue = productID;
+  // Hacemos una solicitud a la ruta '/api/sessions/current para obtener los datos del usuario
+  const response = await fetch('/api/sessions/current', {
+    method: 'GET',
+  })
 
-      if (user && cartID && productIDValue) {
+  // Si falla la validación del token:
+  if (response.redirected) {
+    let invalidTokenURL = response.url;
+    window.location.replace(invalidTokenURL);
+  };
 
-        // Realizar una solicitud POST al servidor con los datos del formulario:
-        const response = await fetch(`/api/carts/${cartID}/products/${productIDValue}/quantity/${quantity}`, {
-          method: 'POST',
-        })
+  // Pasamos la respuesta a json:
+  const res = await response.json();
 
-        const res = await response.json();
-        const statusCodeRes = res.statusCode;
-        const messageRes = res.message;
-        const customError = res.cause;
+  // Si no se cumplen con los permisos para acceder a la ruta: 
+  if (res.status === 401) {
 
-        console.log(res)
+    Swal.fire({
+      title: res.h1,
+      text: res.message,
+      imageUrl: res.img,
+      imageWidth: 70,
+      imageHeight: 70,
+      imageAlt: res.h1,
+    });
+
+  } else {
+
+    // Aquí recibimos los datos del usuario en la variable 'data'
+    let user = res;
+    const cartID = user.cart;
+    const productIDValue = productID;
+
+    if (user && cartID && productIDValue) {
+
+      // Realizar una solicitud POST al servidor con los datos del formulario:
+      const responseAdd = await fetch(`/api/carts/${cartID}/products/${productIDValue}/quantity/${quantity}`, {
+        method: 'POST',
+      })
+
+      // Si falla la validación del token:
+      if (responseAdd.redirected) {
+        let invalidTokenURL = responseAdd.url;
+        window.location.replace(invalidTokenURL);
+      };
+
+      // Pasamos la respuesta a json:
+      const resAdd = await responseAdd.json();
+
+      // Si no se cumplen con los permisos para acceder a la ruta: 
+      if (resAdd.status === 401) {
+
+        Swal.fire({
+          title: resAdd.h1,
+          text: resAdd.message,
+          imageUrl: resAdd.img,
+          imageWidth: 70,
+          imageHeight: 70,
+          imageAlt: resAdd.h1,
+        });
+
+      } else {
+
+        const statusCodeRes = resAdd.statusCode;
+        const messageRes = resAdd.message;
+        const customError = resAdd.cause;
 
         if (statusCodeRes === 200) {
           Swal.fire({
@@ -157,128 +276,165 @@ function allProducts() {
             title: `${quantity} Unds. de ${title} se ha agregado a tu carrito`,
             icon: 'success'
           });
-        }
-      }
+        } else if (customError || statusCodeRes === 404 || statusCodeRes === 403) {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Error en el carrito',
+            text: customError || messageRes
+          });
+        } else if (statusCodeRes === 500) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error en el carrito',
+            text: messageRes
+          });
+        };
 
+      };
 
-    }
+    };
 
-  });
+  };
 
-}
-
-allProducts()
-
+};
 
 // Busqueda filtrada: 
 
-// Capturamos tabla de filtros e inputs:
-const tableFil = document.getElementById('tableFil');
-const limit = document.getElementById('limit');
-const page = document.getElementById("page");
-const sort = document.getElementById("sort");
-const filtro = document.getElementById("filtro");
-const filtroVal = document.getElementById("filtroVal");
-const limpiarFiltros = document.getElementById("limpiarFiltros");
+// Variables para los filtros:
+let limit;
+let page;
+let sort;
+let filtro;
+let filtroVal;
 
 // Creamos la function filtrarProdcuts:
-function filtrarProducts() {
+function filtrarProducts(limit, page, sort, filtro, filtroVal) {
   const busquedaProducts = {
-    limit: limit.value || 10,
-    page: page.value || 1,
-    sort: sort.value || 1,
-    filtro: filtro.value || null,
-    filtroVal: filtroVal.value || null,
+    limit: limit || 10,
+    page: page || 1,
+    sort: sort || 1,
+    filtro: filtro || null,
+    filtroVal: filtroVal || null,
   }
   socket.emit('busquedaFiltrada', busquedaProducts);
-  return busquedaProducts;
-}
+};
 
-limit.addEventListener('input', () => {
-  filtrarProducts();
+// Cambiar el valor de limit.value:
+const Limit = document.getElementById("limit");
+Limit.addEventListener('input', () => {
+  limit = Limit.value;
+  otrosFiltrosYLimit(limit, page, sort, filtro, filtroVal);
 });
 
-page.addEventListener('input', () => {
-  filtrarProducts();
-});
+// Función para regular el valor de limit según los productos devueltos:
+function otrosFiltrosYLimit(limit, page, sort, filtro, filtroVal) {
 
-sort.addEventListener('change', () => {
-  filtrarProducts();
-});
+  limit = parseInt(Limit.value, 10);
 
-filtroVal.addEventListener('change', () => {
-  filtrarProducts();
-});
+  // Limit igual o menor a totalDocs:
+  if (limit === totalDocs || limit < totalDocs) {
 
-// Captura div de Pags:
+    filtrarProducts(limit, page, sort, filtro, filtroVal);
 
-const Pags = document.getElementById('Pags');
-
-// Paginación:
-
-socket.on('products', (products) => {
-
-  const currentPage = products.page;
-  const hasNextPage = products.hasNextPage;
-
-  let htmlPag = "";
-
-  htmlPag +=
-
-    `<h2 class="pag" id="Prev">Prev </h2>
-
-    <h2 class="pag pagNumber" id="numberPag">${currentPage}</h2>
-
-    <h2 class="pag" id="Next">Next</h2>`;
-
-  Pags.innerHTML = htmlPag;
-
-  const prevButton = document.getElementById('Prev');
-  const nextButton = document.getElementById('Next');
-
-  function cambiarPagina(currentPage, newPage, hasNextPage) {
-
-    if (newPage === -1) {
-      if (currentPage < 1) {
-        currentPage = 1;
-      } else {
-        currentPage = currentPage - 1;
+    setTimeout(() => {
+      // Limit mayor al totalDocs actual:
+      if (limit > totalDocs) {
+        swal.fire({
+          icon: 'warning',
+          title: 'Error al aplicar filtro',
+          text: 'La cantidad especificada en el filtro "Mostrar" es mayor que la cantidad de productos disponibles. El valor del filtro se ajustará automáticamente al total de resultados. Puedes configurar el filtro con cantidades menores a este total si lo deseas.'
+        });
+        limit = totalDocs;
+        filtrarProducts(limit, page, sort, filtro, filtroVal);
+        Limit.value = totalDocs;
       }
-    }
+    }, 500);
 
-    if (newPage === 1) {
-      if (hasNextPage === false) {
-        currentPage;
-      } else {
-        currentPage = currentPage + 1;
-      }
-    }
+  } else if (limit > totalDocs) {
 
-    if (currentPage) {
+    // Limit mayor a totalDocs:
+    Swal.fire({
+      icon: 'warning',
+      title: 'Error al aplicar filtro',
+      text: 'La cantidad especificada en el filtro "Mostrar" es mayor que la cantidad de productos disponibles. El valor del filtro se ajustará automáticamente al total de resultados. Puedes configurar el filtro con cantidades menores a este total si lo deseas.'
+    });
+    limit = totalDocs;
+    filtrarProducts(limit, page, sort, filtro, filtroVal);
+    Limit.value = totalDocs;
 
-      const busquedaProducts = {
-        limit: limit.value || 10,
-        page: Number(currentPage),
-        sort: sort.value || 1,
-        filtro: filtro.value || null,
-        filtroVal: filtroVal.value || null,
-      }
-
-      socket.emit('busquedaFiltrada', busquedaProducts);
-
-      const pageInput = document.getElementById('page');
-      pageInput.value = currentPage.toString();
-    }
   }
 
-  prevButton.addEventListener('click', (e) => {
-    e.preventDefault();
-    cambiarPagina(currentPage, -1, hasNextPage);
-  });
+};
 
-  nextButton.addEventListener('click', (e) => {
-    e.preventDefault();
-    cambiarPagina(currentPage, +1, hasNextPage);
-  });
-
+// Todas las caterorías: 
+const all = document.getElementById("All")
+all.addEventListener('click', () => {
+  filtro = "";
+  filtroVal = "";
+  otrosFiltrosYLimit(limit, page, sort, filtro, filtroVal);
 });
+
+// Buscar por categoría: 
+const laptop = document.getElementById("Laptop")
+laptop.addEventListener('click', () => {
+  filtro = "category";
+  filtroVal = "Laptop";
+  otrosFiltrosYLimit(limit, page, sort, filtro, filtroVal);
+});
+
+const celular = document.getElementById("Celular")
+celular.addEventListener('click', () => {
+  filtro = "category";
+  filtroVal = "Celular";
+  otrosFiltrosYLimit(limit, page, sort, filtro, filtroVal);
+});
+
+const monitor = document.getElementById("Monitor")
+monitor.addEventListener('click', () => {
+  filtro = "category";
+  filtroVal = "Monitor";
+  otrosFiltrosYLimit(limit, page, sort, filtro, filtroVal);
+});
+
+// Buscar por precio menor o mayor: 
+const menorPrice = document.getElementById("MenorPre")
+menorPrice.addEventListener('click', () => {
+  sort = "1";
+  otrosFiltrosYLimit(limit, page, sort, filtro, filtroVal);
+});
+
+const mayorPrice = document.getElementById("MayorPre")
+mayorPrice.addEventListener('click', () => {
+  sort = "-1";
+  otrosFiltrosYLimit(limit, page, sort, filtro, filtroVal);
+});
+
+// Limpiar filtros: 
+const limpiarFiltros = document.getElementById("Limpiar");
+
+limpiarFiltros.addEventListener('click', () => {
+  Limit.value = "";
+  limit = 10;
+  page = 1;
+  sort = 1;
+  filtro = null;
+  filtroVal = null;
+  filtrarProducts(limit, page, sort, filtro, filtroVal);
+});
+
+// Cambiar de página:
+function cambiarPagina(currentPage, newPage) {
+
+  let newCurrentPage;
+
+  if (newPage === "prev") {
+    newCurrentPage = currentPage - 1;
+  }
+
+  if (newPage === "next") {
+    newCurrentPage = currentPage + 1;
+  }
+
+  filtrarProducts(limit, newCurrentPage, sort, filtro, filtroVal);
+
+};

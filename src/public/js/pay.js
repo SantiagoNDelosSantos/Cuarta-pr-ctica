@@ -24,7 +24,7 @@ async function paySuccess() {
     if (sessionResponse.redirected) {
         let invalidTokenURL = sessionResponse.url;
         window.location.replace(invalidTokenURL);
-    }
+    };
 
     // Pasamos la respuesta a json:
     const sessionRes = await sessionResponse.json();
@@ -94,8 +94,7 @@ async function paySuccess() {
                         text: messageRes
                     });
                 }
-            }
-            
+            };          
         } catch (error) {
             Swal.fire({
                 icon: 'error',
@@ -104,6 +103,6 @@ async function paySuccess() {
             });
         };
     };
-}
+};
 
 paySuccess();

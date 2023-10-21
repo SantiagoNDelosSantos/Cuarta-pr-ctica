@@ -16,6 +16,7 @@ import {
 const viewsRouter = Router();
 
 viewsRouter.get('/register', (req, res) => {
+    
     res.render('register', {
         title: 'Registro'
     });

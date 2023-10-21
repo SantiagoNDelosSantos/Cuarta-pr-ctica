@@ -65,6 +65,9 @@ const ErrorEnums = {
 
     INVALID_PRODUCT_ORDER_DATA: 32,
 
+    // Filter products:
+
+    INVALID_FILTER_PRODUCT_ERROR: 33,
 }
 
 export default ErrorEnums;

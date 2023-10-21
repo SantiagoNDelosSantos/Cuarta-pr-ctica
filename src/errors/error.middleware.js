@@ -250,6 +250,18 @@ export const errorMiddleware = (error, req, res, next) => {
             });
             break;
 
+            // Filter products:
+
+        case ErrorEnums.INVALID_FILTER_PRODUCT_ERROR:
+            res.status(400).send({
+                status: "error",
+                error: error.name,
+                cause: error.cause,
+                message: error.message,
+                code: ErrorEnums.INVALID_FILTER_PRODUCT_ERROR
+            });
+            break;
+
         default:
             res.status(500).send({
                 status: "error",

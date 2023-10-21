@@ -1,52 +1,58 @@
-// Import ProductService: 
-import ProductService from "../services/products.service.js";
+// Import de ProductService:
+import ProductService from '../services/products.service.js';
 
 // Import MessageService:
 import MessageService from "../services/message.service.js";
-
-// Import CartService:
-import CartService from "../services/carts.service.js";
 
 // Clase para el Controller de vistas: 
 export default class ViewsController {
 
     constructor() {
-        // Instancias de ViewsService:
+        // Instancia de ProductService:
         this.productService = new ProductService();
+        // Instancias de ViewsService:
         this.messageService = new MessageService();
-        this.cartService = new CartService();
     }
 
     // PRODUCTOS - VISTAS:
-
-    // Traer todos los productos - Controller: 
     async getAllProductsControllerV(limit, page, sort, filtro, filtroVal) {
+
+        let limitV = limit || 10;
+        let pageV = page || 1;
+        let sortV = sort || 1;
+        let filtroV = filtro || null;
+        let filtroValV = filtroVal || null;
+
         let response = {};
-        let limitV = limit;
-        let pageV = page;
-        let sortV = sort;
-        let filtroV = filtro;
-        let filtroValV = filtroVal;
-        try {
 
-            const limit = limitV || 10;
-            const page = pageV || 1;
-            let sort = sortV || 1;
-            let filtro = filtroV || null;
-            let filtroVal = filtroValV || null;
+        if (limitV === "0" || pageV === "0" || filtroValV === "0") {
 
-            const resultService = await this.productService.getAllProductsService(limit, page, sort, filtro, filtroVal);
-            response.statusCode = resultService.statusCode;
-            if (resultService.statusCode === 200) {
-                response.result = resultService.result;
-                response.hasNextPage = resultService.hasNextPage;
+            response.statusCode = 400;
+            if (limitV === "0") {
+                response.message = 'El valor ingresado para el filtro "Mostrar" (Cantidad de productos a mostrar por página), no es válido. Por favor, ingresa un número positivo mayor a 0.'
+            } else if (pageV === "0") {
+                response.message = 'El valor ingresado para el filtro "Página" (Página del catálogo), no es válido. Por favor, ingresa un número positivo mayor a 0.'
+            } else if(filtroV === "price" && filtroValV === "0"){
+                response.message = 'El valor ingresado para el filtro "Precio" (Busqueda de productos por su precio), no es válido. Por favor, ingresa un número positivo mayor a 0.'
+            } else if(filtroV === "stock" && filtroValV === "0"){
+                response.message = 'El valor ingresado para el filtro "Stock" (Busqueda de productos por según su stock), no es válido. Por favor, ingresa un número positivo mayor a 0.'
             };
-        } catch (error) {
-            response.statusCode = 500;
-            response.message = "Error al obtener los productos - Controller: " + error.message;
-        };
+
+        } else {
+            try {
+                const resultService = await this.productService.getAllProductsService(limitV, pageV, sortV, filtroV, filtroValV);
+                response.statusCode = resultService.statusCode;
+                response.message = resultService.message;
+                if (resultService.statusCode === 200) {
+                    response.result = resultService.result;
+                };
+            } catch (error) {
+                response.statusCode = 500;
+                response.message = "Error al obtener los productos - Controller: " + error.message;
+            };
+        }
         return response;
-    };
+    }
 
     // CHAT - VISTA: 
 

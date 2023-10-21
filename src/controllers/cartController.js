@@ -184,7 +184,7 @@ export default class CartController {
         const email = req.user.email;
         // Obtenrmos al orden del a cookie
         const order = req.signedCookies[envPurchaseOrder];
-
+        
         try {
 
             if (order.successfulProducts.length > 0) {

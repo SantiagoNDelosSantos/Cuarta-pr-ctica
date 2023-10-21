@@ -25,7 +25,7 @@ const userRouter = Router();
 // Instancia de UserController: 
 let userController = new UserController();
 
-// Subir documentación de usuario - Router:
+// Subir documentación de usuario - Router: (USER, PREMIUM)
 userRouter.post('/:uid/documents',
 passport.authenticate('jwt', { session: false, failureRedirect: '/invalidToken'}), rolesRMiddlewareUsers, uploaderDocuments.fields([{
         name: 'identification',
@@ -46,7 +46,7 @@ passport.authenticate('jwt', { session: false, failureRedirect: '/invalidToken'}
     };
 });
 
-// Cambiar rol del usuario - Router: 
+// Cambiar rol del usuario - Router: (PUBLIC) 
 userRouter.post('/premium/:uid', passport.authenticate('jwt', { session: false, failureRedirect: '/invalidToken'}), rolesRMiddlewarePublic, async (req, res, next) => {
     const result = await userController.changeRoleController(req, res, next);
     if (result !== undefined) {
@@ -54,13 +54,13 @@ userRouter.post('/premium/:uid', passport.authenticate('jwt', { session: false, 
     };
 });
 
-// Obtener todos los usuarios - Router: 
+// Obtener todos los usuarios - Router: (ADMIN)
 userRouter.get('/getAllUsers', passport.authenticate('jwt', { session: false,  failureRedirect: '/invalidToken'}), rolesRMiddlewareAdmin, async (req, res) => {
     const result = await userController.getAllUsersController(req, res);
     res.status(result.statusCode).send(result);
 });
 
-// Eliminar usuarios inactivos (2 Días) - Router:
+// Eliminar usuarios inactivos (2 Días) - Router: (ADMIN)
 userRouter.delete('/deleteInactivityUsers', passport.authenticate('jwt', { session: false,  failureRedirect: '/invalidToken'}), rolesRMiddlewareAdmin, async (req, res) => {
     const result = await userController.deleteInactivityUsersController(req, res);
     res.status(result.statusCode).send(result);
@@ -73,11 +73,6 @@ userRouter.delete('/deleteInactivityUsers', passport.authenticate('jwt', { sessi
 
 
 // Crear una vista que permita visualizar, modificar el rol y eliminar un usuario. Esta vista solo debe ser accesible por el admin.
-
-
-
-
-// Finalizar las vista necesarias para el proceso de compra. 
 
 // Realizar el despliegue de la aplicación en Railway.app y corroborar que se puede llevar a cabo un proceso de compra completo.  
 

@@ -151,7 +151,7 @@ tbody {
   min-height: 90vh;
   margin: 5vh 10vw;
   padding: 1.5em;
-  
+
   background-color: #00000002;
   -webkit-box-shadow: 1px 2px 20px 6px rgba(0, 0, 0, 0.103);
   -moz-box-shadow: 1px 2px 20px 6px rgba(0, 0, 0, 0.103);
@@ -171,34 +171,26 @@ tbody {
 
 
 
-
+/* Pags: */
 
 #Pags {
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: row !important;
+  margin-top: 1.5em;
 }
 
 .pag {
-  margin-top: 1em;
-  margin-right: 1em;
-  margin-left: 1em;
-  color: #002877;
+  margin-top: 0em;
+  margin-right: 1.5em;
+  margin-left: 1.5em;
+  color: #000000;
   font-family: 'Montserrat';
   font-size: 1.2em;
-  padding: 0.5em;
-  background-color: #d7eefd;
-  border-radius: 1em;
 }
 
-.pagNumber {
-  background: none;
-}
 
-.pagNumber:hover {
-  background: none;
-}
 
 
 
@@ -467,7 +459,8 @@ a:hover {
 .swal2-popup.swal2-modal.swal2-icon-error.swal2-show,
 .swal2-popup.swal2-modal.swal2-icon-info.swal2-show,
 .swal2-popup.swal2-modal.swal2-icon-warning.swal2-show,
-.swal2-popup.swal2-toast, .swal2-container.swal2-center>.swal2-popup  {
+.swal2-popup.swal2-toast,
+.swal2-container.swal2-center>.swal2-popup {
   border-radius: 2em !important;
   backdrop-filter: blur(6px) !important;
   background: rgb(255 255 255 / 68%) !important;
@@ -484,7 +477,7 @@ button.swal2-cancel.swal2-styled {
   background-color: #ffffff00;
 }
 
-.swal2-popup.swal2-toast.swal2-icon-success.swal2-show{
+.swal2-popup.swal2-toast.swal2-icon-success.swal2-show {
   padding: 0.2em;
 }
 
@@ -595,6 +588,36 @@ body.swal2-shown.swal2-height-auto {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+
+
+/* Boton filtros:*/
+
+.botonB {
+  font-family: 'Montserrat';
+  font-size: 1em;
+  color: #000000;
+  background-color: #ffffff;
+  width: auto;
+  padding: 0em 0.2em;
+  border-radius: 1em;
+  text-align: center;
+  cursor: pointer;
+  border: 0.15em solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+}
+
+.botonB:hover {
+  color: #ffffff;
+  background-color: #95d0f7;
+  border: 0.15em solid #95d0f7;
+  border-bottom: 2px solid #3838380e;
 }

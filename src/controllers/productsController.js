@@ -153,16 +153,27 @@ export default class ProductController {
         return response;
     };
 
-    // Traer todos los productos - Controller: 
-    async getAllProductsController(req, res) {
+    // Traer todos los productos - Controller:
+    async getAllProductsController(req, res, next) {
+        let limit = Number(req.limit) || 10;
+        let page = Number(req.query.page) || 1;
+        let sort = (req.query.sort !== undefined) ? Number(req.query.sort) : 1;
+        let filtro = req.query.filtro || null;
+        let filtroVal = req.query.filtroVal || null;
+        try {
+            if (limit === 0 || page === 0 || filtroVal === 0) {
+                CustomError.createError({
+                    name: "Error al intentar filtrar productos.",
+                    cause: ErrorGenerator.generateFilterErrorInfo(),
+                    message: "El valor proporcionado para el filtro no es válido.",
+                    code: ErrorEnums.INVALID_FILTER_PRODUCT_ERROR
+                });
+            }
+        } catch (error) {
+            return next(error);
+        };
         let response = {};
         try {
-            const limit = Number(req.query.limit) || 10;
-            const page = Number(req.query.page) || 1;
-            let sort = (req.query.sort !== undefined) ? Number(req.query.sort) : 1;
-            console.log(sort)
-            let filtro = req.query.filtro || null;
-            let filtroVal = req.query.filtroVal || null;
             const resultService = await this.productService.getAllProductsService(limit, page, sort, filtro, filtroVal);
             response.statusCode = resultService.statusCode;
             response.message = resultService.message;
@@ -172,7 +183,6 @@ export default class ProductController {
                 req.logger.warn(response.message);
             } else if (resultService.statusCode === 200) {
                 response.result = resultService.result;
-                response.hasNextPage = resultService.hasNextPage;
                 req.logger.debug(response.message);
             };
         } catch (error) {

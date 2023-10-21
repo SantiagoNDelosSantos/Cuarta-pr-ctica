@@ -112,11 +112,11 @@ socketServer.on("connection", async (socket) => {
 
     // Envío de todos los productos en tiempo real:
     const productsResponse = await viewsController.getAllProductsControllerV();
-
-    socket.emit('products', productsResponse.result);
+    socket.emit('products', productsResponse);
 
     // Recibo los filtros de main.js en busquedaProducts:
     socket.on('busquedaFiltrada', async (busquedaProducts) => {
+
         const {
             limit,
             page,
@@ -124,8 +124,11 @@ socketServer.on("connection", async (socket) => {
             filtro,
             filtroVal
         } = busquedaProducts;
+
+        
+    // Envío de todos los productos filtrados en tiempo real:
         const productsResponse = await viewsController.getAllProductsControllerV(limit, page, sort, filtro, filtroVal);
-        socket.emit('products', productsResponse.result);
+        socket.emit('products', productsResponse);
     });
 
     // MESSAGES: 

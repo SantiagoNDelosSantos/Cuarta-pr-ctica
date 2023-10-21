@@ -27,46 +27,38 @@
 
     </div>
 
-    <h1>Filtros:</h1>
+    <div style="display: flex; flex-direction: row; justify-content: center; margin-top: 0.6em; margin-bottom: 1em;">
 
-    <table id="tableFil" class="table">
+            <div style="display: flex; flex-direction: row; justify-content: center; gap: 0.5em; padding: 0.3em;">
 
-        <thead>
-            <tr>
-                <th>Limit</th>
-                <th>Page</th>
-                <th>Sort</th>
-                <th>Filtro</th>
-                <th>Filtro Valor</th>
-            </tr>
-        </thead>
+                <button id="All" class="botonB">Todas las categorías</button>
 
-        <tbody>
-            <tr>
+                <button id="Laptop" class="botonB">Laptops</button>
 
-                <td><input type="text" id="limit" placeholder="Indicar Limit" /></td>
+                <button id="Celular" class="botonB">Celulares</button>
 
-                <td><input type="text" id="page" placeholder="Indicar Page" /></td>
+                <button id="Monitor" class="botonB">Monitores</button>
 
-                <td><input type="text" id="sort" placeholder="1 / -1" /></td>
+                <button id="MenorPre" class="botonB">Menor precio</button>
 
-                <td><input type="text" id="filtro" placeholder="category / stock" /></td>
+                <button id="MayorPre" class="botonB">Mayor precio</button>
 
-                <td><input type="text" id="filtroVal" placeholder="Indicar Valor de Filtro" /></td>
+                <input type="number" id="limit" class="botonB"
+                    style="display: flex; justify-content: center; align-items: center; height: 3em;  margin: 0em 0em; width: 6.5em;"
+                    placeholder="Mostrar" />
 
-            </tr>
+                <button id="Limpiar" class="botonB">Limpiar filtros</button>
 
-        </tbody>
+            </div>
 
-    </table>
+    </div>
 
-    <h1>Catálogo en tiempo real:</h1>
+    <h1>Catálogo:</h1>
 
 
     <table id="tableProd" class="table">
     </table>
 
-    
     <div id="Pags"></div>
 
 </div>

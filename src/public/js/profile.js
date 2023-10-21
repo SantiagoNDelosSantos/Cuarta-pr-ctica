@@ -22,65 +22,106 @@ async function verPerfil() {
         method: 'GET',
     })
 
+    // Si falla la validación del token:
+    if (response.redirected) {
+        const invalidTokenURL = response.url;
+        window.location.replace(invalidTokenURL);
+    };
+
+    // Pasamos a la respuesta a json: 
     const res = await response.json();
 
-    if (res) {
+    // Si no se cumplen con los permisos para acceder a la ruta: 
+    if (res.status === 401) {
 
-        // HTML para el cuadro de perfil:
-        let htmlPerfil = "";
-
-        htmlPerfil += `
-
-        <div
-        style="display: flex; justify-content: center; gap: 2em; flex-direction: row; align-items: center; margin: 0em 2em; ">
-
-            <div style="display: flex; justify-content: center; gap: 0em; flex-direction: column; align-items: center; width: 80%; border-right: 0.1em solid #95d0f7; padding-right: 1.5em">
-
-            <img src=${res.photo} alt="ADD-PHOTO" border="0" style="height: 25vh; width: 25vh; object-fit: cover; object-position: center; border-radius: 1em; margin-bottom: 0em;" />
-            
-            </div>
-
-            <div style="display: flex; justify-content: center; gap: 2em; flex-direction: column; align-items: center; flex-grow: 1;">
-                
-                <div style="display: flex; gap: 6em;">
-
-                    <div style="display: flex; flex-direction: row ; align-items: center; gap: 1.33em">
-                        <h2 style="margin-top: 0em">Nombre: </h2>
-                        <p style="margin-top: 0em">${res.name}</p>
-                    </div>
-
-                    <div style="display: flex; flex-direction: row ; align-items: center; gap: 1.33em">
-                        <h2 style="margin-top: 0em">Rol:</h2>
-                        <p style="margin-top: 0em"> ${res.role}</p>
-                    </div>
-
-                </div>
-                
-                <div style="display: flex; flex-direction: column ; align-items: center; gap: 0.5em">
-                    <h2 style="margin-top: 0em">Correo: </h2>
-                    <p style="margin-top: 0em"> ${res.email}</p>
-                </div>
-
-            </div>
-            
-        </div>`
-
-        sectionPerfil.innerHTML = htmlPerfil;
-
-        // HTML para el boton de editar perfil:
-        let htmlEditarP = "";
-
-        htmlEditarP += `<button class="boton" id="btnEditarPerfil">Editar perfil</button>`
-
-        btnsEditarPerfil.innerHTML = htmlEditarP;
-
-        // Captura bóton de editar perfil funcion:
-        const btnEditarPerfil = document.getElementById('btnEditarPerfil');
-
-        // Escuchamos el envento del bóton:
-        btnEditarPerfil.addEventListener("click", () => {
-            editarPerfil();
+        Swal.fire({
+            title: res.h1,
+            text: res.message,
+            imageUrl: res.img,
+            imageWidth: 70,
+            imageHeight: 70,
+            imageAlt: res.h1,
         });
+
+    } else {
+
+        // Si se pudo acceder a la ruta, entonces extraemos la info necesaria:
+        const statusCodeRes = res.statusCode;
+        const messageRes = res.message;
+        const user = res.result;
+
+        if (statusCodeRes === 200) {
+
+            // HTML para el cuadro de perfil:
+            let htmlPerfil = "";
+
+            htmlPerfil += `
+
+                <div
+                style="display: flex; justify-content: center; gap: 2em; flex-direction: row; align-items: center; margin: 0em 2em; ">
+
+                    <div style="display: flex; justify-content: center; gap: 0em; flex-direction: column; align-items: center; width: 80%; border-right: 0.1em solid #95d0f7; padding-right: 1.5em">
+
+                    <img src=${user.photo} alt="ADD-PHOTO" border="0" style="height: 25vh; width: 25vh; object-fit: cover; object-position: center; border-radius: 1em; margin-bottom: 0em;" />
+                    
+                    </div>
+
+                    <div style="display: flex; justify-content: center; gap: 2em; flex-direction: column; align-items: center; flex-grow: 1;">
+                        
+                        <div style="display: flex; gap: 6em;">
+
+                            <div style="display: flex; flex-direction: row ; align-items: center; gap: 1.33em">
+                                <h2 style="margin-top: 0em">Nombre: </h2>
+                                <p style="margin-top: 0em">${user.name}</p>
+                            </div>
+
+                            <div style="display: flex; flex-direction: row ; align-items: center; gap: 1.33em">
+                                <h2 style="margin-top: 0em">Rol:</h2>
+                                <p style="margin-top: 0em"> ${user.role}</p>
+                            </div>
+
+                        </div>
+                        
+                        <div style="display: flex; flex-direction: column ; align-items: center; gap: 0.5em">
+                            <h2 style="margin-top: 0em">Correo: </h2>
+                            <p style="margin-top: 0em"> ${user.email}</p>
+                        </div>
+
+                    </div>
+                    
+                </div>`
+
+            sectionPerfil.innerHTML = htmlPerfil;
+
+            // HTML para el boton de editar perfil:
+            let htmlEditarP = "";
+
+            htmlEditarP += `<button class="boton" id="btnEditarPerfil">Editar perfil</button>`
+
+            btnsEditarPerfil.innerHTML = htmlEditarP;
+
+            // Captura bóton de editar perfil funcion:
+            const btnEditarPerfil = document.getElementById('btnEditarPerfil');
+
+            // Escuchamos el envento del bóton:
+            btnEditarPerfil.addEventListener("click", () => {
+                editarPerfil();
+            });
+
+        } else if (statusCodeRes === 404) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Error al obtener perfil del usuario',
+                text: messageRes
+            });
+        } else if (statusCodeRes === 500) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error al obtener perfil del usuario',
+                text: messageRes
+            });
+        };
+
     };
 
 };
@@ -97,85 +138,125 @@ async function editarPerfil() {
         method: 'GET',
     })
 
+    // Si falla la validación del token:
+    if (response.redirected) {
+        const invalidTokenURL = response.url;
+        window.location.replace(invalidTokenURL);
+    };
+
+    // Pasamos a la respuesta a json: 
     const res = await response.json();
 
-    if (res) {
+    // Si no se cumplen con los permisos para acceder a la ruta: 
+    if (res.status === 401) {
 
-        let htmlPerfil = ""
-
-        htmlPerfil += `
-
-        <form id="editProfileForm" style="display: flex; justify-content: center; gap: 2em; flex-direction: row; align-items: center; width: 100%;">
-
-            <div style="display: flex; justify-content: center; gap: 0em; flex-direction: column; align-items: center; width: 80%; border-right: 0.1em solid #95d0f7; padding-right: 1.5em">
-
-            <img src=${res.photo} alt="ADD-PHOTO" border="0" style="height: 25vh; width: 25vh; object-fit: cover; object-position: center; border-radius: 1em; margin-bottom: 1em;" />
-        
-                <div>
-
-                    <div style="display: flex; justify-content: center; gap: 1em; flex-direction: column; align-items: center;">
-                        
-                        <input type="file" id="archivoInputProfile" name="profile" style="display: none;">
-
-                        <label for="archivoInputProfile" style="padding: 10px; font-family: 'Montserrat'; background-color: #bfe4fd; color: #002877; cursor: pointer; border-radius: 1em; border: none;">
-                            <span id="nombreArchivo">Agrega una foto de perfil</span>
-                        </label>
-
-                    </div>
-                
-                </div>
-
-            </div>
-
-            <div style="display: flex; justify-content: center; gap: 1.5em; flex-direction: column; align-items: center; flex-grow: 1; width: 120% !important">
-        
-                    <div style="width: 100% !important">
-        
-                        <h2 style="margin-top: 0em">Nombre:</h2>
-                        <input style="margin-top: 0.5em; width: 100% !important" type="text" id="nombreInput" name="name"
-                            placeholder="${res.name}" required>
-        
-                    </div>
-        
-                    <div style="width: 100% !important">
-                        <h2 style="margin-top: 0em">Correo:</h2>
-                        <input style="margin-top: 0.5em; width: 100% !important" type="text" id="correoInput" name="email"
-                            placeholder="${res.email}" required>
-                    </div>
-        
-            </div>
-        
-        </form>`
-
-        sectionPerfil.innerHTML = htmlPerfil;
-
-        let htmlEditarP = "";
-
-        htmlEditarP += `<button class="boton" id="btnConfirmarCambios">Confirmar cambios</button>`
-
-        btnsEditarPerfil.innerHTML = htmlEditarP;
-
-        const archivoInputProfile = document.getElementById('archivoInputProfile');
-        const nombreArchivo = document.getElementById('nombreArchivo');
-
-        archivoInputProfile.addEventListener('change', () => {
-            const archivos = archivoInputProfile.files;
-            nombreArchivo.textContent = archivos[0].name;
-        })
-
-        // Captura formulario: 
-
-        const formEditProfile = document.getElementById('editProfileForm');
-
-        // Captura bóton de confirmar cambios función:
-        const btnConfirmarCambios = document.getElementById('btnConfirmarCambios');
-
-        // Escuchamos el envento del bóton:
-        btnConfirmarCambios.addEventListener("click", () => {
-            confirmarCambios(formEditProfile);
+        Swal.fire({
+            title: res.h1,
+            text: res.message,
+            imageUrl: res.img,
+            imageWidth: 70,
+            imageHeight: 70,
+            imageAlt: res.h1,
         });
 
+    } else {
+
+        // Si se pudo acceder a la ruta, entonces extraemos la info necesaria:
+        const statusCodeRes = res.statusCode;
+        const messageRes = res.message;
+        const user = res.result;
+
+        if (statusCodeRes === 200) {
+
+            let htmlPerfil = ""
+
+            htmlPerfil += `
+
+                <form id="editProfileForm" style="display: flex; justify-content: center; gap: 2em; flex-direction: row; align-items: center; width: 100%;">
+
+                    <div style="display: flex; justify-content: center; gap: 0em; flex-direction: column; align-items: center; width: 80%; border-right: 0.1em solid #95d0f7; padding-right: 1.5em">
+
+                    <img src=${user.photo} alt="ADD-PHOTO" border="0" style="height: 25vh; width: 25vh; object-fit: cover; object-position: center; border-radius: 1em; margin-bottom: 1em;" />
+                
+                        <div>
+
+                            <div style="display: flex; justify-content: center; gap: 1em; flex-direction: column; align-items: center;">
+                                
+                                <input type="file" id="archivoInputProfile" name="profile" style="display: none;">
+
+                                <label for="archivoInputProfile" style="padding: 10px; font-family: 'Montserrat'; background-color: #bfe4fd; color: #002877; cursor: pointer; border-radius: 1em; border: none;">
+                                    <span id="nombreArchivo">Agrega una foto de perfil</span>
+                                </label>
+
+                            </div>
+                        
+                        </div>
+
+                    </div>
+
+                    <div style="display: flex; justify-content: center; gap: 1.5em; flex-direction: column; align-items: center; flex-grow: 1; width: 120% !important">
+                
+                            <div style="width: 100% !important">
+                
+                                <h2 style="margin-top: 0em">Nombre:</h2>
+                                <input style="margin-top: 0.5em; width: 100% !important" type="text" id="nombreInput" name="name"
+                                    placeholder="${user.name}" required>
+                
+                            </div>
+                
+                            <div style="width: 100% !important">
+                                <h2 style="margin-top: 0em">Correo:</h2>
+                                <input style="margin-top: 0.5em; width: 100% !important" type="text" id="correoInput" name="email"
+                                    placeholder="${user.email}" required>
+                            </div>
+                
+                    </div>
+                
+                </form>`
+
+            sectionPerfil.innerHTML = htmlPerfil;
+
+            let htmlEditarP = "";
+
+            htmlEditarP += `<button class="boton" id="btnConfirmarCambios">Confirmar cambios</button>`
+
+            btnsEditarPerfil.innerHTML = htmlEditarP;
+
+            const archivoInputProfile = document.getElementById('archivoInputProfile');
+            const nombreArchivo = document.getElementById('nombreArchivo');
+
+            archivoInputProfile.addEventListener('change', () => {
+                const archivos = archivoInputProfile.files;
+                nombreArchivo.textContent = archivos[0].name;
+            })
+
+            // Captura formulario: 
+            const formEditProfile = document.getElementById('editProfileForm');
+
+            // Captura bóton de confirmar cambios función:
+            const btnConfirmarCambios = document.getElementById('btnConfirmarCambios');
+
+            // Escuchamos el envento del bóton:
+            btnConfirmarCambios.addEventListener("click", () => {
+                confirmarCambios(formEditProfile);
+            });
+
+        } else if (statusCodeRes === 404) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Error al obtener perfil del usuario',
+                text: messageRes
+            });
+        } else if (statusCodeRes === 500) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error al obtener perfil del usuario',
+                text: messageRes
+            });
+        };
+
     };
+
 };
 
 async function confirmarCambios(formEditProfile) {
@@ -184,55 +265,72 @@ async function confirmarCambios(formEditProfile) {
     const data = new FormData(formEditProfile);
 
     try {
+
         // Realizar una solicitud POST al servidor con los datos del formulario:
         const response = await fetch('/api/sessions/editProfile', {
             method: 'POST',
             body: data,
         });
 
-        const res = await response.json();
-        const statusCodeRes = res.statusCode;
-        const messageRes = res.message;
-        const customError = res.cause;
-
-        if (statusCodeRes === 200) {
-            Swal.fire({
-                icon: 'success',
-                title: 'Editar perfil',
-                text: messageRes || 'Perfil actualizado exitosamente.',
-            });
-            setTimeout(() => {
-                verPerfil();
-            }, 2000);
-        } else if (customError) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Error al intentar actualizar perfil',
-                text: customError || 'Hubo un problema al intentar actualizar perfil.',
-            });
-        } else if (statusCodeRes === 400) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Sin cambios',
-                text: messageRes || 'No se realizaron cambios en el perfil.',
-            })
-            setTimeout(() => {
-                verPerfil();
-            }, 2000);
-        } else if (statusCodeRes === 404) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Error al intentar cerrar session',
-                text: messageRes || 'Hubo un problema al intentar intentar actualizar perfil.',
-            });
-        } else if (statusCodeRes === 500) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error al intentar cerrar session',
-                text: messageRes || 'Hubo un problema al intentar intentar actualizar perfil.',
-            });
+        // Si falla la validación del token:
+        if (response.redirected) {
+            let invalidTokenURL = response.url;
+            window.location.replace(invalidTokenURL);
         };
 
+        // Pasamos la respuesta a json:
+        const res = await response.json();
+
+        // Si no se cumplen con los permisos para acceder a la ruta: 
+        if (res.status === 401) {
+
+            Swal.fire({
+                title: res.h1,
+                text: res.message,
+                imageUrl: res.img,
+                imageWidth: 70,
+                imageHeight: 70,
+                imageAlt: res.h1,
+            });
+
+        } else {
+
+            const statusCodeRes = res.statusCode;
+            const messageRes = res.message;
+            const customError = res.cause;
+
+            if (statusCodeRes === 200) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Editar perfil',
+                    text: messageRes || 'Perfil actualizado exitosamente.',
+                });
+                setTimeout(() => {
+                    verPerfil();
+                }, 2000);
+            } else if (customError || statusCodeRes === 404) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Error al intentar actualizar perfil',
+                    text: customError | messageRes || 'Hubo un problema al intentar actualizar perfil.',
+                });
+            } else if (statusCodeRes === 400) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Sin cambios',
+                    text: messageRes || 'No se realizaron cambios en el perfil.',
+                })
+                setTimeout(() => {
+                    verPerfil();
+                }, 2000);
+            } else if (statusCodeRes === 500) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error al intentar actualizar perfil',
+                    text: messageRes || 'Hubo un problema al intentar intentar actualizar perfil.',
+                });
+            };
+        }
     } catch (error) {
         Swal.fire({
             icon: 'error',
@@ -259,41 +357,64 @@ async function cerrarSession() {
             method: 'POST',
         })
 
+        // Si falla la validación del token:
+        if (response.redirected) {
+            let invalidTokenURL = response.url;
+            window.location.replace(invalidTokenURL);
+        };
+
+        // Pasamos la respuesta a json:
         const res = await response.json();
-        const statusCode = res.statusCode;
-        const message = res.message;
-        const customError = res.message;
 
-        if (statusCode === 200) {
+        // Si no se cumplen con los permisos para acceder a la ruta: 
+        if (res.status === 401) {
 
             Swal.fire({
-                icon: 'success',
-                title: 'Logout',
-                text: message || 'La session se ha cerrado exitosamente',
+                title: res.h1,
+                text: res.message,
+                imageUrl: res.img,
+                imageWidth: 70,
+                imageHeight: 70,
+                imageAlt: res.h1,
             });
 
-            setTimeout(() => {
-                window.location.replace('/login');
-            }, 2000);
+        } else {
 
-        } else if (customError) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Error al intentar cerrar session',
-                text: customError || 'Hubo un problema al intentar cerrar la session.',
-            });
-        } else if (statusCode === 404) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Error al intentar cerrar session',
-                text: message || 'Hubo un problema al intentar cerrar la session.',
-            });
-        } else if (statusCode === 500) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Error al intentar cerrar session',
-                text: message || 'Hubo un problema al intentar cerrar la session.',
-            });
+            const statusCode = res.statusCode;
+            const message = res.message;
+            const customError = res.message;
+
+            if (statusCode === 200) {
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Logout',
+                    text: message || 'La session se ha cerrado exitosamente',
+                });
+
+                setTimeout(() => {
+                    window.location.replace('/login');
+                }, 2000);
+
+            } else if (customError) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Error al intentar cerrar session',
+                    text: customError || 'Hubo un problema al intentar cerrar la session.',
+                });
+            } else if (statusCode === 404) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Error al intentar cerrar session',
+                    text: message || 'Hubo un problema al intentar cerrar la session.',
+                });
+            } else if (statusCode === 500) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error al intentar cerrar session',
+                    text: message || 'Hubo un problema al intentar cerrar la session.',
+                });
+            };
         };
 
     } catch (error) {
@@ -334,59 +455,100 @@ async function cerrarCuenta() {
         method: 'GET',
     });
 
+    // Si falla la validación del token:
+    if (sessionResponse.redirected) {
+        let invalidTokenURL = sessionResponse.url;
+        window.location.replace(invalidTokenURL);
+    };
+
+    // Pasamos la respuesta a json:
     const sessionRes = await sessionResponse.json();
-    const uid = sessionRes.userId;
-    const cid = sessionRes.cart;
 
-    try {
+    // Si no se cumplen con los permisos para acceder a la ruta: 
+    if (sessionRes.status === 401) {
 
-        const response = await fetch(`api/sessions/deleteAccount/${uid}`, {
-            method: 'DELETE',
-        })
+        Swal.fire({
+            title: sessionRes.h1,
+            text: sessionRes.message,
+            imageUrl: sessionRes.img,
+            imageWidth: 70,
+            imageHeight: 70,
+            imageAlt: sessionRes.h1,
+        });
 
-        const res = await response.json();
-        const statusCode = res.statusCode;
-        const message = res.message;
-        const customError = res.message;
+    } else {
 
-        if (statusCode === 200) {
+        const uid = sessionRes.userId;
 
-            Swal.fire({
-                icon: 'success',
-                title: 'Eliminar cuenta',
-                text: message || 'La cuenta se ha eliminado exitosamente',
-            });
+        try {
 
-            setTimeout(() => {
-                window.location.replace('/login');
-            }, 4000);
+            const response = await fetch(`api/sessions/deleteAccount/${uid}`, {
+                method: 'DELETE',
+            })
 
-        } else if (customError) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Error al intentar eliminar cuenta',
-                text: customError || 'Hubo un problema al intentar eliminar la cuenta.',
-            });
-        } else if (statusCode === 404) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Error al intentar eliminar cuenta',
-                text: message || 'Hubo un problema al intentar eliminar la cuenta.',
-            });
-        } else if (statusCode === 500) {
+            // Si falla la validación del token:
+            if (response.redirected) {
+                let invalidTokenURL = response.url;
+                window.location.replace(invalidTokenURL);
+            };
+
+            // Pasamos la respuesta a json:
+            const res = await response.json();
+
+            // Si no se cumplen con los permisos para acceder a la ruta: 
+            if (res.status === 401) {
+
+                Swal.fire({
+                    title: res.h1,
+                    text: res.message,
+                    imageUrl: res.img,
+                    imageWidth: 70,
+                    imageHeight: 70,
+                    imageAlt: res.h1,
+                });
+
+            } else {
+
+                const statusCode = res.statusCode;
+                const message = res.message;
+                const customError = res.message;
+
+                if (statusCode === 200) {
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Eliminar cuenta',
+                        text: message || 'La cuenta se ha eliminado exitosamente',
+                    });
+
+                    setTimeout(() => {
+                        window.location.replace('/login');
+                    }, 4000);
+
+                } else if (customError || statusCode === 404) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Error al intentar eliminar cuenta',
+                        text: customError || message || 'Hubo un problema al intentar eliminar la cuenta.',
+                    });
+                } else if (statusCode === 500) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error al intentar eliminar cuenta',
+                        text: message || 'Hubo un problema al intentar eliminar la cuenta.',
+                    });
+                };
+
+            };
+
+        } catch (error) {
             Swal.fire({
                 icon: 'error',
-                title: 'Error al intentar eliminar cuenta',
-                text: message || 'Hubo un problema al intentar eliminar la cuenta.',
+                title: 'Error en la solicitud de eliminar cuenta',
+                text: 'Error: ' + error.message
             });
         };
 
-    } catch (error) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Error en la solicitud de eliminar cuenta',
-            text: 'Error: ' + error.message
-        });
     };
 
 };

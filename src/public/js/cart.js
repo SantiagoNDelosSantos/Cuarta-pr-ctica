@@ -32,7 +32,7 @@ async function loadCart() {
   if (sessionResponse.redirected) {
     let invalidTokenURL = sessionResponse.url;
     window.location.replace(invalidTokenURL);
-  }
+  };
 
   // Pasamos la respuesta a json:
   const sessionRes = await sessionResponse.json();
@@ -47,7 +47,7 @@ async function loadCart() {
       imageWidth: 70,
       imageHeight: 70,
       imageAlt: sessionRes.h1,
-    })
+    });
 
   } else {
 
@@ -59,13 +59,13 @@ async function loadCart() {
       // Obtenemos el carrito del usuario: 
       const cartResponse = await fetch(`/api/carts/${cid}`, {
         method: 'GET',
-      })
+      });
 
       // Si falla la validación del token:
       if (cartResponse.redirected) {
         const invalidTokenURL = cartResponse.url;
         window.location.replace(invalidTokenURL);
-      }
+      };
 
       // Pasamos a la respuesta a json: 
       const cartRes = await cartResponse.json();
@@ -80,7 +80,7 @@ async function loadCart() {
           imageWidth: 70,
           imageHeight: 70,
           imageAlt: cartRes.h1,
-        })
+        });
 
       } else {
 
@@ -100,7 +100,7 @@ async function loadCart() {
                 text: messageRes
               });
             }, 1000);
-          }
+          };
 
           // Si no hay productos:
           if (resultCart.products.length === 0) {
@@ -116,7 +116,7 @@ async function loadCart() {
           } else if (resultCart.products.length > 0) {
             // Si hay productos:
             loadProducts(resultCart);
-          }
+          };
 
         } else if (customError || statusCodeRes === 404) {
           Swal.fire({
@@ -132,7 +132,7 @@ async function loadCart() {
           });
         }
 
-      }
+      };
 
     } catch (error) {
       Swal.fire({
@@ -140,17 +140,17 @@ async function loadCart() {
         title: 'Error en la solicitud de obtener carrito',
         text: 'Error: ' + error.message
       });
-    }
+    };
 
-  }
+  };
 
-}
+};
 
-loadCart()
+loadCart();
 
 async function loadProducts(resultCart) {
 
-  const tableProdCartID = document.getElementById('tableProdCartID')
+  const tableProdCartID = document.getElementById('tableProdCartID');
 
   let total = 0;
 
@@ -369,7 +369,6 @@ async function deleteToCart(pid, title) {
       const customError = deleteRes.cause;
 
       if (statusCodeRes === 200) {
-
         Swal.fire({
           toast: true,
           position: 'top-end',
@@ -378,15 +377,7 @@ async function deleteToCart(pid, title) {
           title: `Has eliminado ${title} de tu carrito exitosamente.`,
           icon: 'success'
         });
-
-        const cartResponse = await fetch(`/api/carts/${cid}`, {
-          method: 'GET',
-        })
-
-        const cartRes = await cartResponse.json();
-        const resultCart = cartRes.result;
-        loadProducts(resultCart);
-
+        loadCart();
       } else if (customError || statusCodeRes === 404) {
         Swal.fire({
           icon: 'warning',
@@ -448,7 +439,6 @@ async function deleteAllProds() {
       const customError = deleteRes.cause;
 
       if (statusCodeRes === 200) {
-
         Swal.fire({
           toast: true,
           position: 'top-end',
@@ -457,9 +447,7 @@ async function deleteAllProds() {
           title: `Has eliminado todos los productos del carrito exitosamente.`,
           icon: 'success'
         });
-
         loadCart();
-
       } else if (customError || statusCodeRes === 404) {
         Swal.fire({
           icon: 'warning',
