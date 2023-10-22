@@ -33,17 +33,25 @@ const ProductsSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    thumbnails: {
-        type: [{
-            name: {
-                type: String,
-                required: true
-            },
-            reference: {
-                type: String,
-                required: true
-            }
-        }]
+    imgFront: {
+        name: {
+            type: String,
+            required: true
+        },
+        reference: {
+            type: String,
+            required: true
+        },
+    },
+    imgBack: {
+        name: {
+            type: String,
+            required: true
+        },
+        reference: {
+            type: String,
+            required: true
+        },
     },
     owner: {
         type: String,

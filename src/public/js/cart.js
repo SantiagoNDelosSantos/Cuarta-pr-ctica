@@ -148,7 +148,7 @@ async function loadProducts(resultCart) {
 
     let title = product.product.title;
     let stock = product.product.stock
-    let img = product.product.thumbnails[0].reference
+    let img = product.product.imgFront.reference
     let price = product.product.price;
     let quantityInCart = product.quantity;
     let pidInCart = product._id;

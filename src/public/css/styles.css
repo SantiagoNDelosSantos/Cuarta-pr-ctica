@@ -30,7 +30,6 @@ h1 {
   font-family: 'Montserrat';
   margin-top: 17px;
   text-align: center;
-
 }
 
 h2 {
@@ -127,14 +126,17 @@ tbody {
 
 .cart-icon {
   max-width: 8vh;
+  cursor: pointer;
 }
 
 .cart-icon:hover {
   max-width: 7vh;
+  
 }
 
 .papelera-icon {
   max-width: 7vh;
+  cursor: pointer;
 }
 
 .papelera-icon:hover {
@@ -620,4 +622,28 @@ body.swal2-shown.swal2-height-auto {
   background-color: #95d0f7;
   border: 0.15em solid #95d0f7;
   border-bottom: 2px solid #3838380e;
+}
+
+/* SWEET ALERT - EDITAR PRODUCTO: */
+
+div:where(.swal2-container) .swal2-input {
+  height: 2em !important;
+  padding: 0 0.75em;
+  border-radius: 2em;
+  background: #EFEFEF;
+  width: 10em;
+}
+
+.swal2-popup.swal2-modal.swal2-show {
+  width: 50vw;
+}
+
+.swal2-input {
+  color: #000000;
+  font-size: 1em; 
+}
+
+.swal2-input::placeholder {
+  color: #757575;
+  font-size: 1em;
 }

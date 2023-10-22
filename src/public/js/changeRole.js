@@ -80,7 +80,7 @@ async function cargaChageRole() {
 
 cargaChageRole();
 
-// Función para extraer el nombre del archivo de una URL con uid:
+// Función para extraer el nombre del archivo de una URL:
 function extractFileNameWithUID(url) {
     const match = url.match(/[-\w]+\s*-\s*(.+)/);
     if (match) {

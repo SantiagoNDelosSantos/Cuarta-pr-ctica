@@ -37,61 +37,178 @@
             <img src="https://i.ibb.co/hd9vsgK/Logo-BK-Grande.png" alt="Logo-BK-Grande" border="0" class="logoGRDChat">
         </div>
 
-
-        <!-- ... Tu código HTML anterior ... -->
-
         <h1>Publicar productos:</h1>
 
-        <table id="newProductTable" class="table">
-            <thead>
-                <tr>
-                    <th>Modelo</th>
-                    <th>Descripción</th>
-                    <th>Img Front</th>
-                    <th>Img Back</th>
-                    <th>Stock</th>
-                    <th>Precio</th>
-                    <th>Publicar</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><input type="text" name="model" placeholder="Modelo"></td>
-                    <td><input type="text" name="description" placeholder="Descripción"></td>
-                    <td><input type="file" name="imgFront"></td>
-                    <td><input type="file" name="imgBack"></td>
-                    <td><input type="number" name="stock" placeholder="Stock"></td>
-                    <td><input type="number" name="price" placeholder="Precio"></td>
-                    <td></td>
-                </tr>
-            </tbody>
-        </table>
+        <div
+            style="border: 1px solid rgb(206, 206, 206); padding-top: 0.5em; padding-bottom: 0.5em; padding-left: 0.5em; border-radius: 1em; margin-top: 2em;">
 
-        <!-- ... Tu código HTML posterior ... -->
+            <table class="table" style="margin-top: 0px;">
 
-        <h1 style="margin-top: 1em;">Tus productos publicados:</h1>
+                <thead style="margin: 0em; padding: 0em;">
 
-        <table id="yourProductsTable" class="table">
 
-            <thead>
-                <tr>
-                    <th>Modelo</th>
-                    <th>Descripción</th>
-                    <th>Img Front</th>
-                    <th>Img Back</th>
-                    <th>Stock</th>
-                    <th>Precio</th>
-                    <th>Editar</th>
-                    <th>Eliminar</th>
-                </tr>
-            </thead>
+                    <tr>
+                        <th>Modelo</th>
+                        <th>Descripción</th>
+                        <th>Code</th>
+                        <th>Precio</th>
+                        <th>Stock</th>
+                        <th>Categoría</th>
+                        <th>Img Front</th>
+                        <th>Img Back</th>
 
-        </table>
+                        <th style="background: white; border-bottom: 2px solid white; padding: 0em 0.5em;">
+                            <button id="vaciarCamposBtn" class="boton"
+                                style="height: 4em; margin-left: 1em;  width: 7em;">VACIAR
+                                CAMPOS</button>
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <tr>
+
+                        <form>
+
+                            <td
+                                style="width: 11em; padding: 0em; padding-top: 0.9em; border-bottom: 0px solid #d9d9d9; margin-bottom: -1em;">
+                                <input style="width: 100%;" type="text" name="model" placeholder="Modelo">
+                            </td>
+
+                            <td
+                                style="width: 11em; padding: 0em; padding-top: 0.9em; border-bottom: 0px solid #d9d9d9; margin-bottom: -1em;">
+                                <input style="width: 100%;" type="text" name="description" placeholder="Descripción">
+                            </td>
+
+                            <td
+                                style="width: 11em; padding: 0em; padding-top: 0.9em; border-bottom: 0px solid #d9d9d9; margin-bottom: -1em;">
+                                <input style="width: 100%;" type="text" name="code" placeholder="Code">
+                            </td>
+
+                            <td
+                                style="width: 11em; padding: 0em; padding-top: 0.9em; border-bottom: 0px solid #d9d9d9; margin-bottom: -1em;">
+                                <input style="width: 100%;" type="number" name="price" placeholder="Precio">
+                            </td>
+
+                            <td
+                                style="width: 11em; padding: 0em; padding-top: 0.9em; border-bottom: 0px solid #d9d9d9; margin-bottom: -1em;">
+                                <input style="width: 100%;" type="number" name="stock" placeholder="Stock">
+                            </td>
+
+                            <td
+                                style="width: 11em; padding: 0em; padding-top: 0.9em; border-bottom: 0px solid #d9d9d9; margin-bottom: -1em;">
+                                <input style="width: 100%;" type="text" name="category" placeholder="Categoría">
+                            </td>
+
+                            <td
+                                style="width: 11em; padding: 0em; padding-top: 0.9em; border-bottom: 0px solid #d9d9d9; margin-bottom: -1em;">
+                                <div
+                                    style="display: flex; justify-content: center; flex-direction: column; align-items: center;">
+
+                                    <input type="file" id="imgFront" name="imgFront" style="display: none;">
+
+                                    <label for="imgFront"
+                                        style="padding: 10px; width: %100; font-family: 'Montserrat'; background-color: #bfe4fd; color: #002877; cursor: pointer; border-radius: 1em; border: none;">
+
+                                        <span id="nombreArchivo1">Vista frontal</span>
+
+                                    </label>
+
+                                </div>
+
+                            </td>
+
+                            <td
+                                style="width: 11em; padding: 0em; padding-top: 0.9em; border-bottom: 0px solid #d9d9d9; margin-bottom: -1em;">
+
+                                <div
+                                    style="display: flex; justify-content: center; flex-direction: column; align-items: center;">
+
+                                    <input type="file" id="imgBack" name="imgBack" style="display: none;">
+
+                                    <label for="imgBack"
+                                        style="padding: 10px; width: %100; font-family: 'Montserrat'; background-color: #bfe4fd; color: #002877; cursor: pointer; border-radius: 1em; border: none;">
+
+                                        <span id="nombreArchivo2">Vista posterior</span>
+
+                                    </label>
+
+                                </div>
+
+                            </td>
+
+                        </form>
+
+                        <td style="padding: 0em; border-bottom: 0px solid white;">
+                            <button id="publicarBtn" class="boton"
+                                style="height: 4em;  margin-left: 1em; width: 7em;">PUBLICAR</button>
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+        <div id="tusProductos">
+
+            <h1 style="margin-top: 1em;">Tus productos publicados:</h1>
+            <table id="yourProductsTable" class="table"></table>
+
+        </div>
+
+        <div id="Pags"></div>
 
     </div>
 
 </div>
 
+<script>
+
+    // Inputs file publicar:
+
+    const archivoInputFront = document.getElementById('imgFront');
+    const archivoInputBack = document.getElementById('imgBack');
+
+    const nombreArchivo1 = document.getElementById('nombreArchivo1');
+    const nombreArchivo2 = document.getElementById('nombreArchivo2');
+
+    archivoInputFront.addEventListener('change', () => {
+        const archivos = archivoInputFront.files;
+        nombreArchivo1.textContent = archivos[0].name;
+    })
+
+    archivoInputBack.addEventListener('change', () => {
+        const archivos = archivoInputBack.files;
+        nombreArchivo2.textContent = archivos[0].name;
+    })
+
+    function changeSpanEdit(){
+        // Inputs file editar:
+
+        const editarInputFront = document.getElementById('editImgFront');
+        const editarInputBack = document.getElementById('editImgBack');
+
+        const nombreArchivo3 = document.getElementById('nombreArchivo3');
+        const nombreArchivo4 = document.getElementById('nombreArchivo4');
+
+        editarInputFront.addEventListener('change', () => {
+            const archivos = editarInputFront.files;
+            nombreArchivo3.textContent = archivos[0].name;
+        })
+
+        editarInputBack.addEventListener('change', () => {
+            const archivos = editarInputBack.files;
+            nombreArchivo4.textContent = archivos[0].name;
+        })
+    }
+
+</script>
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="/socket.io/socket.io.js"></script>
 <script src="/js/store.js" type="module"></script>

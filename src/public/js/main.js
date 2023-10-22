@@ -111,8 +111,8 @@ function allProducts() {
           <tr>
             <td id="${product.title}">${product.title}</td>
             <td class="description">${product.description}</td>
-            <td><img src="${product.thumbnails[0].reference}" alt="${product.title}" class="Imgs"></td>
-            <td><img src="${product.thumbnails[1].reference}" alt="${product.title}" class="Imgs"></td>
+            <td><img src="${product.imgFront.reference}" alt="${product.title}" class="Imgs"></td>
+            <td><img src="${product.imgBack.reference}" alt="${product.title}" class="Imgs"></td>
             <td>${product.stock} Und.</td>
             <td>$${product.price}</td>
             <td><input type="number" id="cantidadInput${product._id}" min="1" max="${product.stock}" value="1"></td>
@@ -272,12 +272,18 @@ async function addToCart(productID, title, quantity) {
         const customError = resAdd.cause;
 
         if (statusCodeRes === 200) {
+          let titleS;
+          if (quantity > 1){
+            titleS = `${quantity} Unds. de ${title} se han agregado a tu carrito`
+          } else if (quantity = 1){
+            titleS = `${quantity} Und. de ${title} se ha agregado a tu carrito`
+          }
           Swal.fire({
             toast: true,
             position: 'top-end',
             showConfirmButton: false,
             timer: 5000,
-            title: `${quantity} Unds. de ${title} se ha agregado a tu carrito`,
+            title: titleS,
             icon: 'success'
           });
         } else if (customError || statusCodeRes === 404 || statusCodeRes === 403) {
@@ -323,59 +329,12 @@ function filtrarProducts(limit, page, sort, filtro, filtroVal) {
   socket.emit('busquedaFiltrada', busquedaProducts);
 };
 
-// Cambiar el valor de limit.value:
-const Limit = document.getElementById("limit");
-Limit.addEventListener('input', () => {
-  limit = Limit.value;
-  otrosFiltrosYLimit(limit, page, sort, filtro, filtroVal);
-});
-
-// Función para regular el valor de limit según los productos devueltos:
-function otrosFiltrosYLimit(limit, page, sort, filtro, filtroVal) {
-
-  limit = parseInt(Limit.value, 10);
-
-  // Limit igual o menor a totalDocs:
-  if (limit === totalDocs || limit < totalDocs) {
-
-    filtrarProducts(limit, page, sort, filtro, filtroVal);
-
-    setTimeout(() => {
-      // Limit mayor al totalDocs actual:
-      if (limit > totalDocs) {
-        swal.fire({
-          icon: 'warning',
-          title: 'Error al aplicar filtro',
-          text: 'La cantidad especificada en el filtro "Mostrar" es mayor que la cantidad de productos disponibles. El valor del filtro se ajustará automáticamente al total de resultados. Puedes configurar el filtro con cantidades menores a este total si lo deseas.'
-        });
-        limit = totalDocs;
-        filtrarProducts(limit, page, sort, filtro, filtroVal);
-        Limit.value = totalDocs;
-      }
-    }, 500);
-
-  } else if (limit > totalDocs) {
-
-    // Limit mayor a totalDocs:
-    Swal.fire({
-      icon: 'warning',
-      title: 'Error al aplicar filtro',
-      text: 'La cantidad especificada en el filtro "Mostrar" es mayor que la cantidad de productos disponibles. El valor del filtro se ajustará automáticamente al total de resultados. Puedes configurar el filtro con cantidades menores a este total si lo deseas.'
-    });
-    limit = totalDocs;
-    filtrarProducts(limit, page, sort, filtro, filtroVal);
-    Limit.value = totalDocs;
-
-  }
-
-};
-
 // Todas las caterorías: 
 const all = document.getElementById("All")
 all.addEventListener('click', () => {
   filtro = "";
   filtroVal = "";
-  otrosFiltrosYLimit(limit, page, sort, filtro, filtroVal);
+  filtrarProducts(limit, page, sort, filtro, filtroVal);
 });
 
 // Buscar por categoría: 
@@ -383,41 +342,51 @@ const laptop = document.getElementById("Laptop")
 laptop.addEventListener('click', () => {
   filtro = "category";
   filtroVal = "Laptop";
-  otrosFiltrosYLimit(limit, page, sort, filtro, filtroVal);
+  filtrarProducts(limit, page, sort, filtro, filtroVal);
 });
 
 const celular = document.getElementById("Celular")
 celular.addEventListener('click', () => {
   filtro = "category";
   filtroVal = "Celular";
-  otrosFiltrosYLimit(limit, page, sort, filtro, filtroVal);
+  filtrarProducts(limit, page, sort, filtro, filtroVal);
 });
 
 const monitor = document.getElementById("Monitor")
 monitor.addEventListener('click', () => {
   filtro = "category";
   filtroVal = "Monitor";
-  otrosFiltrosYLimit(limit, page, sort, filtro, filtroVal);
+  filtrarProducts(limit, page, sort, filtro, filtroVal);
 });
 
 // Buscar por precio menor o mayor: 
 const menorPrice = document.getElementById("MenorPre")
 menorPrice.addEventListener('click', () => {
   sort = "1";
-  otrosFiltrosYLimit(limit, page, sort, filtro, filtroVal);
+  filtrarProducts(limit, page, sort, filtro, filtroVal);
 });
 
 const mayorPrice = document.getElementById("MayorPre")
 mayorPrice.addEventListener('click', () => {
   sort = "-1";
-  otrosFiltrosYLimit(limit, page, sort, filtro, filtroVal);
+  filtrarProducts(limit, page, sort, filtro, filtroVal);
 });
+
+// Limit: 
+const limitInput = document.getElementById("limit");
+
+limitInput.addEventListener('input', () =>{
+  limit = limitInput.value
+  filtrarProducts(limit, page, sort, filtro, filtroVal);
+
+})
+
 
 // Limpiar filtros: 
 const limpiarFiltros = document.getElementById("Limpiar");
 
 limpiarFiltros.addEventListener('click', () => {
-  Limit.value = "";
+  limitInput.value = "";
   limit = 10;
   page = 1;
   sort = 1;

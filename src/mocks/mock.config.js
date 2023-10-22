@@ -8,7 +8,8 @@ export const generateProduct = () => {
         price: faker.number.int({ min: 300, max: 3000, dec: 0}),
         stock: faker.number.int({ min: 1, max: 30 }),
         category: faker.commerce.department(),
-        thumbnails: [faker.image.url(), faker.image.url()]
+        imgFront: faker.image.url(),
+        imgBack: faker.image.url()
     }
 };
 

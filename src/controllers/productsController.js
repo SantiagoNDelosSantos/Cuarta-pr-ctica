@@ -37,7 +37,7 @@ export default class ProductController {
             const ruta = frontImg.substring(indice + parteComun.length);
             rutaFrontImg = ruta
         };
-        if (req.files && req.files.backImg[0].path) {
+        if (req.files && req.files.backImg) {
             const backImg = req.files.backImg[0].path;
             const indice = backImg.indexOf(parteComun);
             const ruta = backImg.substring(indice + parteComun.length);
@@ -67,17 +67,16 @@ export default class ProductController {
         let response = {};
         try {
 
-            // Agregamos las rutas de las imagenes al arreglo thumbnails del producto:
-            let thumbnails = [];
-            thumbnails.push({
+            // Agregamos las rutas de las imagenes al   producto:
+            productData.imgFront = {
                 name: "Front Img",
                 reference: `${rutaFrontImg}`
-            });
-            thumbnails.push({
+            };
+
+            productData.imgBack = {
                 name: "Back Img",
-                reference: `${rutaBackImg}`
-            });
-            productData.thumbnails = thumbnails;
+                reference: `${rutaBackImg}`,
+            };
 
             // Extraemos el role del owner: 
             const ownerRole = req.user.role;
@@ -106,7 +105,7 @@ export default class ProductController {
                 response.result = resultService.result;
                 // Actualización Real Time: 
                 const products = await this.productService.getAllProductsService();
-                req.socketServer.sockets.emit('products', products.result);
+                req.socketServer.sockets.emit('products', products);
                 req.logger.debug(response.message);
             };
         } catch (error) {
@@ -155,11 +154,13 @@ export default class ProductController {
 
     // Traer todos los productos - Controller:
     async getAllProductsController(req, res, next) {
+
         let limit = Number(req.limit) || 10;
         let page = Number(req.query.page) || 1;
         let sort = (req.query.sort !== undefined) ? Number(req.query.sort) : 1;
         let filtro = req.query.filtro || null;
         let filtroVal = req.query.filtroVal || null;
+
         try {
             if (limit === 0 || page === 0 || filtroVal === 0) {
                 CustomError.createError({
@@ -183,6 +184,9 @@ export default class ProductController {
                 req.logger.warn(response.message);
             } else if (resultService.statusCode === 200) {
                 response.result = resultService.result;
+                // Actualización Real Time: 
+                const products = await this.productService.getAllProductsService();
+                req.socketServer.sockets.emit('products', products);
                 req.logger.debug(response.message);
             };
         } catch (error) {
@@ -230,7 +234,7 @@ export default class ProductController {
                     response.result = resultService.result;
                     // Actualización Real Time: 
                     const products = await this.productService.getAllProductsService();
-                    req.socketServer.sockets.emit('products', products.result);
+                    req.socketServer.sockets.emit('products', products);
                     req.logger.debug(response.message);
                 };
             }
@@ -273,6 +277,9 @@ export default class ProductController {
             } else if (resultService.statusCode === 404 || resultService.statusCode === 403) {
                 req.logger.warn(response.message);
             } else if (resultService.statusCode === 200) {
+                // Actualización Real Time: 
+                const products = await this.productService.getAllProductsService();
+                req.socketServer.sockets.emit('products', products);
                 req.logger.debug(response.message);
             };
         } catch (error) {
@@ -285,8 +292,35 @@ export default class ProductController {
 
     // Actualizar un producto - Controller: 
     async updatedProductController(req, res, next) {
+
         const pid = req.params.pid;
+
+        // Recibimos la información para actualizar: 
         const updatedFields = req.body;
+
+        // Creamos algunas variables para almacenar las rutas definitivas:
+        let rutaFrontImg;
+        let rutaBackImg;
+
+        // Validamos que archivos se han subido y extreamos las rutas de estos archivos en variables:
+        const parteComun = 'public\\';
+        if (req.files && req.files.frontImg) {
+            const frontImg = req.files.frontImg[0].path;
+            const indice = frontImg.indexOf(parteComun);
+            const ruta = frontImg.substring(indice + parteComun.length);
+            rutaFrontImg = ruta
+        };
+        if (req.files && req.files.backImg) {
+            const backImg = req.files.backImg[0].path;
+            const indice = backImg.indexOf(parteComun);
+            const ruta = backImg.substring(indice + parteComun.length);
+            rutaBackImg = ruta
+        };
+
+        // Conversiones a number:
+        parseFloat(updatedFields.price);
+        parseFloat(updatedFields.stock);
+
         try {
             if (!pid || !mongoose.Types.ObjectId.isValid(pid)) {
                 CustomError.createError({
@@ -309,6 +343,22 @@ export default class ProductController {
         };
         let response = {};
         try {
+
+            // Agregamos las rutas de las nuevas imagenes al producto si las hay:
+            if (rutaFrontImg) {
+                updatedFields.imgFront = {
+                    name: "Front Img",
+                    reference: `${rutaFrontImg}`
+                };
+            }
+
+            if (rutaBackImg) {
+                updatedFields.imgBack = {
+                    name: "Back Img",
+                    reference: `${rutaBackImg}`,
+                };
+            }
+
             // Extraemos el role del owner: 
             const ownerRole = req.user.role;
             // Creamos el owner que vamos a pasar al service: 
@@ -325,7 +375,7 @@ export default class ProductController {
                 response.result = resultService.result;
                 // Actualización Real Time: 
                 const products = await this.productService.getAllProductsService();
-                req.socketServer.sockets.emit('products', products.result);
+                req.socketServer.sockets.emit('products', products);
                 req.logger.debug(response.message);
             };
         } catch (error) {

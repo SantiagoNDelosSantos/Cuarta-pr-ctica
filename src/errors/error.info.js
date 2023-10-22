@@ -45,7 +45,7 @@ export default class ErrorGenerator {
         return `Una o más propiedades en los datos del producto están faltando o no son válidas.
         Propiedades requeridas:
         * title: Debe ser un string, se recibió ${productData.title}.
-        * description: Debe ser un string, se recibió (${productData.description}).
+        * description: Debe ser un string, se recibió ${productData.description}.
         * code: Debe ser un string, se recibió ${productData.code}.
         * price: Debe ser un número positivo mayor que 0, se recibió ${productData.price}.
         * stock: Debe ser un número positivo mayor que 0, se recibió ${productData.stock}.
