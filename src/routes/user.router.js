@@ -66,6 +66,4 @@ userRouter.delete('/deleteInactivityUsers', passport.authenticate('jwt', { sessi
     res.status(result.statusCode).send(result);
 });
 
-// Crear una vista que permita visualizar, modificar el rol y eliminar un usuario. Esta vista solo debe ser accesible por el admin.
-
 export default userRouter;
