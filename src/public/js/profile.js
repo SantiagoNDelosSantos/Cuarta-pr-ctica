@@ -20,7 +20,7 @@ async function verPerfil() {
     const res = await response.json();
 
     // Si no se cumplen con los permisos para acceder a la ruta: 
-    if (res.status === 401) {
+    if (res.statusCode === 401) {
 
         Swal.fire({
             title: res.h1,
@@ -40,13 +40,18 @@ async function verPerfil() {
 
         if (statusCodeRes === 200) {
 
+            let h1 = document.getElementById('h1');
+
+            h1.style = style = "display: block";
+
             // HTML para el cuadro de perfil:
             let htmlPerfil = "";
 
             htmlPerfil += `
 
-                <div
-                style="display: flex; justify-content: center; gap: 2em; flex-direction: row; align-items: center; margin: 0em 2em; ">
+            <div style="width: 92%; margin-left: 1.7em; border: 0.1em solid rgb(188 188 188 / 78%); padding: 1em; border-radius: 1em; margin-bottom: 1em !important;">
+                
+                <div style="display: flex; justify-content: center; gap: 2em; flex-direction: row; align-items: center; margin: 0em 2em; ">
 
                     <div style="display: flex; justify-content: center; gap: 0em; flex-direction: column; align-items: center; width: 80%; border-right: 0.1em solid #95d0f7; padding-right: 1.5em">
 
@@ -59,25 +64,27 @@ async function verPerfil() {
                         <div style="display: flex; gap: 6em;">
 
                             <div style="display: flex; flex-direction: row ; align-items: center; gap: 1.33em">
-                                <h2 style="margin-top: 0em">Nombre: </h2>
+                                <h2 style="margin-top: 0em">Nombre </h2>
                                 <p style="margin-top: 0em">${user.name}</p>
                             </div>
 
                             <div style="display: flex; flex-direction: row ; align-items: center; gap: 1.33em">
-                                <h2 style="margin-top: 0em">Rol:</h2>
+                                <h2 style="margin-top: 0em">Rol</h2>
                                 <p style="margin-top: 0em"> ${user.role}</p>
                             </div>
 
                         </div>
                         
                         <div style="display: flex; flex-direction: column ; align-items: center; gap: 0.5em">
-                            <h2 style="margin-top: 0em">Correo: </h2>
+                            <h2 style="margin-top: 0em">Correo </h2>
                             <p style="margin-top: 0em"> ${user.email}</p>
                         </div>
 
                     </div>
                     
-                </div>`
+                </div>
+                
+            </div>`
 
             sectionPerfil.innerHTML = htmlPerfil;
 
@@ -136,7 +143,7 @@ async function editarPerfil() {
     const res = await response.json();
 
     // Si no se cumplen con los permisos para acceder a la ruta: 
-    if (res.status === 401) {
+    if (res.statusCode === 401) {
 
         Swal.fire({
             title: res.h1,
@@ -156,9 +163,14 @@ async function editarPerfil() {
 
         if (statusCodeRes === 200) {
 
+            let h1 = document.getElementById('h1');
+
+            h1.style = style = "display: none";
+
             let htmlPerfil = ""
 
             htmlPerfil += `
+            <div    style="width: 190%; margin-left: -8.3em; border: 0.1em solid rgb(188 188 188 / 78%); padding: 1em; border-radius: 1em; margin-bottom: 1em !important;">
 
                 <form id="editProfileForm" style="display: flex; justify-content: center; gap: 2em; flex-direction: row; align-items: center; width: 100%;">
 
@@ -172,7 +184,7 @@ async function editarPerfil() {
                                 
                                 <input type="file" id="archivoInputProfile" name="profile" style="display: none;">
 
-                                <label for="archivoInputProfile" style="padding: 10px; font-family: 'Montserrat'; background-color: #bfe4fd; color: #002877; cursor: pointer; border-radius: 1em; border: none;">
+                                <label for="archivoInputProfile" style="text-align: center; padding: 10px; font-family: 'Montserrat'; background-color: #bfe4fd; color: #002877; cursor: pointer; border-radius: 1em; border: none; width: 70%">
                                     <span id="nombreArchivo">Agrega una foto de perfil</span>
                                 </label>
 
@@ -186,21 +198,41 @@ async function editarPerfil() {
                 
                             <div style="width: 100% !important">
                 
-                                <h2 style="margin-top: 0em">Nombre:</h2>
-                                <input style="margin-top: 0.5em; width: 100% !important" type="text" id="nombreInput" name="name"
+                                <h2 style="margin-top: 0em; margin-bottom: 0.5em;">Nombre</h2>
+                                
+                                <div style="display: flex; flex-direction: row; gap: 0.5em; width: 100%; align-items: center; justify-content: center;">
+
+                                    <span class="material-symbols-outlined" style="position: absolute; margin-top: 0.3em ; margin-left: -26%;">
+                                        badge
+                                    </span>
+
+                                    <input style="margin-top: 0.5em; width: 100% !important" type="text" id="nombreInput" name="name"
                                     placeholder="${user.name}" required>
-                
+
+                                </div>
+
                             </div>
                 
                             <div style="width: 100% !important">
-                                <h2 style="margin-top: 0em">Correo:</h2>
-                                <input style="margin-top: 0.5em; width: 100% !important" type="text" id="correoInput" name="email"
-                                    placeholder="${user.email}" required>
+
+                                <h2 style="margin-top: 0em; margin-bottom: 0.5em;">Correo</h2>
+
+                                <div style="display: flex; flex-direction: row; gap: 0.5em; width: 100%; align-items: center; justify-content: center;">
+
+                                    <span class="material-symbols-outlined" style="position: absolute; margin-top: 0.3em ; margin-left: -26%;">
+                                        alternate_email
+                                    </span>
+                                
+                                    <input style="margin-top: 0.5em; width: 100% !important; font-size: 0.90em; " type="text" id="correoInput" name="email" placeholder="${user.email}" required>
+                                    </div>
+
                             </div>
                 
                     </div>
                 
-                </form>`
+                </form>
+
+            </div>`
 
             sectionPerfil.innerHTML = htmlPerfil;
 
@@ -270,7 +302,7 @@ async function confirmarCambios(formEditProfile) {
         const res = await response.json();
 
         // Si no se cumplen con los permisos para acceder a la ruta: 
-        if (res.status === 401) {
+        if (res.statusCode === 401) {
 
             Swal.fire({
                 title: res.h1,
@@ -355,7 +387,7 @@ async function cerrarSession() {
         const res = await response.json();
 
         // Si no se cumplen con los permisos para acceder a la ruta: 
-        if (res.status === 401) {
+        if (res.statusCode === 401) {
 
             Swal.fire({
                 title: res.h1,
@@ -453,7 +485,7 @@ async function cerrarCuenta() {
     const sessionRes = await sessionResponse.json();
 
     // Si no se cumplen con los permisos para acceder a la ruta: 
-    if (sessionRes.status === 401) {
+    if (sessionRes.statusCode === 401) {
 
         Swal.fire({
             title: sessionRes.h1,
@@ -484,7 +516,7 @@ async function cerrarCuenta() {
             const res = await response.json();
 
             // Si no se cumplen con los permisos para acceder a la ruta: 
-            if (res.status === 401) {
+            if (res.statusCode === 401) {
 
                 Swal.fire({
                     title: res.h1,
@@ -549,6 +581,6 @@ function pantallaCarga() {
     setTimeout(() => {
         carga.style = "display: none";
         vista.style = "display: block";
-    }, 500);
+    }, 2000);
 };
 pantallaCarga();

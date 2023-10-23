@@ -19,7 +19,7 @@ async function loadTickets() {
     const sessionRes = await sessionResponse.json();
 
     // Si no se cumplen con los permisos para acceder a la ruta: 
-    if (sessionRes.status === 401) {
+    if (sessionRes.statusCode === 401) {
 
         Swal.fire({
             title: sessionRes.h1,
@@ -51,7 +51,7 @@ async function loadTickets() {
             const cartRes = await cartResponse.json();
 
             // Si no se cumplen con los permisos para acceder a la ruta: 
-            if (sessionRes.status === 401) {
+            if (sessionRes.statusCode === 401) {
 
                 Swal.fire({
                     title: cartRes.h1,
@@ -171,6 +171,6 @@ function pantallaCarga() {
     setTimeout(() => {
         carga.style = "display: none";
         vista.style = "display: block";
-    }, 500);
+    }, 2000);
 };
 pantallaCarga();

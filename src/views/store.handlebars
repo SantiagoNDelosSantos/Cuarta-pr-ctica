@@ -30,17 +30,17 @@
 
     <div class="container">
 
-        <a href="/products"><img src="https://i.ibb.co/mHPj0kW/Logo-volver-removebg-preview.png" alt="volver" border="0"
-                class="logoS" style="position: absolute; margin-top: 2em;"></a>
+        <a id="volverStore" href="/products"><img src="https://i.ibb.co/mHPj0kW/Logo-volver-removebg-preview.png"
+                alt="volver" border="0" class="logoS" style="position: absolute; margin-top: 2em;"></a>
 
         <div class="divLogoChat">
             <img src="https://i.ibb.co/hd9vsgK/Logo-BK-Grande.png" alt="Logo-BK-Grande" border="0" class="logoGRDChat">
         </div>
 
-        <h1>Publicar productos:</h1>
+        <h1>Publicar productos</h1>
 
         <div
-            style="border: 1px solid rgb(206, 206, 206); padding-top: 0.5em; padding-bottom: 0.5em; padding-left: 0.5em; border-radius: 1em; margin-top: 2em;">
+            style="border: 1px solid rgb(206, 206, 206); padding-top: 0.7em; padding-bottom: 0.5em; padding-left: 0.5em; border-radius: 1em; margin-top: 2em;">
 
             <table class="table" style="margin-top: 0px;">
 
@@ -59,7 +59,7 @@
 
                         <th style="background: white; border-bottom: 2px solid white; padding: 0em 0.5em;">
                             <button id="vaciarCamposBtn" class="boton"
-                                style="height: 4em; margin-left: 1em;  width: 7em;">VACIAR
+                                style="height: 4.2em; margin-left: 1em; margin-bottom: -0.1em; width: 7em;">VACIAR
                                 CAMPOS</button>
                         </th>
 
@@ -75,32 +75,35 @@
 
                             <td
                                 style="width: 11em; padding: 0em; padding-top: 0.9em; border-bottom: 0px solid #d9d9d9; margin-bottom: -1em;">
-                                <input style="width: 100%;" type="text" name="model" placeholder="Modelo">
+                                <input style="width: 100%; height: 4em;" type="text" name="model" placeholder="Modelo">
                             </td>
 
                             <td
                                 style="width: 11em; padding: 0em; padding-top: 0.9em; border-bottom: 0px solid #d9d9d9; margin-bottom: -1em;">
-                                <input style="width: 100%;" type="text" name="description" placeholder="Descripción">
+                                <input style="width: 100%; height: 4em;" type="text" name="description"
+                                    placeholder="Descripción">
                             </td>
 
                             <td
                                 style="width: 11em; padding: 0em; padding-top: 0.9em; border-bottom: 0px solid #d9d9d9; margin-bottom: -1em;">
-                                <input style="width: 100%;" type="text" name="code" placeholder="Code">
+                                <input style="width: 100%; height: 4em;" type="text" name="code" placeholder="Code">
                             </td>
 
                             <td
                                 style="width: 11em; padding: 0em; padding-top: 0.9em; border-bottom: 0px solid #d9d9d9; margin-bottom: -1em;">
-                                <input style="width: 100%;" type="number" name="price" placeholder="Precio">
+                                <input style="width: 100%; height: 4em;" type="number" name="price"
+                                    placeholder="Precio">
                             </td>
 
                             <td
                                 style="width: 11em; padding: 0em; padding-top: 0.9em; border-bottom: 0px solid #d9d9d9; margin-bottom: -1em;">
-                                <input style="width: 100%;" type="number" name="stock" placeholder="Stock">
+                                <input style="width: 100%; height: 4em;" type="number" name="stock" placeholder="Stock">
                             </td>
 
                             <td
                                 style="width: 11em; padding: 0em; padding-top: 0.9em; border-bottom: 0px solid #d9d9d9; margin-bottom: -1em;">
-                                <input style="width: 100%;" type="text" name="category" placeholder="Categoría">
+                                <input style="width: 100%; height: 4em;" type="text" name="category"
+                                    placeholder="Categoría">
                             </td>
 
                             <td
@@ -144,7 +147,7 @@
 
                         <td style="padding: 0em; border-bottom: 0px solid white;">
                             <button id="publicarBtn" class="boton"
-                                style="height: 4em;  margin-left: 1em; width: 7em;">PUBLICAR</button>
+                                style="height: 3.73em; margin-top: 0.9em; margin-left: 1em; margin-bottom: 0.1em; width: 7em;">PUBLICAR</button>
                         </td>
 
                     </tr>
@@ -157,7 +160,7 @@
 
         <div id="tusProductos">
 
-            <h1 style="margin-top: 1em;">Tus productos publicados:</h1>
+            <h1 style="margin-top: 1em;">Tu inventario de productos</h1>
             <table id="yourProductsTable" class="table"></table>
 
         </div>
@@ -188,7 +191,7 @@
         nombreArchivo2.textContent = archivos[0].name;
     })
 
-    function changeSpanEdit(){
+    function changeSpanEdit() {
         // Inputs file editar:
 
         const editarInputFront = document.getElementById('editImgFront');

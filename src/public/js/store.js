@@ -1,6 +1,51 @@
 // Captura bóton publicar:
 const publicarBtn = document.getElementById('publicarBtn')
 
+// Editar la redirecciön si es admin:
+async function volver() {
+  // Obtenemos los datos del usuario: 
+  const sessionResponse = await fetch('/api/sessions/current', {
+    method: 'GET',
+  });
+
+  // Si falla la validación del token:
+  if (sessionResponse.redirected) {
+    let invalidTokenURL = sessionResponse.url;
+    window.location.replace(invalidTokenURL);
+  };
+
+  // Pasamos la respuesta a json:
+  const sessionRes = await sessionResponse.json();
+
+  // Si no se cumplen con los permisos para acceder a la ruta: 
+  if (sessionRes.statusCode === 401) {
+
+    Swal.fire({
+      title: sessionRes.h1,
+      text: sessionRes.message,
+      imageUrl: sessionRes.img,
+      imageWidth: 70,
+      imageHeight: 70,
+      imageAlt: sessionRes.h1,
+    });
+
+  } else {
+
+    let role = sessionRes.role;
+
+    let btnVolver = document.getElementById("volverStore");
+
+    if (role === "admin") {
+      btnVolver.href = '/adminPanel';
+    } else {
+      btnVolver.href = '/products';
+    }
+
+  }
+}
+
+volver()
+
 async function publicar() {
 
   // Capturamos los text y number:
@@ -82,7 +127,7 @@ async function publicar() {
     const createRes = await createResponse.json();
 
     // Si no se cumplen con los permisos para acceder a la ruta: 
-    if (createRes.status === 401) {
+    if (createRes.statusCode === 401) {
 
       Swal.fire({
         title: createRes.h1,
@@ -200,7 +245,7 @@ async function ownerProduct() {
   const sessionRes = await sessionResponse.json();
 
   // Si no se cumplen con los permisos para acceder a la ruta: 
-  if (sessionRes.status === 401) {
+  if (sessionRes.statusCode === 401) {
 
     Swal.fire({
       title: sessionRes.h1,
@@ -241,7 +286,7 @@ async function ownerProduct() {
       const ownerProductRes = await ownerProductResponse.json();
 
       // Si no se cumplen con los permisos para acceder a la ruta: 
-      if (ownerProductRes.status === 401) {
+      if (ownerProductRes.statusCode === 401) {
 
         Swal.fire({
           title: ownerProductRes.h1,
@@ -431,7 +476,7 @@ async function deleteProd(pid, title) {
   const deleteRes = await deleteResponse.json();
 
   // Si no se cumplen con los permisos para acceder a la ruta: 
-  if (deleteRes.status === 401) {
+  if (deleteRes.statusCode === 401) {
 
     Swal.fire({
       title: deleteRes.h1,
@@ -499,7 +544,7 @@ async function editProd(pid, title) {
   let resProd = await responseProd.json();
 
   // Si no se cumplen con los permisos para acceder a la ruta: 
-  if (resProd.status === 401) {
+  if (resProd.statusCode === 401) {
 
     Swal.fire({
       title: resProd.h1,
@@ -642,7 +687,7 @@ async function editProd(pid, title) {
             formData.append('backImg', `${resultProd.imgBack.reference}`);
           }
 
-          actualizar(pid, formData)
+          actualizar(pid, resultProd.title, formData)
 
         },
 
@@ -670,29 +715,74 @@ async function editProd(pid, title) {
 
 
 
-async function actualizar(pid, formData) {
+async function actualizar(pid, title, formData) {
+
   // Obtenemos el firstName del usuario:
-  const response = await fetch(`/api/products/${pid}`, {
+  const responsePut = await fetch(`/api/products/${pid}`, {
     method: 'PUT',
     body: formData
   })
 
+  // Si falla la validación del token:
+  if (responsePut.redirected) {
+    let invalidTokenURL = responsePut.url;
+    window.location.replace(invalidTokenURL);
+  };
+
   // Pasamos a la respuesta a json: 
-  const res = await response.json();
-  console.log(res)
+  const resPut = await responsePut.json();
 
+  // Si no se cumplen con los permisos para acceder a la ruta: 
+  if (resPut.statusCode === 401) {
 
-  if (res.statusCode === 200) {
-    ownerProduct();
-  }
+    Swal.fire({
+      title: resPut.h1,
+      text: resPut.message,
+      imageUrl: resPut.img,
+      imageWidth: 70,
+      imageHeight: 70,
+      imageAlt: resPut.h1,
+    });
 
+  } else {
+
+    const statusCodeRes = resPut.statusCode;
+    const messageRes = resPut.message;
+    const customError = resPut.cause;
+
+    if (statusCodeRes === 200) {
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 5000,
+        title: `Has actualizado ${title} exitosamente.`,
+        icon: 'success'
+      });
+      ownerProduct();
+    } else if (statusCodeRes === 409) {
+      Swal.fire({
+        icon: 'info',
+        title: 'Los datos enviados coincidieron con los datos actuales del producto',
+        text: messageRes + " No se realizaron cambios."
+      });
+    } else if (customError || statusCodeRes === 404 || statusCodeRes === 403) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Error al intentar actualizar el producto',
+        text: customError || messageRes
+      });
+    } else if (statusCodeRes === 500) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error al intentar actualizar el producto',
+        text: messageRes
+      });
+    }
+
+  };
 
 }
-
-
-
-
-
 
 // Ocultar la vista de carga después de 1 segundo (1000 milisegundos):
 const carga = document.getElementById("VistaDeCarga");
@@ -704,4 +794,5 @@ function pantallaCarga() {
     vista.style = "display: block";
   }, 2000);
 };
+
 pantallaCarga();

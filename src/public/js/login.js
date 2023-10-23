@@ -1,5 +1,13 @@
 const form = document.getElementById('loginForm');
 
+// Saludo de bienvenida - Parte 1:
+const saludoYaMostrado = localStorage.getItem('saludoMostrado');
+if(!saludoYaMostrado){
+    localStorage.setItem('saludoMostrado', 'false'); 
+} else if (saludoYaMostrado === 'true') {
+    localStorage.setItem('saludoMostrado', 'false'); 
+}
+
 form.addEventListener('submit', async (e) => {
 
     e.preventDefault();

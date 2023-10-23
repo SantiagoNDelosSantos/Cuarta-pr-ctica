@@ -20,7 +20,7 @@ async function cargaChageRole() {
         const res = await response.json();
 
         // Si no se cumplen con los permisos para acceder a la ruta: 
-        if (res.status === 401) {
+        if (res.statusCode === 401) {
 
             Swal.fire({
                 title: res.h1,
@@ -117,7 +117,7 @@ async function cargarDocuments() {
         const sessionRes = await sessionResponse.json();
 
         // Si no se cumplen con los permisos para acceder a la ruta: 
-        if (sessionRes.status === 401) {
+        if (sessionRes.statusCode === 401) {
 
             Swal.fire({
                 title: sessionRes.h1,
@@ -151,7 +151,7 @@ async function cargarDocuments() {
                 const docsRes = await uploadDocsRes.json();
 
                 // Si no se cumplen con los permisos para acceder a la ruta: 
-                if (docsRes.status === 401) {
+                if (docsRes.statusCode === 401) {
 
                     Swal.fire({
                         title: docsRes.h1,
@@ -243,7 +243,7 @@ ChangeROLE.addEventListener("click", async (event) => {
         const sessionRes = await sessionResponse.json();
 
         // Si no se cumplen con los permisos para acceder a la ruta: 
-        if (sessionRes.status === 401) {
+        if (sessionRes.statusCode === 401) {
 
             Swal.fire({
                 title: sessionRes.h1,
@@ -320,7 +320,7 @@ async function cambiarRole(uid) {
         const res = await response.json();
 
         // Si no se cumplen con los permisos para acceder a la ruta: 
-        if (res.status === 401) {
+        if (res.statusCode === 401) {
 
             Swal.fire({
                 title: res.h1,
@@ -376,6 +376,6 @@ function pantallaCarga() {
     setTimeout(() => {
         carga.style = "display: none";
         vista.style = "display: block";
-    }, 500);
+    }, 1000);
 };
 pantallaCarga();

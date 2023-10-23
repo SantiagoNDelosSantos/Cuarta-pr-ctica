@@ -96,7 +96,7 @@ async function deleteMessage(messageId) {
     const res = await response.json();
 
     // Si no se cumplen con los permisos para acceder a la ruta: 
-    if (res.status === 401) {
+    if (res.statusCode === 401) {
 
       Swal.fire({
         title: res.h1,
@@ -181,7 +181,7 @@ async function enviarMensaje() {
     const res = await response.json();
 
     // Si no se cumplen con los permisos para acceder a la ruta: 
-    if (res.status === 401) {
+    if (res.statusCode === 401) {
 
       Swal.fire({
         title: res.h1,
@@ -228,7 +228,7 @@ async function enviarMensaje() {
         const resEnv = await responseEnv.json();
 
         // Si no se cumplen con los permisos para acceder a la ruta: 
-        if (resEnv.status === 401) {
+        if (resEnv.statusCode === 401) {
 
           Swal.fire({
             title: resEnv.h1,
@@ -300,6 +300,6 @@ function pantallaCarga() {
   setTimeout(() => {
     carga.style = "display: none";
     vista.style = "display: block";
-  }, 500);
+  }, 2000);
 };
 pantallaCarga();

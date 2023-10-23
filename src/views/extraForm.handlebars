@@ -4,7 +4,7 @@
         <img src="https://i.ibb.co/hd9vsgK/Logo-BK-Grande.png" alt="Logo-BK-Grande" border="0" class="logoGRD">
     </div>
 
-    <h1>Formulario de datos requeridos:</h1>
+    <h1>Formulario de datos requeridos</h1>
 
     <p>
         Antes de darte acceso a la plataforma, requerimos que completes algunos datos adicionales.
@@ -18,19 +18,43 @@
 
     <form id="extraForm" class="styleFormSession">
 
-        <input type="text" name="last_name" placeholder="Apellido" required>
+        <div
+            style="display: flex; flex-direction: row; gap: 0.5em; width: 100%; align-items: center; justify-content: center;">
+            <span class="material-symbols-outlined" style="position: absolute; margin-left: -16em;">
+                signature
+            </span>
+            <input type="text" name="last_name" placeholder="Apellido" required>
+        </div>
 
         <br />
 
-        <input type="email" name="email" placeholder="Correo" required>
+        <div
+            style="display: flex; flex-direction: row; gap: 0.5em; width: 100%; align-items: center; justify-content: center;">
+            <span class="material-symbols-outlined" style="position: absolute; margin-left: -16em;">
+                alternate_email
+            </span>
+            <input type="email" name="email" placeholder="Correo" required>
+        </div>
 
         <br />
 
-        <input type="number" name="age" placeholder="Edad" required>
+        <div
+            style="display: flex; flex-direction: row; gap: 0.5em; width: 100%; align-items: center; justify-content: center;">
+            <span class="material-symbols-outlined" style="position: absolute; margin-left: -16em;">
+                demography
+            </span>
+            <input type="number" name="age" placeholder="Edad" required>
+        </div>
 
         <br />
 
-        <input type="password" name="password" placeholder="Contraseña" required>
+        <div
+            style="display: flex; flex-direction: row; gap: 0.5em; width: 100%; align-items: center; justify-content: center;">
+            <span class="material-symbols-outlined" style="position: absolute; margin-left: -16em;">
+                password
+            </span>
+            <input type="password" name="password" placeholder="Contraseña" required>
+        </div>
 
         <br />
 
@@ -39,7 +63,6 @@
     </form>
 
 </div>
-
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="/js/extraForm.js"></script>

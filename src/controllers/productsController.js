@@ -82,18 +82,22 @@ export default class ProductController {
             const ownerRole = req.user.role;
             let owner = "";
             let email = "";
+            let role = ""
             if (ownerRole === "premium") {
                 // Si es premium agregamos su id a owner:
                 owner = req.user.userID;
+                role = req.user.role;
                 email = req.user.email;
             } else if (ownerRole === "admin") {
                 // Si es admin agregamos su role a owner:
                 owner = req.user.role;
+                role = req.user.role;
                 email = null;
-            }
+            };
             // Agregamos el owner a productData: 
             productData.owner = owner;
             productData.email = email;
+            productData.role = role;
 
             // Enviamos toda la información del producto incluyendo el owner al service: 
             const resultService = await this.productService.createProductService(productData);
@@ -350,14 +354,13 @@ export default class ProductController {
                     name: "Front Img",
                     reference: `${rutaFrontImg}`
                 };
-            }
-
+            };
             if (rutaBackImg) {
                 updatedFields.imgBack = {
                     name: "Back Img",
                     reference: `${rutaBackImg}`,
                 };
-            }
+            };
 
             // Extraemos el role del owner: 
             const ownerRole = req.user.role;

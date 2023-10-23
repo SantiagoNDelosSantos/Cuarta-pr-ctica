@@ -22,7 +22,7 @@ async function saludoYAccesoPrem() {
     const sessionRes = await sessionResponse.json();
 
     // Si no se cumplen con los permisos para acceder a la ruta: 
-    if (sessionRes.status === 401) {
+    if (sessionRes.statusCode === 401) {
 
       Swal.fire({
         title: sessionRes.h1,
@@ -44,21 +44,20 @@ async function saludoYAccesoPrem() {
 
       setTimeout(() => {
 
-        // Saludo de bienvenida:
+        // Saludo de bienvenida - Parte 2:
         const saludoYaMostrado = localStorage.getItem('saludoMostrado');
-        const duracionSaludoEnMilisegundos = 12 * 60 * 60 * 1000;
-        if (!saludoYaMostrado) {
+
+        if (saludoYaMostrado === 'false') {
+
           Swal.fire({
             icon: 'success',
             title: '¡Bienvenido!',
             text: `Hola ${sessionRes.name}, has iniciado sesión con éxito.`,
           });
-          // Marcar que el saludo:
-          localStorage.setItem('saludoMostrado', Date.now().toString());
 
-          setTimeout(() => {
-            localStorage.removeItem('saludoMostrado');
-          }, duracionSaludoEnMilisegundos);
+          // Marcar que el saludo se ha mostrado:
+          localStorage.setItem('saludoMostrado', 'true');
+
         }
 
       }, 600);
@@ -140,7 +139,7 @@ function allProducts() {
 
       });
 
-      // Gaurdamos en la variable el total de los productos devueltos: 
+      // Guardamos en la variable el total de los productos devueltos: 
       totalDocs = productsResponse.result.totalDocs;
 
       // Captura div de Pags:
@@ -209,6 +208,8 @@ async function addToCart(productID, title, quantity) {
     method: 'GET',
   })
 
+
+
   // Si falla la validación del token:
   if (response.redirected) {
     let invalidTokenURL = response.url;
@@ -219,7 +220,7 @@ async function addToCart(productID, title, quantity) {
   const res = await response.json();
 
   // Si no se cumplen con los permisos para acceder a la ruta: 
-  if (res.status === 401) {
+  if (res.statusCode === 401) {
 
     Swal.fire({
       title: res.h1,
@@ -237,69 +238,67 @@ async function addToCart(productID, title, quantity) {
     const cartID = user.cart;
     const productIDValue = productID;
 
-    if (user && cartID && productIDValue) {
+    // Realizar una solicitud POST al servidor con los datos del formulario:
+    const responseAdd = await fetch(`/api/carts/${cartID}/products/${productIDValue}/quantity/${quantity}`, {
+      method: 'POST',
+    })
 
-      // Realizar una solicitud POST al servidor con los datos del formulario:
-      const responseAdd = await fetch(`/api/carts/${cartID}/products/${productIDValue}/quantity/${quantity}`, {
-        method: 'POST',
-      })
+    // Si falla la validación del token:
+    if (responseAdd.redirected) {
+      let invalidTokenURL = responseAdd.url;
+      window.location.replace(invalidTokenURL);
+    };
 
-      // Si falla la validación del token:
-      if (responseAdd.redirected) {
-        let invalidTokenURL = responseAdd.url;
-        window.location.replace(invalidTokenURL);
-      };
+    // Pasamos la respuesta a json:
+    const resAdd = await responseAdd.json();
 
-      // Pasamos la respuesta a json:
-      const resAdd = await responseAdd.json();
+      console.log("Y voscuando saltas" +  JSON.stringify(resAdd.status, null, 2))
+  
+    // Si no se cumplen con los permisos para acceder a la ruta: 
+    if (resAdd.statusCode === 401) {
 
-      // Si no se cumplen con los permisos para acceder a la ruta: 
-      if (resAdd.status === 401) {
+      Swal.fire({
+        title: resAdd.h1,
+        text: resAdd.message,
+        imageUrl: resAdd.img,
+        imageWidth: 70,
+        imageHeight: 70,
+        imageAlt: resAdd.h1,
+      });
 
+    } else {
+
+      const statusCodeRes = resAdd.statusCode;
+      const messageRes = resAdd.message;
+      const customError = resAdd.cause;
+
+      if (statusCodeRes === 200) {
+        let titleS;
+        if (quantity > 1) {
+          titleS = `${quantity} Unds. de ${title} se han agregado a tu carrito`
+        } else if (quantity = 1) {
+          titleS = `${quantity} Und. de ${title} se ha agregado a tu carrito`
+        }
         Swal.fire({
-          title: resAdd.h1,
-          text: resAdd.message,
-          imageUrl: resAdd.img,
-          imageWidth: 70,
-          imageHeight: 70,
-          imageAlt: resAdd.h1,
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 5000,
+          title: titleS,
+          icon: 'success'
         });
-
-      } else {
-
-        const statusCodeRes = resAdd.statusCode;
-        const messageRes = resAdd.message;
-        const customError = resAdd.cause;
-
-        if (statusCodeRes === 200) {
-          let titleS;
-          if (quantity > 1){
-            titleS = `${quantity} Unds. de ${title} se han agregado a tu carrito`
-          } else if (quantity = 1){
-            titleS = `${quantity} Und. de ${title} se ha agregado a tu carrito`
-          }
-          Swal.fire({
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 5000,
-            title: titleS,
-            icon: 'success'
-          });
-        } else if (customError || statusCodeRes === 404 || statusCodeRes === 403) {
-          Swal.fire({
-            icon: 'warning',
-            title: 'Error en el carrito',
-            text: customError || messageRes
-          });
-        } else if (statusCodeRes === 500) {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error en el carrito',
-            text: messageRes
-          });
-        };
-
+      } else if (customError || statusCodeRes === 404 || statusCodeRes === 403) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Error en el carrito',
+          text: customError || messageRes
+        });
+      } else if (statusCodeRes === 500) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error en el carrito',
+          text: messageRes
+        });
       };
 
     };
@@ -374,13 +373,11 @@ mayorPrice.addEventListener('click', () => {
 
 // Limit: 
 const limitInput = document.getElementById("limit");
-
-limitInput.addEventListener('input', () =>{
+limitInput.addEventListener('input', () => {
   limit = limitInput.value
   filtrarProducts(limit, page, sort, filtro, filtroVal);
 
 })
-
 
 // Limpiar filtros: 
 const limpiarFiltros = document.getElementById("Limpiar");
@@ -420,6 +417,6 @@ function pantallaCarga() {
   setTimeout(() => {
     carga.style = "display: none";
     vista.style = "display: block";
-  }, 500);
+  }, 1000);
 };
 pantallaCarga();

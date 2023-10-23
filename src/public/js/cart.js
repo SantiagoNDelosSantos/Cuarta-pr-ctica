@@ -26,7 +26,7 @@ async function loadCart() {
   const sessionRes = await sessionResponse.json();
 
   // Si no se cumplen con los permisos para acceder a la ruta: 
-  if (sessionRes.status === 401) {
+  if (sessionRes.statusCode === 401) {
 
     Swal.fire({
       title: sessionRes.h1,
@@ -59,7 +59,7 @@ async function loadCart() {
       const cartRes = await cartResponse.json();
 
       // Si no se cumplen con los permisos para acceder a la ruta: 
-      if (sessionRes.status === 401) {
+      if (sessionRes.statusCode === 401) {
 
         Swal.fire({
           title: cartRes.h1,
@@ -245,7 +245,7 @@ document.addEventListener('input', async (event) => {
         const quantityRes = await quantityResponse.json();
 
         // Si no se cumplen con los permisos para acceder a la ruta: 
-        if (quantityRes.status === 401) {
+        if (quantityRes.statusCode === 401) {
 
           Swal.fire({
             title: quantityRes.h1,
@@ -338,7 +338,7 @@ async function deleteToCart(pid, title) {
     const deleteRes = await deleteResponse.json();
 
     // Si no se cumplen con los permisos para acceder a la ruta: 
-    if (deleteRes.status === 401) {
+    if (deleteRes.statusCode === 401) {
 
       Swal.fire({
         title: deleteRes.h1,
@@ -409,7 +409,7 @@ async function deleteAllProds() {
     const deleteRes = await deleteAllResponse.json();
 
     // Si no se cumplen con los permisos para acceder a la ruta: 
-    if (deleteRes.status === 401) {
+    if (deleteRes.statusCode === 401) {
 
       Swal.fire({
         title: deleteRes.h1,
@@ -478,7 +478,7 @@ async function orderGeneration() {
     const orderRes = await orderResponse.json();
 
     // Si no se cumplen con los permisos para acceder a la ruta: 
-    if (orderRes.status === 401) {
+    if (orderRes.statusCode === 401) {
 
       Swal.fire({
         title: orderRes.h1,
@@ -564,7 +564,7 @@ async function stripe(order) {
       const paymentIntRes = await paymentsIntentsResponse.json();
 
       // Si no se cumplen con los permisos para acceder a la ruta: 
-      if (paymentIntRes.status === 401) {
+      if (paymentIntRes.statusCode === 401) {
         Swal.fire({
           title: paymentIntRes.h1,
           text: paymentIntRes.message,
@@ -621,6 +621,6 @@ function pantallaCarga() {
   setTimeout(() => {
     carga.style = "display: none";
     vista.style = "display: block";
-  }, 500);
+  }, 1000);
 };
 pantallaCarga();
