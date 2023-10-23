@@ -54,6 +54,9 @@ export const envResetPassToken = process.env.RESET_PASSWORD_TOKEN;
 // Cookie para guardar el email del usuario que solicita correo de restablecimiento de contraseña:
 export const envResetPassCookieEmail = process.env.RESET_PASSWORD_COOKIE; 
 
+// Enlace para redireción a Reset pass view:
+export const envUrlResetPass = process.env.URL_REST_PASS;
+
 // Keys de Stipe: 
 export const envStripeKeyPublic = process.env.STRIPE_KEY_PUBLIC;
 export const envStripeKeySecret = process.env.STIRPE_KEY_SECRET;

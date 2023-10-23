@@ -109,6 +109,16 @@ async function publicar() {
       text: `La información requerida para el producto está incompleta, los campos a completar son: ${incomplete}.`
     });
 
+  }
+
+  if (category !== "Laptop" && category !== "Celular" && category !== "Monitor") {
+
+    Swal.fire({
+      icon: 'warning',
+      title: 'Error al intentar crear producto',
+      text: `Las únicas categorías de productos que pueden publicarse son "Celular", "Laptop" o "Monitor". Por favor, indica a cuál de estas categorías pertenece tu producto.`
+    });
+
   } else {
 
     // Enviamos el formulario:

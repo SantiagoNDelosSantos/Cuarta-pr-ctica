@@ -315,6 +315,69 @@ async function deleteUserPid(pid, title) {
 
 };
 
+// Cerrar session: 
+let logout = document.getElementById("logoutAdmin")
+
+logout.addEventListener('click', () => {
+    logoutF();
+});
+
+async function logoutF() {
+
+    const response = await fetch('/api/sessions/logout', {
+        method: 'POST',
+    })
+
+    // Si falla la validación del token:
+    if (response.redirected) {
+        let invalidTokenURL = response.url;
+        window.location.replace(invalidTokenURL);
+    };
+
+    // Pasamos la respuesta a json:
+    const res = await response.json();
+
+    // Si no se cumplen con los permisos para acceder a la ruta: 
+    if (res.statusCode === 401) {
+
+        Swal.fire({
+            title: res.h1,
+            text: res.message,
+            imageUrl: res.img,
+            imageWidth: 70,
+            imageHeight: 70,
+            imageAlt: res.h1,
+        });
+
+    } else {
+
+        const statusCode = res.statusCode;
+        const message = res.message;
+        const customError = res.message;
+
+        if (statusCode === 200) {
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Logout',
+                text: message || 'La session se ha cerrado exitosamente',
+            });
+
+            setTimeout(() => {
+                window.location.replace('/login');
+            }, 2000);
+
+        }  else if (statusCode === 500) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error al intentar cerrar session',
+                text: message || 'Hubo un problema al intentar cerrar la session.',
+            });
+        };
+    };
+
+};
+
 // Busqueda filtrada: 
 
 // Variables para los filtros:

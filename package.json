@@ -4,9 +4,9 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon src/config.js --mode dev --exec \"nodemon src/server.js\"",
-    "prod": "nodemon src/config.js --mode prod --exec \"nodemon src/server.js\""
+    "prod": "nodemon src/config.js --mode prod --exec \"nodemon src/server.js\"",
+    "test": "mocha src/test/supertest.js"
   },
   "keywords": [],
   "author": "",

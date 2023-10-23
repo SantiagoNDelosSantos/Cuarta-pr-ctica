@@ -264,19 +264,24 @@ export default class SessionController {
 
     // Cerrar session - Controller:
     async logoutController(req, res, next) {
-        const uid = req.user.userID;
-        try {
-            if (!uid || !mongoose.Types.ObjectId.isValid(uid)) {
-                CustomError.createError({
-                    name: "Error al cerrar session.",
-                    cause: ErrorGenerator.generateUserIdInfo(uid),
-                    message: "El ID de usuario proporcionado no es válido.",
-                    code: ErrorEnums.INVALID_ID_USER_ERROR
-                });
-            }
-        } catch (error) {
-            return next(error);
-        };
+        let uid;
+        if (req.user.role !== "admin") {
+            uid = req.user.userID;
+            try {
+                if (!uid || !mongoose.Types.ObjectId.isValid(uid)) {
+                    CustomError.createError({
+                        name: "Error al cerrar session.",
+                        cause: ErrorGenerator.generateUserIdInfo(uid),
+                        message: "El ID de usuario proporcionado no es válido.",
+                        code: ErrorEnums.INVALID_ID_USER_ERROR
+                    });
+                }
+            } catch (error) {
+                return next(error);
+            };
+        } else if (req.user.role === "admin") {
+            uid = null
+        }
         let response = {};
         try {
             const resultService = await this.sessionService.logoutService(req, res, uid);

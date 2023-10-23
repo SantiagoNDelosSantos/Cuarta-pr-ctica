@@ -23,7 +23,8 @@ import {
 import {
     envResetPassToken,
     envCoderTokenCookie,
-    envCoderSecret
+    envCoderSecret,
+    envUrlResetPass
 } from '../config.js'
 
 // Clase para el Service de session: 
@@ -138,7 +139,7 @@ export default class SessionService {
                         <h2 style="font-size: 24px; margin: 0;">Enlace para restablecimiento de contraseña:</h2>
                             <p style="font-size: 16px;">
                             Haga click en el siguiente enlace para restablecer su contraseña:</p>
-                            <a href="http://localhost:8080/resetPasswordView?token=${token}" 
+                            <a href="${envUrlResetPass}${token}" 
                             style="
                             background-color: #95d0f7;
                             color: #ffffff; 
@@ -272,21 +273,34 @@ export default class SessionService {
     // Cerrar session - Service:
     async logoutService(req, res, uid) {
         let response = {};
+
         try {
-            const lastConnection = {
-                last_connection: new Date().toLocaleDateString() + " - " + new Date().toLocaleTimeString()
-            };
-            // Enviamos el id del usuario y su last_connection:
-            const resultUpdt = await this.sessionDAO.updateUser(uid, lastConnection);
-            // Validamos los resultados:
-            if (resultUpdt.status === "error") {
-                response.statusCode = 500;
-                response.message = resultUpdt.message;
-            } else if (resultUpdt.status === "not found user") {
-                response.statusCode = 404;
-                response.message = "Usuario no encontrado.";
-            } else if (resultUpdt.status === "success") {
-                // Luego de actualizar el last_connection, eliminamos el token de la cookie:
+            if (uid !== null) {
+                const lastConnection = {
+                    last_connection: new Date().toLocaleDateString() + " - " + new Date().toLocaleTimeString()
+                };
+                // Enviamos el id del usuario y su last_connection:
+                const resultUpdt = await this.sessionDAO.updateUser(uid, lastConnection);
+                // Validamos los resultados:
+                if (resultUpdt.status === "error") {
+                    response.statusCode = 500;
+                    response.message = resultUpdt.message;
+                } else if (resultUpdt.status === "not found user") {
+                    response.statusCode = 404;
+                    response.message = "Usuario no encontrado.";
+                } else if (resultUpdt.status === "success") {
+                    // Luego de actualizar el last_connection, eliminamos el token de la cookie:
+                    res.cookie(envCoderTokenCookie, "", {
+                        httpOnly: true,
+                        signed: true,
+                        maxAge: 7 * 24 * 60 * 60 * 1000
+                    })
+                    // Devolvemos un status 200:
+                    response.statusCode = 200;
+                    response.message = "Session cerrada exitosamente.";
+                };
+            } else if (uid === null) {
+                // Eliminamos el token de la cookie:
                 res.cookie(envCoderTokenCookie, "", {
                     httpOnly: true,
                     signed: true,
@@ -295,7 +309,7 @@ export default class SessionService {
                 // Devolvemos un status 200:
                 response.statusCode = 200;
                 response.message = "Session cerrada exitosamente.";
-            };
+            }
         } catch (error) {
             response.statusCode = 500;
             response.message = "Error al cerrar session - Service: " + error.message;
@@ -319,7 +333,7 @@ export default class SessionService {
                 response.message = userInfo.message;
             } else if (userInfo.statusCode === 404) {
                 response.statusCode = 404;
-                response.message = `No se encontró ningún usuario con el Email, Nombre o ID, ${identifier}.`;
+                response.message = `No se encontró ningún usuario con el ID, ${uid}.`;
             } else if (userInfo.statusCode === 200) {
 
                 // Extraemos al info necesaria:
@@ -382,7 +396,6 @@ export default class SessionService {
                         }
                     }
 
-
                     // Validamos los resultados:
                     if (deleteCart.statusCode === "error" || deleteUserProducts.statusCode === "error" || errorCorreo === true) {
                         response.statusCode = 500;
@@ -395,15 +408,6 @@ export default class SessionService {
                         response.message = "Cuenta eliminada exitosamente. " + deleteUserProducts.message;
                     }
                 }
-
-
-
-
-
-
-
-
-
 
             };
         } catch (error) {

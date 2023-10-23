@@ -28,7 +28,7 @@ async function loadUsers() {
 
     } else {
 
-        // Obtenemos el carrito del usuario: 
+        // Obtenemos los usuario: 
         const usersResponse = await fetch(`/api/users/getAllUsers`, {
             method: 'GET',
         });
@@ -64,12 +64,14 @@ async function loadUsers() {
 
             if (statusCodeRes === 200) {
                 tableUsers(resultUsers);
-            } else if (customError || statusCodeRes === 404) {
+            } else if (customError) {
                 Swal.fire({
                     icon: 'warning',
                     title: 'Error al obtener los usuarios',
-                    text: customError || messageRes
+                    text: customError
                 });
+            } else if (statusCodeRes === 404) {
+                tableUsers("no users");
             } else if (statusCodeRes === 500) {
                 Swal.fire({
                     icon: 'error',
@@ -88,15 +90,48 @@ loadUsers();
 
 async function tableUsers(resultUsers) {
 
-    console.log(resultUsers)
 
-    const yoursUsersTable = document.getElementById("tableUsers")
 
-    yoursUsersTable.innerHTML = ""
+    if (resultUsers !== "no users") {
 
-    resultUsers.forEach((user) => {
 
-        const usersRow = `
+        const headTable = document.getElementById("headTable")
+
+        headTable.innerHTML = ""
+
+        headTable.innerHTML += `
+        <tr>
+        <th style="background: white; border: none"></th>
+        <th style="background: white; border: none"></th>
+        <th style="background: white; border: none"></th>
+        <th style="background: white; border: none"></th>
+        <th style="background: white; border: none"></th>
+        <th style="background: white; border: none"></th>
+        <th style="padding: 0.5em"><button id="deleteInactivityUsers" class="botonB"
+                style="height: 4em; font-size: 0.9em; width: 100%; padding: 0.5em 0em;">
+                <h2>Eliminar inactivos</h2>
+            </button>
+        </th>
+        </tr>
+
+        <tr>
+            <th>Nombre</th>
+            <th>Correo</th>
+            <th>ID</th>
+            <th>Role</th>
+            <th>Last Connection</th>
+            <th>Cambiar role</th>
+            <th>Eliminar usuario</th>
+        </tr>
+            `
+
+        const yoursUsersTable = document.getElementById("tableUsers")
+
+        yoursUsersTable.innerHTML = ""
+
+        resultUsers.forEach((user) => {
+
+            const usersRow = `
             <tr>
                 <td>${user.first_name}</td>
 
@@ -120,45 +155,324 @@ async function tableUsers(resultUsers) {
 
             </tr>`;
 
-        yoursUsersTable.insertAdjacentHTML('beforeend', usersRow);
+            yoursUsersTable.insertAdjacentHTML('beforeend', usersRow);
 
-    });
-
-    resultUsers.forEach((user) => {
-
-        const editBtn = document.getElementById(`edit-${user._id}`);
-        const deleteBtn = document.getElementById(`delete-${user._id}`);
-
-        editBtn.addEventListener("click", () => {
-            editUser(user._id);
         });
 
-        deleteBtn.addEventListener("click", () => {
-            deleteUser(user._id);
+        resultUsers.forEach((user) => {
+
+            const editBtn = document.getElementById(`edit-${user._id}`);
+            const deleteBtn = document.getElementById(`delete-${user._id}`);
+
+            editBtn.addEventListener("click", () => {
+                editUser(user._id);
+            });
+
+            deleteBtn.addEventListener("click", () => {
+                deleteUser(user._id);
+            });
+
+        })
+
+        let deleteInactivityUsers = document.getElementById("deleteInactivityUsers")
+
+        deleteInactivityUsers.addEventListener("click", () => {
+            deleteAccounts()
         });
 
-    })
+    } else {
+
+        let divTable = document.getElementById("yoursUsersTable")
+
+        let noUsers = "";
+
+        noUsers += `
+        <div style="display: flex; align-items: center; justify-content: center; margin-top: 0em; flex-direction: column;">
+
+            <img style="width: 15vw; margin-top: 4em; margin-bottom: 3em;" src="https://i.ibb.co/KGgRF5M/4570095.png" alt="4570095" border="0">
+
+                <h2 style="margin-top: -1em;">No se han encontrado usuarios. </h2>
+                    
+        </div>
+        `;
+
+        divTable.innerHTML = noUsers;
+    }
 
 };
 
+async function editUser(uid) {
 
-
-async function editUser(uid){
     console.log(uid)
+
+    // Obtenemos los datos del usuario: 
+    const sessionResponse = await fetch('/api/sessions/current', {
+        method: 'GET',
+    });
+
+    // Si falla la validación del token:
+    if (sessionResponse.redirected) {
+        let invalidTokenURL = sessionResponse.url;
+        window.location.replace(invalidTokenURL);
+    };
+
+    // Pasamos la respuesta a json:
+    const sessionRes = await sessionResponse.json();
+
+    // Si no se cumplen con los permisos para acceder a la ruta: 
+    if (sessionRes.statusCode === 401) {
+
+        Swal.fire({
+            title: sessionRes.h1,
+            text: sessionRes.message,
+            imageUrl: sessionRes.img,
+            imageWidth: 70,
+            imageHeight: 70,
+            imageAlt: sessionRes.h1,
+        });
+
+    } else {
+
+        // Cambiamos el role del usuario: 
+        const changeRoleResponse = await fetch(`/api/users/premium/${uid}`, {
+            method: 'POST',
+        });
+
+        // Si falla la validación del token:
+        if (changeRoleResponse.redirected) {
+            const invalidTokenURL = changeRoleResponse.url;
+            window.location.replace(invalidTokenURL);
+        };
+
+        // Pasamos a la respuesta a json: 
+        const changeRoleRes = await changeRoleResponse.json();
+
+        // Si no se cumplen con los permisos para acceder a la ruta: 
+        if (changeRoleRes.statusCode === 401) {
+
+            Swal.fire({
+                title: changeRoleRes.h1,
+                text: changeRoleRes.message,
+                imageUrl: changeRoleRes.img,
+                imageWidth: 70,
+                imageHeight: 70,
+                imageAlt: changeRoleRes.h1,
+            });
+
+        } else {
+
+            // Si se pudo acceder a la ruta:
+            const statusCodeRes = changeRoleRes.statusCode;
+            const messageRes = changeRoleRes.message;
+            const customError = changeRoleRes.cause;
+
+            if (statusCodeRes === 200) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Actualizar role',
+                    text: messageRes || 'Role actualizado exitosamente.',
+                });
+                loadUsers();
+            } else if (customError || statusCodeRes === 404) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Error al intentar actualizar role del usuario',
+                    text: customError || messageRes
+                });
+            } else if (statusCodeRes === 500) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error al intentar actualizar role del usuario',
+                    text: messageRes
+                });
+            }
+
+        };
+
+    };
+
 }
 
+async function deleteUser(uid) {
 
-async function deleteUser(uid){
     console.log(uid)
+
+    // Obtenemos los datos del usuario: 
+    const sessionResponse = await fetch('/api/sessions/current', {
+        method: 'GET',
+    });
+
+    // Si falla la validación del token:
+    if (sessionResponse.redirected) {
+        let invalidTokenURL = sessionResponse.url;
+        window.location.replace(invalidTokenURL);
+    };
+
+    // Pasamos la respuesta a json:
+    const sessionRes = await sessionResponse.json();
+
+    // Si no se cumplen con los permisos para acceder a la ruta: 
+    if (sessionRes.statusCode === 401) {
+
+        Swal.fire({
+            title: sessionRes.h1,
+            text: sessionRes.message,
+            imageUrl: sessionRes.img,
+            imageWidth: 70,
+            imageHeight: 70,
+            imageAlt: sessionRes.h1,
+        });
+
+    } else {
+
+        // Eliminamos al usuario: 
+        const deleteUserResponse = await fetch(`/api/sessions/deleteAccount/${uid}`, {
+            method: 'DELETE',
+        });
+
+        // Si falla la validación del token:
+        if (deleteUserResponse.redirected) {
+            const invalidTokenURL = deleteUserResponse.url;
+            window.location.replace(invalidTokenURL);
+        };
+
+        // Pasamos a la respuesta a json: 
+        const deleteUserRes = await deleteUserResponse.json();
+
+        // Si no se cumplen con los permisos para acceder a la ruta: 
+        if (deleteUserRes.statusCode === 401) {
+
+            Swal.fire({
+                title: deleteUserRes.h1,
+                text: deleteUserRes.message,
+                imageUrl: deleteUserRes.img,
+                imageWidth: 70,
+                imageHeight: 70,
+                imageAlt: deleteUserRes.h1,
+            });
+
+        } else {
+
+            // Si se pudo acceder a la ruta:
+            const statusCodeRes = deleteUserRes.statusCode;
+            const messageRes = deleteUserRes.message;
+            const customError = deleteUserRes.cause;
+
+            if (statusCodeRes === 200) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Eliminar usuario',
+                    text: messageRes || 'Usuario eliminado exitosamente.',
+                });
+                loadUsers();
+            } else if (customError || statusCodeRes === 404) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Error al intentar eliminar usuario',
+                    text: customError || messageRes
+                });
+            } else if (statusCodeRes === 500) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error al intentar eliminar usuario',
+                    text: messageRes
+                });
+            }
+
+        };
+
+    };
+
+};
+
+async function deleteAccounts() {
+
+    // Obtenemos los datos del usuario: 
+    const sessionResponse = await fetch('/api/sessions/current', {
+        method: 'GET',
+    });
+
+    // Si falla la validación del token:
+    if (sessionResponse.redirected) {
+        let invalidTokenURL = sessionResponse.url;
+        window.location.replace(invalidTokenURL);
+    };
+
+    // Pasamos la respuesta a json:
+    const sessionRes = await sessionResponse.json();
+
+    // Si no se cumplen con los permisos para acceder a la ruta: 
+    if (sessionRes.statusCode === 401) {
+
+        Swal.fire({
+            title: sessionRes.h1,
+            text: sessionRes.message,
+            imageUrl: sessionRes.img,
+            imageWidth: 70,
+            imageHeight: 70,
+            imageAlt: sessionRes.h1,
+        });
+
+    } else {
+
+        // Eliminamos los usuarios inactivos: 
+        const deleteInactivityUsers = await fetch(`/api/users/deleteInactivityUsers`, {
+            method: 'DELETE',
+        });
+
+        // Si falla la validación del token:
+        if (deleteInactivityUsers.redirected) {
+            const invalidTokenURL = deleteInactivityUsers.url;
+            window.location.replace(invalidTokenURL);
+        };
+
+        // Pasamos a la respuesta a json: 
+        const deleteInacUserRes = await deleteInactivityUsers.json();
+
+        // Si no se cumplen con los permisos para acceder a la ruta: 
+        if (deleteInacUserRes.statusCode === 401) {
+
+            Swal.fire({
+                title: deleteInacUserRes.h1,
+                text: deleteInacUserRes.message,
+                imageUrl: deleteInacUserRes.img,
+                imageWidth: 70,
+                imageHeight: 70,
+                imageAlt: deleteInacUserRes.h1,
+            });
+
+        } else {
+
+            // Si se pudo acceder a la ruta:
+            const statusCodeRes = deleteInacUserRes.statusCode;
+            const messageRes = deleteInacUserRes.message;
+            const customError = deleteInacUserRes.cause;
+
+            if (statusCodeRes === 200) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Eliminar usuarios inactivos',
+                    text: messageRes
+                });
+                loadUsers();
+            } else if (customError || statusCodeRes === 404) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Error al intentar eliminar usuarios inactivos',
+                    text: customError || messageRes
+                });
+            } else if (statusCodeRes === 500) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error al intentar eliminar usuarios inactivos',
+                    text: messageRes
+                });
+            }
+
+        };
+
+    };
 }
-
-
-
-
-
-
-
-
 
 // Ocultar la vista de carga después de 1 segundo (1000 milisegundos):
 const carga = document.getElementById("VistaDeCarga");
