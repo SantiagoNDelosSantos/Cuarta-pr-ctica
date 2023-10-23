@@ -59,7 +59,7 @@ async function loadCart() {
       const cartRes = await cartResponse.json();
 
       // Si no se cumplen con los permisos para acceder a la ruta: 
-      if (sessionRes.statusCode === 401) {
+      if (cartRes.statusCode === 401) {
 
         Swal.fire({
           title: cartRes.h1,

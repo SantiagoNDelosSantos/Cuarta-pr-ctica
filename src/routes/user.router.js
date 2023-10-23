@@ -66,16 +66,6 @@ userRouter.delete('/deleteInactivityUsers', passport.authenticate('jwt', { sessi
     res.status(result.statusCode).send(result);
 });
 
-
-
-
-
-
-
 // Crear una vista que permita visualizar, modificar el rol y eliminar un usuario. Esta vista solo debe ser accesible por el admin.
-
-// Realizar el despliegue de la aplicación en Railway.app y corroborar que se puede llevar a cabo un proceso de compra completo.  
-
-
 
 export default userRouter;

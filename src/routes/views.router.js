@@ -140,6 +140,15 @@ viewsRouter.get('/adminPanel', passport.authenticate('jwt', {
     });
 });
 
+viewsRouter.get('/editUserAdmin', passport.authenticate('jwt', {
+    session: false,
+    failureRedirect: '/notLoggedIn'
+}), rolesVMiddlewareAdmin, (req, res) => {
+    res.render('editUsersAdmin', {
+        title: 'Panel de administrador - Usuarios'
+    });
+});
+
 // Solo admin y premium:
 
 viewsRouter.get('/storeProducts', passport.authenticate('jwt', {
