@@ -64,6 +64,10 @@ export const envStripeKeySecret = process.env.STIRPE_KEY_SECRET;
 // Cookie con la orden de compra: 
 export const envPurchaseOrder = process.env.PURCHASE_ORDER;
 
+// URLs para Stripe: 
+export const envSuccess_url = process.env.SUCCESS_URL;
+export const envCancel_url = process.env.CANCEL_URL;
+
 console.log(program.opts())
 
 // Cargar variables de entorno, antes de levantar el servidor: 

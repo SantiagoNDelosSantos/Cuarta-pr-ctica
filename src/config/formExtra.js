@@ -91,21 +91,23 @@ export const completeProfile = async (req, res, next) => {
             };
 
             // Actualizar el usuario en la base de datos:
-            const updateSessionControl = await sessionController.updateUserController(req, res, next, userId, updateUser);
+            await sessionController.updateUserController(req, res, next, userId, updateUser);
 
+            const getNewUser = await sessionController.getUserController(req, res, email);
+            
             // Si se encuantra el usuario lo actualizamos:
-            if (updateSessionControl.statusCode === 200) {
+            if (getNewUser.statusCode === 200) {
 
                 // Extraermos solo el resultado:
-                const userExtraForm = updateSessionControl.result;
+                const newUser = getNewUser.result;
 
                 // Generar el token JWT:
                 let token = jwt.sign({
-                    email: userExtraForm.email,
-                    first_name: userExtraForm.first_name,
-                    role: userExtraForm.role,
-                    cart: userExtraForm.cart,
-                    userID: userExtraForm._id
+                    email: newUser.email,
+                    first_name: newUser.first_name,
+                    role: newUser.role,
+                    cart: newUser.cart,
+                    userID: newUser._id
                 }, envCoderSecret, {
                     expiresIn: '7d'
                 });
